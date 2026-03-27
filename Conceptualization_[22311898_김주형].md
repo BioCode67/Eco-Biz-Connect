@@ -3,7 +3,7 @@
 ## **Eco-Biz Connect (EBC): AI 및 블록체인 기반 ESG 통합 금융 플랫폼**
 
 ### **[ Project Logo ]**
-> ![EBC_LOGO](./EBC logo.png)
+> ![EBC_LOGO](./EBC_logo.png)
 > *AI 경영 분석과 블록체인 탄소 투자의 결합*
 
 **Student No:** 22311898
