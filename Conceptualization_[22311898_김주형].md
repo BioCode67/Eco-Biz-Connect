@@ -58,18 +58,54 @@
 
 ### **2. System context diagram**
 
-*(이 섹션에는 설계한 다이어그램 이미지를 삽입하세요. 시스템을 중앙에 두고 Actor들을 배치합니다.)*
+*(이 섹션에는 Mermaid 문법을 이용한 시스템 컨텍스트 다이어그램과 각 Actor와의 상세한 데이터 흐름을 기술합니다.)*
 
-> ![System Context Diagram Placeholder](https://via.placeholder.com/600x400?text=System+Context+Diagram+Placement)
+#### **2.1 Diagram (Mermaid)**
 
-**Description of terms in the diagram:**
-* **System (EBC Platform):** 전체 데이터 처리 및 AI 분석, 블록체인 스마트 컨트랙트 로직을 담당하는 핵심 엔진.
-* **Merchant (소상공인):** 경영 데이터를 입력하고 분석 리포트 및 금융 매칭 서비스를 수신하는 사용자.
-* **Investor (개인 투자자):** 탄소중립 자산에 조각 투자를 진행하고 토큰 소유권을 관리하는 사용자.
-* **Bank/Financial API:** 실제 우대 금리 대출 연계 및 투자 자금 결제 처리를 담당하는 외부 금융 시스템.
-* **Blockchain Network:** 조각 투자 내역과 수익 분배 과정을 투명하게 기록하는 분산 원장.
+```mermaid
+graph TD
+    %% 노드 정의 및 스타일
+    subgraph EBC_System [Eco-Biz Connect 통합 플랫폼]
+        EBC[("EBC Platform Core
+        (AI 엔진 & 스마트 컨트랙트)")]
+    end
 
----
+    Merchant["Merchant
+    (소상공인)"]
+    Investor["Investor
+    (개인 투자자)"]
+    Bank_API["Bank/Financial API
+    (외부 금융 시스템)"]
+    Blockchain["Blockchain Network
+    (분산 원장)"]
+
+    %% 스타일 정의
+    classDef system fill:#e3f2fd,stroke:#1565c0,stroke-width:2px,color:#000;
+    classDef actor fill:#fff9c4,stroke:#fbc02d,color:#000;
+    classDef external fill:#f5f5f5,stroke:#9e9e9e,stroke-dasharray: 5 5,color:#000;
+
+    class EBC system;
+    class Merchant,Investor actor;
+    class Bank_API,Blockchain external;
+
+    %% 데이터 흐름 정의
+    Merchant -- "1. 매출 및 상권 데이터 전송" --> EBC
+    EBC -- "2. AI 경영 분석 리포트 제공" --> Merchant
+    EBC -- "3. 맞춤형 우대 금융 상품 제안" --> Merchant
+
+    Investor -- "4. 조각 투자 신청 및 투자금 이체" --> EBC
+    EBC -- "5. 토큰 소유권 증명 및 포트폴리오 제공" --> Investor
+    EBC -- "6. 투자 수익금 배분 알림" --> Investor
+
+    %% 외부 시스템 데이터 흐름 (양방향 가독성)
+    EBC -. "7. 대출 심사 요청 (신용 평가 정보)" .-> Bank_API
+    Bank_API -. "8. 대출 심사 결과 및 상품 정보" .-> EBC
+
+    EBC == "9. STO 발행/거래 기록 요청" ==> Blockchain
+    Blockchain == "10. 거래 완료 및 원장 데이터 동기화" ==> EBC
+
+    %% subgraph 스타일 제거 (테두리 없음)
+    style EBC_System fill:none,stroke:none;
 
 ### **3. Use case list**
 
