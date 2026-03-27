@@ -58,7 +58,7 @@
 
 ### **2. System context diagram**
 
-*(이 섹션에는 Mermaid 문법을 이용한 시스템 컨텍스트 다이어그램과 각 Actor와의 상세한 데이터 흐름을 기술합니다.)*
+*(이 섹션에서는 Mermaid 문법을 이용한 시스템 컨텍스트 다이어그램과 각 Actor와의 상세한 데이터 흐름을 기술합니다.)*
 
 #### **2.1 Diagram (Mermaid)**
 
@@ -66,18 +66,13 @@
 graph TD
     %% 노드 정의 및 스타일
     subgraph EBC_System [Eco-Biz Connect 통합 플랫폼]
-        EBC[("EBC Platform Core
-        (AI 엔진 & 스마트 컨트랙트)")]
+        EBC[("EBC Platform Core<br/>(AI 엔진 & 스마트 컨트랙트)")]
     end
 
-    Merchant["Merchant
-    (소상공인)"]
-    Investor["Investor
-    (개인 투자자)"]
-    Bank_API["Bank/Financial API
-    (외부 금융 시스템)"]
-    Blockchain["Blockchain Network
-    (분산 원장)"]
+    Merchant["Merchant<br/>(소상공인)"]
+    Investor["Investor<br/>(개인 투자자)"]
+    Bank_API["Bank/Financial API<br/>(외부 금융 시스템)"]
+    Blockchain["Blockchain Network<br/>(분산 원장)"]
 
     %% 스타일 정의
     classDef system fill:#e3f2fd,stroke:#1565c0,stroke-width:2px,color:#000;
@@ -97,15 +92,37 @@ graph TD
     EBC -- "5. 토큰 소유권 증명 및 포트폴리오 제공" --> Investor
     EBC -- "6. 투자 수익금 배분 알림" --> Investor
 
-    %% 외부 시스템 데이터 흐름 (양방향 가독성)
+    %% 외부 시스템 데이터 흐름
     EBC -. "7. 대출 심사 요청 (신용 평가 정보)" .-> Bank_API
     Bank_API -. "8. 대출 심사 결과 및 상품 정보" .-> EBC
 
     EBC == "9. STO 발행/거래 기록 요청" ==> Blockchain
     Blockchain == "10. 거래 완료 및 원장 데이터 동기화" ==> EBC
 
-    %% subgraph 스타일 제거 (테두리 없음)
-    style EBC_System fill:none,stroke:none;
+    %% subgraph 스타일 적용
+    style EBC_System fill:#f8f9fa,stroke:#dee2e6,stroke-dasharray: 5 5;
+```
+
+#### **2.2 Description of terms and interactions**
+
+[cite_start]**EBC 플랫폼**과 외부 환경(Actors) 간의 경계를 정의하고, 시스템을 중심으로 오가는 핵심 데이터 및 상호작용을 상세히 기술합니다. [cite: 2598, 2599]
+
+**1) System**
+* **EBC Platform (Eco-Biz Connect):** 시스템의 최상위 경계입니다. 소상공인의 데이터를 수집/분석하는 **AI 비즈니스 엔진**과 환경 자산의 토큰화 및 수익 분배를 담당하는 **블록체인 스마트 컨트랙트(Smart Contract) 로직**을 통합 관리하는 핵심 엔진입니다.
+
+**2) Input Actors (데이터 제공 및 행위 주체)**
+* [cite_start]**Merchant (소상공인):** 본 플랫폼의 핵심 사용자 그룹입니다. [cite: 1476]
+    * [cite_start]**주요 상호작용:** POS(매출) 데이터, 지출 데이터, 상권 정보를 시스템에 입력합니다. [cite: 1419] [cite_start]시스템으로부터 AI가 분석한 경영 개선 리포트와 최적화된 금융 상품 추천 정보를 수신합니다. [cite: 1429]
+* [cite_start]**Investor (개인 투자자):** 탄소중립 자산 조각 투자에 참여하는 사용자 그룹입니다. [cite: 1487]
+    * [cite_start]**주요 상호작용:** 앱을 통해 조각 투자 신청을 하고 투자금을 이체합니다. [cite: 1492] [cite_start]시스템으로부터 투자한 토큰의 소유권(Proof of Ownership) 증명과 포트폴리오, 수익금 배분 현황을 실시간으로 확인합니다. [cite: 1495]
+
+**3) Supporting/External Actors (외부 연동 시스템)**
+* [cite_start]**Bank/Financial API (외부 금융 시스템):** 실질적인 금융 서비스를 제공하는 은행 인프라입니다. [cite: 1410]
+    * **주요 상호작용:** EBC 시스템으로부터 대출 심사에 필요한 소상공인의 경영 성과 정보를 수신합니다. [cite_start]심사 결과에 따른 우대 금리 대출 상품 정보를 제공합니다. [cite: 1413]
+* [cite_start]**Blockchain Network (분산 원장):** STO 자산의 신뢰성을 담보하는 외부 블록체인 네트워크입니다. [cite: 2456]
+    * [cite_start]**주요 상호작용:** EBC 시스템의 요청에 따라 탄소중립 자산의 토큰(STO) 발행 및 거래 기록을 영구적으로 저장하고 데이터를 동기화합니다. [cite: 2421]
+
+---
 
 ### **3. Use case list**
 
