@@ -6,8 +6,6 @@
 > ![EBC_LOGO](./logo.png)
 > *AI 경영 분석과 블록체인 탄소 투자의 결합*
 
-| 구분 (Category) | 상세 정보 (Details) |
-| :--- | :--- |
 | **Student No** | 22311898 |
 | **Name** | 김주형 (Ju) |
 | **E-mail** | curie01@yu.ac.kr |
