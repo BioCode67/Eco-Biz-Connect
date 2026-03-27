@@ -33,51 +33,6 @@
 | 7. **References** | 7 |
 ---
 
-김주형님, 요청하신 대로 모든 인용 표기()를 제거하고, 내용을 더욱 풍성하게 다듬은 전체 마크다운 코드입니다. 이 코드를 복사하여 사용하시면 됩니다.
-
-Markdown
-# 1. Conceptualization
-
-## **Eco-Biz Connect (EBC): AI 및 블록체인 기반 ESG 통합 금융 플랫폼**
-
-<br>
-
-### **[ Project Logo ]**
-<p align="left">
-  <img src="./EBC%20logo.png" width="250" />
-</p>
-> *AI 경영 분석과 블록체인 탄소 투자의 결합*
-
-<br>
-
-**Student No:** 22311898 <br>
-**Name:** 김주형 <br>
-**E-mail:** curie01@yu.ac.kr <br>
-
----
-
-### **[ Revision history ]**
-
-| Revision date | Version # | Description | Author |
-| :--- | :--- | :--- | :--- |
-| 2026/03/27 | 1.0.0 | 초안 작성 및 사업 목적(Business Purpose) 고도화 | 김주형 |
-
----
-
-### **= Contents =**
-
-| 항목 (Section) | 페이지 (Page) |
-| :--- | ---: |
-| 1. **Business purpose** | 1 |
-| 2. **System context diagram** | 2 |
-| 3. **Use case list** | 3 |
-| 4. **Concept of operation** | 4 |
-| 5. **Problem statement** | 5 |
-| 6. **Glossary** | 6 |
-| 7. **References** | 7 |
-
----
-
 ### **1. Business purpose**
 
 **1.1 Project background**
