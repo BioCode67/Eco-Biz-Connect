@@ -23,9 +23,12 @@
 
 ### **[ Revision history ]**
 
+### **[ Revision history ]**
+
 | Revision date | Version # | Description | Author |
 | :--- | :--- | :--- | :--- |
 | 2026/03/27 | 1.0.0 | 초안 작성 (Eco-Biz Connect 통합 기획) | 김주형 |
+| 2026/05/08 | 2.0.0 | Analysis 문서 작성 | 김주형 |
 
 ---
 
