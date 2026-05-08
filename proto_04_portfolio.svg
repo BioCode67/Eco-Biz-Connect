@@ -1,0 +1,121 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="620" viewBox="0 0 960 620">
+  <rect width="960" height="620" fill="#f1f5f9"/>
+
+  <!-- Sidebar -->
+  <rect x="0" y="0" width="200" height="620" fill="#1e293b"/>
+  <rect x="16" y="16" width="32" height="32" rx="7" fill="#3b82f6"/>
+  <text x="32" y="37" text-anchor="middle" font-family="Arial, sans-serif" font-size="15" font-weight="bold" fill="white">E</text>
+  <text x="58" y="30" font-family="Arial, sans-serif" font-size="12" font-weight="bold" fill="white">Eco-Biz</text>
+  <text x="58" y="44" font-family="Arial, sans-serif" font-size="10" fill="#64748b">Connect</text>
+  <text x="36" y="103" font-family="Arial, sans-serif" font-size="11" fill="#94a3b8">  Dashboard</text>
+  <text x="36" y="130" font-family="Arial, sans-serif" font-size="11" fill="#94a3b8">  Marketplace</text>
+  <rect x="10" y="137" width="180" height="34" rx="6" fill="#3b82f6"/>
+  <text x="36" y="158" font-family="Arial, sans-serif" font-size="12" font-weight="bold" fill="white">■ Portfolio</text>
+  <text x="36" y="186" font-family="Arial, sans-serif" font-size="11" fill="#94a3b8">  Dividends</text>
+  <text x="36" y="212" font-family="Arial, sans-serif" font-size="11" fill="#94a3b8">  Transactions</text>
+
+  <!-- Top bar -->
+  <rect x="200" y="0" width="760" height="52" fill="white" stroke="#e2e8f0" stroke-width="1"/>
+  <text x="220" y="20" font-family="Arial, sans-serif" font-size="11" fill="#64748b">Investor Portfolio</text>
+  <text x="220" y="38" font-family="Arial, sans-serif" font-size="16" font-weight="bold" fill="#1e293b">My Investment Portfolio</text>
+
+  <!-- Summary bar -->
+  <rect x="206" y="60" width="738" height="72" rx="8" fill="white" stroke="#e2e8f0" stroke-width="1"/>
+  <!-- Card 1 -->
+  <text x="240" y="84" font-family="Arial, sans-serif" font-size="10" fill="#64748b">Total Invested</text>
+  <text x="240" y="106" font-family="Arial, sans-serif" font-size="18" font-weight="bold" fill="#1e293b">₩1,500,000</text>
+  <line x1="366" y1="74" x2="366" y2="122" stroke="#e2e8f0" stroke-width="1"/>
+  <!-- Card 2 -->
+  <text x="390" y="84" font-family="Arial, sans-serif" font-size="10" fill="#64748b">Current Valuation</text>
+  <text x="390" y="106" font-family="Arial, sans-serif" font-size="18" font-weight="bold" fill="#1e293b">₩1,582,300</text>
+  <text x="390" y="120" font-family="Arial, sans-serif" font-size="10" fill="#22c55e">▲ +₩82,300</text>
+  <line x1="536" y1="74" x2="536" y2="122" stroke="#e2e8f0" stroke-width="1"/>
+  <!-- Card 3 -->
+  <text x="560" y="84" font-family="Arial, sans-serif" font-size="10" fill="#64748b">Total Return</text>
+  <text x="560" y="106" font-family="Arial, sans-serif" font-size="18" font-weight="bold" fill="#059669">+5.49%</text>
+  <line x1="680" y1="74" x2="680" y2="122" stroke="#e2e8f0" stroke-width="1"/>
+  <!-- Card 4 -->
+  <text x="704" y="84" font-family="Arial, sans-serif" font-size="10" fill="#64748b">Total Dividends Received</text>
+  <text x="704" y="106" font-family="Arial, sans-serif" font-size="18" font-weight="bold" fill="#1e293b">₩100,000</text>
+
+  <!-- Holdings table -->
+  <rect x="206" y="144" width="530" height="300" rx="8" fill="white" stroke="#e2e8f0" stroke-width="1"/>
+  <text x="222" y="166" font-family="Arial, sans-serif" font-size="12" font-weight="bold" fill="#1e293b">Holdings</text>
+  <!-- Table header -->
+  <rect x="206" y="174" width="530" height="28" fill="#f8fafc"/>
+  <text x="222" y="192" font-family="Arial, sans-serif" font-size="10" font-weight="bold" fill="#64748b">Asset</text>
+  <text x="366" y="192" font-family="Arial, sans-serif" font-size="10" font-weight="bold" fill="#64748b">Qty</text>
+  <text x="410" y="192" font-family="Arial, sans-serif" font-size="10" font-weight="bold" fill="#64748b">Cost Basis</text>
+  <text x="486" y="192" font-family="Arial, sans-serif" font-size="10" font-weight="bold" fill="#64748b">Curr. Value</text>
+  <text x="570" y="192" font-family="Arial, sans-serif" font-size="10" font-weight="bold" fill="#64748b">Return</text>
+  <text x="628" y="192" font-family="Arial, sans-serif" font-size="10" font-weight="bold" fill="#64748b">Next Dividend</text>
+  <!-- Row 1 -->
+  <line x1="206" y1="202" x2="736" y2="202" stroke="#f1f5f9" stroke-width="1"/>
+  <text x="222" y="222" font-family="Arial, sans-serif" font-size="11" fill="#1e293b">☀ Gyeongju Solar Farm No.3</text>
+  <text x="366" y="222" font-family="Arial, sans-serif" font-size="11" fill="#1e293b">100</text>
+  <text x="410" y="222" font-family="Arial, sans-serif" font-size="11" fill="#1e293b">₩1,000,000</text>
+  <text x="486" y="222" font-family="Arial, sans-serif" font-size="11" fill="#1e293b">₩1,020,000</text>
+  <text x="570" y="222" font-family="Arial, sans-serif" font-size="11" fill="#22c55e">+2.0%</text>
+  <text x="628" y="222" font-family="Arial, sans-serif" font-size="11" fill="#64748b">Jul 1, 2026</text>
+  <!-- Row 2 -->
+  <line x1="206" y1="232" x2="736" y2="232" stroke="#f1f5f9" stroke-width="1"/>
+  <text x="222" y="254" font-family="Arial, sans-serif" font-size="11" fill="#1e293b">💨 Pohang Offshore Wind Zone 1</text>
+  <text x="366" y="254" font-family="Arial, sans-serif" font-size="11" fill="#1e293b">10</text>
+  <text x="410" y="254" font-family="Arial, sans-serif" font-size="11" fill="#1e293b">₩500,000</text>
+  <text x="486" y="254" font-family="Arial, sans-serif" font-size="11" fill="#1e293b">₩562,300</text>
+  <text x="570" y="254" font-family="Arial, sans-serif" font-size="11" fill="#22c55e">+12.46%</text>
+  <text x="628" y="254" font-family="Arial, sans-serif" font-size="11" fill="#64748b">Jul 1, 2026</text>
+
+  <!-- Dividend timeline -->
+  <rect x="206" y="456" width="530" height="128" rx="8" fill="white" stroke="#e2e8f0" stroke-width="1"/>
+  <text x="222" y="476" font-family="Arial, sans-serif" font-size="12" font-weight="bold" fill="#1e293b">Dividend History</text>
+  <!-- Entry 1 -->
+  <circle cx="230" cy="500" r="6" fill="#22c55e"/>
+  <text x="246" y="505" font-family="Arial, sans-serif" font-size="10" font-weight="bold" fill="#1e293b">Apr 1, 2026</text>
+  <text x="336" y="505" font-family="Arial, sans-serif" font-size="10" fill="#64748b">Gyeongju Solar Farm Q1 dividend</text>
+  <text x="630" y="505" text-anchor="end" font-family="Arial, sans-serif" font-size="10" font-weight="bold" fill="#059669">+₩62,000</text>
+  <text x="700" y="505" font-family="Arial, sans-serif" font-size="9" fill="#3b82f6">0xa8f3…</text>
+  <!-- Entry 2 -->
+  <circle cx="230" cy="526" r="6" fill="#22c55e"/>
+  <text x="246" y="531" font-family="Arial, sans-serif" font-size="10" font-weight="bold" fill="#1e293b">Jan 1, 2026</text>
+  <text x="336" y="531" font-family="Arial, sans-serif" font-size="10" fill="#64748b">Gyeongju Solar Farm Q4 dividend</text>
+  <text x="630" y="531" text-anchor="end" font-family="Arial, sans-serif" font-size="10" font-weight="bold" fill="#059669">+₩38,000</text>
+  <text x="700" y="531" font-family="Arial, sans-serif" font-size="9" fill="#3b82f6">0xc124…</text>
+  <!-- Upcoming -->
+  <rect x="216" y="548" width="510" height="28" rx="6" fill="#eff6ff"/>
+  <circle cx="230" cy="562" r="6" fill="white" stroke="#3b82f6" stroke-width="1.5"/>
+  <text x="246" y="567" font-family="Arial, sans-serif" font-size="10" font-weight="bold" fill="#3b82f6">Jul 1, 2026 (Upcoming)</text>
+  <text x="390" y="567" font-family="Arial, sans-serif" font-size="10" fill="#1e40af">Both assets — estimated total:</text>
+  <text x="660" y="567" font-family="Arial, sans-serif" font-size="10" font-weight="bold" fill="#1d4ed8">~₩68,000</text>
+
+  <!-- Right side: portfolio chart -->
+  <rect x="750" y="144" width="194" height="440" rx="8" fill="white" stroke="#e2e8f0" stroke-width="1"/>
+  <text x="764" y="166" font-family="Arial, sans-serif" font-size="12" font-weight="bold" fill="#1e293b">Allocation</text>
+  <!-- Donut chart (simplified) -->
+  <!-- outer arc blue (67%) -->
+  <circle cx="847" cy="260" r="70" fill="none" stroke="#e2e8f0" stroke-width="28"/>
+  <!-- Solar: blue 67% -->
+  <circle cx="847" cy="260" r="70" fill="none" stroke="#3b82f6" stroke-width="28" stroke-dasharray="263 176" stroke-dashoffset="0" stroke-linecap="butt" transform="rotate(-90 847 260)"/>
+  <!-- Wind: green 33% -->
+  <circle cx="847" cy="260" r="70" fill="none" stroke="#22c55e" stroke-width="28" stroke-dasharray="130 309" stroke-dashoffset="-263" stroke-linecap="butt" transform="rotate(-90 847 260)"/>
+  <!-- center label -->
+  <text x="847" y="254" text-anchor="middle" font-family="Arial, sans-serif" font-size="12" font-weight="bold" fill="#1e293b">2</text>
+  <text x="847" y="270" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" fill="#64748b">assets</text>
+
+  <!-- Legend -->
+  <rect x="770" y="340" width="12" height="12" rx="2" fill="#3b82f6"/>
+  <text x="788" y="350" font-family="Arial, sans-serif" font-size="10" fill="#374151">Gyeongju Solar</text>
+  <text x="788" y="362" font-family="Arial, sans-serif" font-size="9" fill="#64748b">₩1,020,000 (64.5%)</text>
+  <rect x="770" y="374" width="12" height="12" rx="2" fill="#22c55e"/>
+  <text x="788" y="384" font-family="Arial, sans-serif" font-size="10" fill="#374151">Pohang Wind</text>
+  <text x="788" y="396" font-family="Arial, sans-serif" font-size="9" fill="#64748b">₩562,300 (35.5%)</text>
+
+  <!-- CO2 impact -->
+  <rect x="760" y="418" width="174" height="58" rx="6" fill="#f0fdf4"/>
+  <text x="772" y="436" font-family="Arial, sans-serif" font-size="10" font-weight="bold" fill="#166534">Environmental Impact</text>
+  <text x="772" y="452" font-family="Arial, sans-serif" font-size="10" fill="#374151">CO₂ reduced (your share):</text>
+  <text x="772" y="468" font-family="Arial, sans-serif" font-size="14" font-weight="bold" fill="#059669">~3.7 ton/yr</text>
+
+  <!-- Figure label -->
+  <text x="580" y="608" text-anchor="middle" font-family="Arial, sans-serif" font-size="11" fill="#94a3b8">Figure 4.4 — Investor Portfolio Page (Web Application)</text>
+</svg>
