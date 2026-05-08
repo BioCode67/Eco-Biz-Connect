@@ -1,0 +1,161 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="620" viewBox="0 0 960 620">
+  <rect width="960" height="620" fill="#0f172a"/>
+
+  <!-- Sidebar -->
+  <rect x="0" y="0" width="210" height="620" fill="#1e293b"/>
+  <rect x="16" y="16" width="32" height="32" rx="7" fill="#ef4444"/>
+  <text x="32" y="37" text-anchor="middle" font-family="Arial, sans-serif" font-size="15" font-weight="bold" fill="white">A</text>
+  <text x="58" y="28" font-family="Arial, sans-serif" font-size="12" font-weight="bold" fill="white">EBC Admin</text>
+  <text x="58" y="44" font-family="Arial, sans-serif" font-size="10" fill="#64748b">Console v2.0</text>
+
+  <rect x="10" y="78" width="190" height="32" rx="6" fill="#ef4444"/>
+  <text x="30" y="98" font-family="Arial, sans-serif" font-size="11" font-weight="bold" fill="white">■ System Monitor</text>
+  <text x="30" y="128" font-family="Arial, sans-serif" font-size="11" fill="#94a3b8">  User Management</text>
+  <text x="30" y="154" font-family="Arial, sans-serif" font-size="11" fill="#94a3b8">  Asset Management</text>
+  <text x="30" y="180" font-family="Arial, sans-serif" font-size="11" fill="#94a3b8">  Issue New STO</text>
+  <text x="30" y="206" font-family="Arial, sans-serif" font-size="11" fill="#94a3b8">  Audit Log</text>
+  <text x="30" y="232" font-family="Arial, sans-serif" font-size="11" fill="#94a3b8">  Configuration</text>
+
+  <circle cx="28" cy="592" r="12" fill="#ef4444"/>
+  <text x="28" y="597" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" font-weight="bold" fill="white">A</text>
+  <text x="48" y="589" font-family="Arial, sans-serif" font-size="11" font-weight="bold" fill="white">Admin User</text>
+  <text x="48" y="602" font-family="Arial, sans-serif" font-size="9" fill="#64748b">Administrator</text>
+
+  <!-- Top bar -->
+  <rect x="210" y="0" width="750" height="48" fill="#1e293b" stroke="#334155" stroke-width="1"/>
+  <text x="226" y="20" font-family="Arial, sans-serif" font-size="11" fill="#64748b">Admin Console</text>
+  <text x="226" y="36" font-family="Arial, sans-serif" font-size="15" font-weight="bold" fill="white">System Monitoring Dashboard</text>
+  <!-- Live indicator -->
+  <circle cx="900" cy="24" r="6" fill="#22c55e"/>
+  <text x="886" y="28" text-anchor="end" font-family="Arial, sans-serif" font-size="10" fill="#22c55e">LIVE</text>
+
+  <!-- ── Status cards row ── -->
+  <!-- AI Engine -->
+  <rect x="218" y="56" width="170" height="86" rx="8" fill="#1e293b" stroke="#334155" stroke-width="1"/>
+  <text x="234" y="76" font-family="Arial, sans-serif" font-size="10" fill="#94a3b8">AI Analytics Engine</text>
+  <circle cx="368" cy="70" r="6" fill="#22c55e"/>
+  <text x="234" y="100" font-family="Arial, sans-serif" font-size="20" font-weight="bold" fill="#22c55e">HEALTHY</text>
+  <text x="234" y="118" font-family="Arial, sans-serif" font-size="10" fill="#64748b">Avg response: 0.8s</text>
+  <text x="234" y="132" font-family="Arial, sans-serif" font-size="10" fill="#64748b">Jobs queued: 3</text>
+
+  <!-- Blockchain -->
+  <rect x="400" y="56" width="170" height="86" rx="8" fill="#1e293b" stroke="#334155" stroke-width="1"/>
+  <text x="416" y="76" font-family="Arial, sans-serif" font-size="10" fill="#94a3b8">Blockchain Network</text>
+  <circle cx="550" cy="70" r="6" fill="#22c55e"/>
+  <text x="416" y="100" font-family="Arial, sans-serif" font-size="20" font-weight="bold" fill="#22c55e">SYNCED</text>
+  <text x="416" y="118" font-family="Arial, sans-serif" font-size="10" fill="#64748b">Last block: #12,840,322</text>
+  <text x="416" y="132" font-family="Arial, sans-serif" font-size="10" fill="#64748b">TPS: 120  Pending: 2</text>
+
+  <!-- Bank API -->
+  <rect x="582" y="56" width="170" height="86" rx="8" fill="#1e293b" stroke="#f59e0b" stroke-width="1.5"/>
+  <text x="598" y="76" font-family="Arial, sans-serif" font-size="10" fill="#94a3b8">Bank API</text>
+  <circle cx="732" cy="70" r="6" fill="#f59e0b"/>
+  <text x="598" y="100" font-family="Arial, sans-serif" font-size="20" font-weight="bold" fill="#f59e0b">DEGRADED</text>
+  <text x="598" y="118" font-family="Arial, sans-serif" font-size="10" fill="#64748b">Avg response: 2.8s ▲</text>
+  <text x="598" y="132" font-family="Arial, sans-serif" font-size="10" fill="#f59e0b">Latency alert active</text>
+
+  <!-- Users -->
+  <rect x="764" y="56" width="190" height="86" rx="8" fill="#1e293b" stroke="#334155" stroke-width="1"/>
+  <text x="780" y="76" font-family="Arial, sans-serif" font-size="10" fill="#94a3b8">Platform Users</text>
+  <text x="780" y="106" font-family="Arial, sans-serif" font-size="20" font-weight="bold" fill="white">3,412</text>
+  <text x="780" y="118" font-family="Arial, sans-serif" font-size="10" fill="#64748b">Merchants: 1,203  Investors: 2,205</text>
+  <text x="780" y="132" font-family="Arial, sans-serif" font-size="10" fill="#22c55e">New today: +14</text>
+
+  <!-- ── Transaction volume chart ── -->
+  <rect x="218" y="154" width="440" height="200" rx="8" fill="#1e293b" stroke="#334155" stroke-width="1"/>
+  <text x="234" y="174" font-family="Arial, sans-serif" font-size="12" font-weight="bold" fill="white">Transaction Volume (Last 7 Days)</text>
+  <!-- Bars -->
+  <rect x="250" y="278" width="36" height="48" rx="3" fill="#3b82f6" opacity="0.7"/>
+  <rect x="300" y="256" width="36" height="70" rx="3" fill="#3b82f6" opacity="0.7"/>
+  <rect x="350" y="240" width="36" height="86" rx="3" fill="#3b82f6" opacity="0.7"/>
+  <rect x="400" y="222" width="36" height="104" rx="3" fill="#3b82f6"/>
+  <rect x="450" y="232" width="36" height="94" rx="3" fill="#3b82f6" opacity="0.7"/>
+  <rect x="500" y="244" width="36" height="82" rx="3" fill="#3b82f6" opacity="0.7"/>
+  <rect x="550" y="198" width="36" height="128" rx="3" fill="#22c55e"/>
+  <!-- labels -->
+  <text x="268" y="338" text-anchor="middle" font-family="Arial, sans-serif" font-size="9" fill="#64748b">May 2</text>
+  <text x="318" y="338" text-anchor="middle" font-family="Arial, sans-serif" font-size="9" fill="#64748b">May 3</text>
+  <text x="368" y="338" text-anchor="middle" font-family="Arial, sans-serif" font-size="9" fill="#64748b">May 4</text>
+  <text x="418" y="338" text-anchor="middle" font-family="Arial, sans-serif" font-size="9" fill="#64748b">May 5</text>
+  <text x="468" y="338" text-anchor="middle" font-family="Arial, sans-serif" font-size="9" fill="#64748b">May 6</text>
+  <text x="518" y="338" text-anchor="middle" font-family="Arial, sans-serif" font-size="9" fill="#64748b">May 7</text>
+  <text x="568" y="338" text-anchor="middle" font-family="Arial, sans-serif" font-size="9" fill="#22c55e">May 8</text>
+  <!-- bar values -->
+  <text x="268" y="273" text-anchor="middle" font-family="Arial, sans-serif" font-size="9" fill="#94a3b8">₩18M</text>
+  <text x="568" y="193" text-anchor="middle" font-family="Arial, sans-serif" font-size="9" fill="#22c55e">₩48M</text>
+
+  <!-- ── STO Assets summary ── -->
+  <rect x="218" y="366" width="440" height="200" rx="8" fill="#1e293b" stroke="#334155" stroke-width="1"/>
+  <text x="234" y="386" font-family="Arial, sans-serif" font-size="12" font-weight="bold" fill="white">Active STO Assets</text>
+  <!-- Table header -->
+  <rect x="218" y="393" width="440" height="24" fill="#111827"/>
+  <text x="234" y="409" font-family="Arial, sans-serif" font-size="10" fill="#64748b">Asset Name</text>
+  <text x="408" y="409" font-family="Arial, sans-serif" font-size="10" fill="#64748b">Tokens Sold</text>
+  <text x="500" y="409" font-family="Arial, sans-serif" font-size="10" fill="#64748b">Revenue</text>
+  <text x="590" y="409" font-family="Arial, sans-serif" font-size="10" fill="#64748b">Status</text>
+  <!-- Row 1 -->
+  <text x="234" y="430" font-family="Arial, sans-serif" font-size="10" fill="#e2e8f0">☀ Gyeongju Solar Farm No.3</text>
+  <text x="408" y="430" font-family="Arial, sans-serif" font-size="10" fill="#e2e8f0">3,750 / 5,000</text>
+  <text x="500" y="430" font-family="Arial, sans-serif" font-size="10" fill="#22c55e">₩37,500,000</text>
+  <rect x="590" y="420" width="48" height="16" rx="8" fill="#166534"/>
+  <text x="614" y="431" text-anchor="middle" font-family="Arial, sans-serif" font-size="9" fill="#86efac">Active</text>
+  <!-- Row 2 -->
+  <line x1="218" y1="438" x2="658" y2="438" stroke="#334155" stroke-width="1"/>
+  <text x="234" y="456" font-family="Arial, sans-serif" font-size="10" fill="#e2e8f0">💨 Pohang Offshore Wind Zone 1</text>
+  <text x="408" y="456" font-family="Arial, sans-serif" font-size="10" fill="#e2e8f0">1,620 / 2,000</text>
+  <text x="500" y="456" font-family="Arial, sans-serif" font-size="10" fill="#22c55e">₩81,000,000</text>
+  <rect x="590" y="446" width="48" height="16" rx="8" fill="#7c2d12"/>
+  <text x="614" y="457" text-anchor="middle" font-family="Arial, sans-serif" font-size="9" fill="#fca5a5">Ending</text>
+  <!-- Row 3 -->
+  <line x1="218" y1="464" x2="658" y2="464" stroke="#334155" stroke-width="1"/>
+  <text x="234" y="482" font-family="Arial, sans-serif" font-size="10" fill="#e2e8f0">🌿 Daegu Urban Carbon Forest</text>
+  <text x="408" y="482" font-family="Arial, sans-serif" font-size="10" fill="#e2e8f0">900 / 4,000</text>
+  <text x="500" y="482" font-family="Arial, sans-serif" font-size="10" fill="#22c55e">₩4,500,000</text>
+  <rect x="590" y="472" width="48" height="16" rx="8" fill="#166534"/>
+  <text x="614" y="483" text-anchor="middle" font-family="Arial, sans-serif" font-size="9" fill="#86efac">Active</text>
+  <!-- Total -->
+  <line x1="218" y1="495" x2="658" y2="495" stroke="#334155" stroke-width="1"/>
+  <text x="480" y="514" text-anchor="end" font-family="Arial, sans-serif" font-size="11" font-weight="bold" fill="#f1f5f9">Total Platform Revenue:</text>
+  <text x="590" y="514" font-family="Arial, sans-serif" font-size="11" font-weight="bold" fill="#22c55e">₩123,000,000</text>
+
+  <!-- ── Alerts feed ── -->
+  <rect x="670" y="154" width="284" height="412" rx="8" fill="#1e293b" stroke="#334155" stroke-width="1"/>
+  <text x="686" y="174" font-family="Arial, sans-serif" font-size="12" font-weight="bold" fill="white">System Alerts</text>
+  <circle cx="936" cy="168" r="8" fill="#ef4444"/>
+  <text x="936" y="172" text-anchor="middle" font-family="Arial, sans-serif" font-size="9" font-weight="bold" fill="white">2</text>
+
+  <!-- Alert 1 — warning -->
+  <rect x="680" y="184" width="264" height="68" rx="6" fill="#451a03" stroke="#f59e0b" stroke-width="1"/>
+  <text x="698" y="200" font-family="Arial, sans-serif" font-size="9" fill="#f59e0b">⚠  WARNING  15:32</text>
+  <text x="698" y="216" font-family="Arial, sans-serif" font-size="10" font-weight="bold" fill="#fef3c7">Bank API latency elevated</text>
+  <text x="698" y="230" font-family="Arial, sans-serif" font-size="9" fill="#d97706">Response avg 2.8s (&gt;2s threshold)</text>
+  <text x="698" y="244" font-family="Arial, sans-serif" font-size="9" fill="#f59e0b">Duration: 12 minutes — monitoring</text>
+
+  <!-- Alert 2 — info -->
+  <rect x="680" y="262" width="264" height="68" rx="6" fill="#0c1a2e" stroke="#3b82f6" stroke-width="1"/>
+  <text x="698" y="278" font-family="Arial, sans-serif" font-size="9" fill="#3b82f6">ℹ  INFO  14:10</text>
+  <text x="698" y="294" font-family="Arial, sans-serif" font-size="10" font-weight="bold" fill="#bfdbfe">New STO successfully deployed</text>
+  <text x="698" y="308" font-family="Arial, sans-serif" font-size="9" fill="#93c5fd">Daegu Urban Carbon Forest</text>
+  <text x="698" y="322" font-family="Arial, sans-serif" font-size="9" fill="#64748b">Contract: 0xa7f3c8d1…</text>
+
+  <!-- Alert 3 — success -->
+  <rect x="680" y="340" width="264" height="56" rx="6" fill="#052e16" stroke="#22c55e" stroke-width="1"/>
+  <text x="698" y="356" font-family="Arial, sans-serif" font-size="9" fill="#22c55e">✓  OK  13:45</text>
+  <text x="698" y="372" font-family="Arial, sans-serif" font-size="10" font-weight="bold" fill="#bbf7d0">AI Engine model reloaded</text>
+  <text x="698" y="386" font-family="Arial, sans-serif" font-size="9" fill="#64748b">Model v3.2.1 deployed successfully</text>
+
+  <!-- Alert 4 — info -->
+  <rect x="680" y="406" width="264" height="56" rx="6" fill="#0c1a2e" stroke="#3b82f6" stroke-width="1"/>
+  <text x="698" y="422" font-family="Arial, sans-serif" font-size="9" fill="#3b82f6">ℹ  INFO  11:22</text>
+  <text x="698" y="438" font-family="Arial, sans-serif" font-size="10" font-weight="bold" fill="#bfdbfe">Smart contract dividend triggered</text>
+  <text x="698" y="452" font-family="Arial, sans-serif" font-size="9" fill="#64748b">Gyeongju Solar Q2 → 3,750 investors</text>
+
+  <!-- Alert 5 -->
+  <rect x="680" y="472" width="264" height="56" rx="6" fill="#1e293b" stroke="#334155" stroke-width="1"/>
+  <text x="698" y="488" font-family="Arial, sans-serif" font-size="9" fill="#64748b">ℹ  INFO  09:00</text>
+  <text x="698" y="504" font-family="Arial, sans-serif" font-size="10" fill="#94a3b8">Daily system health check passed</text>
+  <text x="698" y="518" font-family="Arial, sans-serif" font-size="9" fill="#64748b">All services nominal at 09:00 UTC+9</text>
+
+  <!-- Figure label -->
+  <text x="580" y="600" text-anchor="middle" font-family="Arial, sans-serif" font-size="11" fill="#475569">Figure 4.5 — Admin Console System Monitoring (Web Application)</text>
+</svg>
