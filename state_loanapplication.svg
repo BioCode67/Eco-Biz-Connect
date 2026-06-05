@@ -1,0 +1,52 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 470" font-family="'Helvetica Neue','Segoe UI','Malgun Gothic',sans-serif">
+<defs>
+ <marker id="sarr" markerWidth="12" markerHeight="11" refX="9" refY="5" orient="auto" markerUnits="userSpaceOnUse">
+   <path d="M0,0 L10,5 L0,10 Z" fill="#3f4f63"/></marker>
+ <filter id="sds" x="-15%" y="-25%" width="130%" height="150%">
+   <feDropShadow dx="0" dy="1.5" stdDeviation="2.4" flood-color="#1f2a37" flood-opacity="0.16"/></filter>
+</defs>
+<rect width="1200" height="470" fill="#ffffff"/>
+<text x="600.0" y="42" text-anchor="middle" font-size="20" font-weight="800" fill="#1f2a37" letter-spacing="0.3">State Machine Diagram — LoanApplication Lifecycle</text>
+<line x1="60" y1="60" x2="1140" y2="60" stroke="#cfd6df" stroke-width="1.2"/>
+<circle cx="80" cy="110" r="9" fill="#3f4f63"/>
+<rect x="120" y="80" width="180" height="60" rx="14" fill="#e7f5ec" stroke="#3a9d5d" stroke-width="1.7" filter="url(#sds)"/>
+<text x="210.0" y="102" text-anchor="middle" font-size="13" font-weight="700" fill="#1d6b39">Draft</text>
+<line x1="120" y1="110" x2="300" y2="110" stroke="#3a9d5d" stroke-width="1.1"/>
+<text x="132" y="126" font-size="10.5" fill="#3a4654">entry / autofill profile</text>
+<path d="M89,110 L120,110" fill="none" stroke="#3f4f63" stroke-width="1.5" marker-end="url(#sarr)"/>
+<text x="104.5" y="104.0" text-anchor="middle" font-size="10" fill="#a0612a">applyForLoan()</text>
+<rect x="460" y="80" width="180" height="60" rx="14" fill="#e7f5ec" stroke="#3a9d5d" stroke-width="1.7" filter="url(#sds)"/>
+<text x="550.0" y="102" text-anchor="middle" font-size="13" font-weight="700" fill="#1d6b39">Submitting</text>
+<line x1="460" y1="110" x2="640" y2="110" stroke="#3a9d5d" stroke-width="1.1"/>
+<text x="472" y="126" font-size="10.5" fill="#3a4654">do / POST to Bank API</text>
+<path d="M300,110 L460,110" fill="none" stroke="#3f4f63" stroke-width="1.5" marker-end="url(#sarr)"/>
+<text x="380.0" y="104.0" text-anchor="middle" font-size="10" fill="#a0612a">submit() [docs complete]</text>
+<rect x="800" y="80" width="200" height="76" rx="14" fill="#e7f5ec" stroke="#3a9d5d" stroke-width="1.7" filter="url(#sds)"/>
+<text x="900.0" y="102" text-anchor="middle" font-size="13" font-weight="700" fill="#1d6b39">UnderReview</text>
+<line x1="800" y1="110" x2="1000" y2="110" stroke="#3a9d5d" stroke-width="1.1"/>
+<text x="812" y="126" font-size="10.5" fill="#3a4654">entry / save REVIEW</text>
+<text x="812" y="142" font-size="10.5" fill="#3a4654">do / await webhook</text>
+<path d="M640,110 L800,110" fill="none" stroke="#3f4f63" stroke-width="1.5" marker-end="url(#sarr)"/>
+<text x="720.0" y="104.0" text-anchor="middle" font-size="10" fill="#a0612a">200 + refId</text>
+<rect x="800" y="280" width="200" height="60" rx="14" fill="#e8f1fd" stroke="#3f78c4" stroke-width="1.7" filter="url(#sds)"/>
+<text x="900.0" y="302" text-anchor="middle" font-size="13" font-weight="700" fill="#1d4e86">Approved</text>
+<line x1="800" y1="310" x2="1000" y2="310" stroke="#3f78c4" stroke-width="1.1"/>
+<text x="812" y="326" font-size="10.5" fill="#3a4654">entry / notify success</text>
+<rect x="470" y="280" width="200" height="60" rx="14" fill="#fce8f0" stroke="#cc5a86" stroke-width="1.7" filter="url(#sds)"/>
+<text x="570.0" y="302" text-anchor="middle" font-size="13" font-weight="700" fill="#88385c">Rejected</text>
+<line x1="470" y1="310" x2="670" y2="310" stroke="#cc5a86" stroke-width="1.1"/>
+<text x="482" y="326" font-size="10.5" fill="#3a4654">entry / notify reason</text>
+<path d="M890,156 L890,280" fill="none" stroke="#3f4f63" stroke-width="1.5" marker-end="url(#sarr)"/>
+<text x="960" y="220" text-anchor="middle" font-size="10" fill="#a0612a">webhook [approved]</text>
+<path d="M820,156 Q680,230 590,280" fill="none" stroke="#3f4f63" stroke-width="1.5" marker-end="url(#sarr)"/>
+<text x="690" y="222" text-anchor="middle" font-size="10" fill="#a0612a">webhook</text>
+<text x="690" y="235" text-anchor="middle" font-size="10" fill="#a0612a">[rejected]</text>
+<circle cx="895" cy="400" r="12" fill="#ffffff" stroke="#3f4f63" stroke-width="1.8"/><circle cx="895" cy="400" r="6" fill="#3f4f63"/>
+<path d="M895,340 L895,388" fill="none" stroke="#3f4f63" stroke-width="1.5" marker-end="url(#sarr)"/>
+<circle cx="575" cy="400" r="12" fill="#ffffff" stroke="#3f4f63" stroke-width="1.8"/><circle cx="575" cy="400" r="6" fill="#3f4f63"/>
+<path d="M575,340 L575,388" fill="none" stroke="#3f4f63" stroke-width="1.5" marker-end="url(#sarr)"/>
+<path d="M532.0,80 C524.0,44 576.0,44 568.0,78" fill="none" stroke="#3f4f63" stroke-width="1.4" marker-end="url(#sarr)"/>
+<text x="550.0" y="48" text-anchor="middle" font-size="9.5" fill="#a0612a">Bank unreachable / enqueue retry</text>
+<path d="M470,128 Q395,165 320,128" fill="none" stroke="#3f4f63" stroke-width="1.5" marker-end="url(#sarr)"/>
+<text x="395" y="178" text-anchor="middle" font-size="10" fill="#a0612a">validation error</text>
+</svg>

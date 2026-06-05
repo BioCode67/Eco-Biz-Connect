@@ -1,0 +1,46 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 380" font-family="'Helvetica Neue','Segoe UI','Malgun Gothic',sans-serif">
+<defs>
+ <marker id="sarr" markerWidth="12" markerHeight="11" refX="9" refY="5" orient="auto" markerUnits="userSpaceOnUse">
+   <path d="M0,0 L10,5 L0,10 Z" fill="#3f4f63"/></marker>
+ <filter id="sds" x="-15%" y="-25%" width="130%" height="150%">
+   <feDropShadow dx="0" dy="1.5" stdDeviation="2.4" flood-color="#1f2a37" flood-opacity="0.16"/></filter>
+</defs>
+<rect width="1280" height="380" fill="#ffffff"/>
+<text x="640.0" y="42" text-anchor="middle" font-size="20" font-weight="800" fill="#1f2a37" letter-spacing="0.3">State Machine Diagram — BusinessData Processing Lifecycle</text>
+<line x1="60" y1="60" x2="1220" y2="60" stroke="#cfd6df" stroke-width="1.2"/>
+<circle cx="80" cy="170" r="9" fill="#3f4f63"/>
+<rect x="120" y="140" width="160" height="60" rx="14" fill="#fff4e3" stroke="#dd9038" stroke-width="1.7" filter="url(#sds)"/>
+<text x="200.0" y="175.0" text-anchor="middle" font-size="13" font-weight="700" fill="#9c5e12">Uploaded</text>
+<rect x="330" y="140" width="160" height="60" rx="14" fill="#fff4e3" stroke="#dd9038" stroke-width="1.7" filter="url(#sds)"/>
+<text x="410.0" y="175.0" text-anchor="middle" font-size="13" font-weight="700" fill="#9c5e12">Parsing</text>
+<rect x="540" y="140" width="160" height="60" rx="14" fill="#fff4e3" stroke="#dd9038" stroke-width="1.7" filter="url(#sds)"/>
+<text x="620.0" y="175.0" text-anchor="middle" font-size="13" font-weight="700" fill="#9c5e12">Parsed</text>
+<rect x="750" y="140" width="160" height="60" rx="14" fill="#fff4e3" stroke="#dd9038" stroke-width="1.7" filter="url(#sds)"/>
+<text x="830.0" y="175.0" text-anchor="middle" font-size="13" font-weight="700" fill="#9c5e12">AIQueued</text>
+<rect x="960" y="140" width="160" height="60" rx="14" fill="#fff4e3" stroke="#dd9038" stroke-width="1.7" filter="url(#sds)"/>
+<text x="1040.0" y="175.0" text-anchor="middle" font-size="13" font-weight="700" fill="#9c5e12">AICompleted</text>
+<path d="M89,170 L120,170" fill="none" stroke="#3f4f63" stroke-width="1.5" marker-end="url(#sarr)"/>
+<text x="104.5" y="164.0" text-anchor="middle" font-size="10" fill="#a0612a">save()</text>
+<path d="M280,170 L330,170" fill="none" stroke="#3f4f63" stroke-width="1.5" marker-end="url(#sarr)"/>
+<text x="305.0" y="164.0" text-anchor="middle" font-size="10" fill="#a0612a">parse()</text>
+<path d="M490,170 L540,170" fill="none" stroke="#3f4f63" stroke-width="1.5" marker-end="url(#sarr)"/>
+<text x="515.0" y="164.0" text-anchor="middle" font-size="10" fill="#a0612a">schema valid /</text>
+<text x="515.0" y="177.0" text-anchor="middle" font-size="10" fill="#a0612a">enqueue AI job</text>
+<path d="M700,170 L750,170" fill="none" stroke="#3f4f63" stroke-width="1.5" marker-end="url(#sarr)"/>
+<text x="725.0" y="164.0" text-anchor="middle" font-size="10" fill="#a0612a">worker picks job</text>
+<path d="M910,170 L960,170" fill="none" stroke="#3f4f63" stroke-width="1.5" marker-end="url(#sarr)"/>
+<text x="935.0" y="164.0" text-anchor="middle" font-size="10" fill="#a0612a">analysis done /</text>
+<text x="935.0" y="177.0" text-anchor="middle" font-size="10" fill="#a0612a">emit DataProcessed</text>
+<path d="M392.0,140 C384.0,104 436.0,104 428.0,138" fill="none" stroke="#3f4f63" stroke-width="1.4" marker-end="url(#sarr)"/>
+<text x="410.0" y="108" text-anchor="middle" font-size="9.5" fill="#a0612a">parse error / flag &amp; retry</text>
+<rect x="960" y="250" width="160" height="56" rx="14" fill="#fff4e3" stroke="#dd9038" stroke-width="1.7" filter="url(#sds)"/>
+<text x="1040.0" y="283.0" text-anchor="middle" font-size="13" font-weight="700" fill="#9c5e12">ESGCompleted</text>
+<path d="M560,200 Q640,300 960,255" fill="none" stroke="#3f4f63" stroke-width="1.5" marker-end="url(#sarr)"/>
+<text x="700" y="288" text-anchor="middle" font-size="10" fill="#a0612a">schema valid /</text>
+<text x="700" y="301" text-anchor="middle" font-size="10" fill="#a0612a">calculate ESG (parallel)</text>
+<circle cx="1170" cy="278" r="12" fill="#ffffff" stroke="#3f4f63" stroke-width="1.8"/><circle cx="1170" cy="278" r="6" fill="#3f4f63"/>
+<path d="M1120,278 L1158,278" fill="none" stroke="#3f4f63" stroke-width="1.5" marker-end="url(#sarr)"/>
+<circle cx="1170" cy="170" r="12" fill="#ffffff" stroke="#3f4f63" stroke-width="1.8"/><circle cx="1170" cy="170" r="6" fill="#3f4f63"/>
+<path d="M1120,170 L1158,170" fill="none" stroke="#3f4f63" stroke-width="1.5" marker-end="url(#sarr)"/>
+<text x="1139.0" y="164.0" text-anchor="middle" font-size="10" fill="#a0612a">report cached</text>
+</svg>

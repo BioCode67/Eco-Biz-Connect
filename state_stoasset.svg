@@ -1,0 +1,56 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1320 400" font-family="'Helvetica Neue','Segoe UI','Malgun Gothic',sans-serif">
+<defs>
+ <marker id="sarr" markerWidth="12" markerHeight="11" refX="9" refY="5" orient="auto" markerUnits="userSpaceOnUse">
+   <path d="M0,0 L10,5 L0,10 Z" fill="#3f4f63"/></marker>
+ <filter id="sds" x="-15%" y="-25%" width="130%" height="150%">
+   <feDropShadow dx="0" dy="1.5" stdDeviation="2.4" flood-color="#1f2a37" flood-opacity="0.16"/></filter>
+</defs>
+<rect width="1320" height="400" fill="#ffffff"/>
+<text x="660.0" y="42" text-anchor="middle" font-size="20" font-weight="800" fill="#1f2a37" letter-spacing="0.3">State Machine Diagram — STOAsset Lifecycle</text>
+<line x1="60" y1="60" x2="1260" y2="60" stroke="#cfd6df" stroke-width="1.2"/>
+<circle cx="70" cy="180" r="9" fill="#3f4f63"/>
+<rect x="110" y="150" width="160" height="62" rx="14" fill="#efeaf9" stroke="#7659bf" stroke-width="1.7" filter="url(#sds)"/>
+<text x="190.0" y="172" text-anchor="middle" font-size="13" font-weight="700" fill="#43308a">Drafting</text>
+<line x1="110" y1="180" x2="270" y2="180" stroke="#7659bf" stroke-width="1.1"/>
+<text x="122" y="196" font-size="10.5" fill="#3a4654">entry / input details</text>
+<path d="M79,180 L110,180" fill="none" stroke="#3f4f63" stroke-width="1.5" marker-end="url(#sarr)"/>
+<text x="94.5" y="174.0" text-anchor="middle" font-size="10" fill="#a0612a">New STO</text>
+<rect x="330" y="150" width="170" height="76" rx="14" fill="#efeaf9" stroke="#7659bf" stroke-width="1.7" filter="url(#sds)"/>
+<text x="415.0" y="172" text-anchor="middle" font-size="13" font-weight="700" fill="#43308a">Compiling</text>
+<line x1="330" y1="180" x2="500" y2="180" stroke="#7659bf" stroke-width="1.1"/>
+<text x="342" y="196" font-size="10.5" fill="#3a4654">do / build ERC-1400</text>
+<path d="M270,180 L330,180" fill="none" stroke="#3f4f63" stroke-width="1.5" marker-end="url(#sarr)"/>
+<text x="300.0" y="174.0" text-anchor="middle" font-size="10" fill="#a0612a">preview()</text>
+<rect x="560" y="150" width="170" height="76" rx="14" fill="#efeaf9" stroke="#7659bf" stroke-width="1.7" filter="url(#sds)"/>
+<text x="645.0" y="172" text-anchor="middle" font-size="13" font-weight="700" fill="#43308a">Deploying</text>
+<line x1="560" y1="180" x2="730" y2="180" stroke="#7659bf" stroke-width="1.1"/>
+<text x="572" y="196" font-size="10.5" fill="#3a4654">do / deploy to chain</text>
+<path d="M500,180 L560,180" fill="none" stroke="#3f4f63" stroke-width="1.5" marker-end="url(#sarr)"/>
+<text x="530.0" y="174.0" text-anchor="middle" font-size="10" fill="#a0612a">Deploy &amp; Issue</text>
+<rect x="790" y="150" width="180" height="76" rx="14" fill="#efeaf9" stroke="#7659bf" stroke-width="1.7" filter="url(#sds)"/>
+<text x="880.0" y="172" text-anchor="middle" font-size="13" font-weight="700" fill="#43308a">Listed</text>
+<line x1="790" y1="180" x2="970" y2="180" stroke="#7659bf" stroke-width="1.1"/>
+<text x="802" y="196" font-size="10.5" fill="#3a4654">entry / publish market</text>
+<text x="802" y="212" font-size="10.5" fill="#3a4654">entry / notify investors</text>
+<path d="M730,180 L790,180" fill="none" stroke="#3f4f63" stroke-width="1.5" marker-end="url(#sarr)"/>
+<text x="760.0" y="174.0" text-anchor="middle" font-size="10" fill="#a0612a">contractAddress</text>
+<path d="M862.0,150 C854.0,114 906.0,114 898.0,148" fill="none" stroke="#3f4f63" stroke-width="1.4" marker-end="url(#sarr)"/>
+<text x="880.0" y="118" text-anchor="middle" font-size="9.5" fill="#a0612a">purchase() / remainingTokens--</text>
+<path d="M627.0,150 C619.0,114 671.0,114 663.0,148" fill="none" stroke="#3f4f63" stroke-width="1.4" marker-end="url(#sarr)"/>
+<text x="645.0" y="118" text-anchor="middle" font-size="9.5" fill="#a0612a">deploy error / retry</text>
+<rect x="1030" y="150" width="180" height="76" rx="14" fill="#efeaf9" stroke="#7659bf" stroke-width="1.7" filter="url(#sds)"/>
+<text x="1120.0" y="172" text-anchor="middle" font-size="13" font-weight="700" fill="#43308a">Dividend Distributing</text>
+<line x1="1030" y1="180" x2="1210" y2="180" stroke="#7659bf" stroke-width="1.1"/>
+<text x="1042" y="196" font-size="10.5" fill="#3a4654">do / distribute()</text>
+<path d="M970,170 L1030,170" fill="none" stroke="#3f4f63" stroke-width="1.5" marker-end="url(#sarr)"/>
+<text x="1000.0" y="164.0" text-anchor="middle" font-size="10" fill="#a0612a">period due</text>
+<path d="M1095,226 Q1060,260 1010,226" fill="none" stroke="#3f4f63" stroke-width="1.5" marker-end="url(#sarr)"/>
+<text x="1055" y="268" text-anchor="middle" font-size="10" fill="#a0612a">done</text>
+<rect x="790" y="290" width="180" height="56" rx="14" fill="#eef1f4" stroke="#7387a0" stroke-width="1.7" filter="url(#sds)"/>
+<text x="880.0" y="323.0" text-anchor="middle" font-size="13" font-weight="700" fill="#3f4f63">SoldOut</text>
+<path d="M880,226 L880,290" fill="none" stroke="#3f4f63" stroke-width="1.5" marker-end="url(#sarr)"/>
+<text x="940" y="262" text-anchor="middle" font-size="10" fill="#a0612a">[remaining = 0]</text>
+<circle cx="1130" cy="318" r="12" fill="#ffffff" stroke="#3f4f63" stroke-width="1.8"/><circle cx="1130" cy="318" r="6" fill="#3f4f63"/>
+<path d="M970,318 L1118,318" fill="none" stroke="#3f4f63" stroke-width="1.5" marker-end="url(#sarr)"/>
+<text x="1044.0" y="312.0" text-anchor="middle" font-size="10" fill="#a0612a">asset matured</text>
+</svg>
