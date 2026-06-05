@@ -8,24 +8,28 @@
 <rect width="1340" height="760" fill="#ffffff"/>
 <text x="670.0" y="42" text-anchor="middle" font-size="20" font-weight="800" fill="#1f2a37" letter-spacing="0.3">State Machine Diagram — EBC Overall System (User Session)</text>
 <line x1="60" y1="60" x2="1280" y2="60" stroke="#cfd6df" stroke-width="1.2"/>
-<circle cx="60" cy="92" r="9" fill="#3f4f63"/>
-<rect x="100" y="66" width="160" height="52" rx="14" fill="#e8f1fd" stroke="#3f78c4" stroke-width="1.7" filter="url(#sds)"/>
-<text x="180.0" y="97.0" text-anchor="middle" font-size="13" font-weight="700" fill="#1d4e86">AppLaunched</text>
-<path d="M69,92 L100,92" fill="none" stroke="#3f4f63" stroke-width="1.5" marker-end="url(#sarr)"/>
-<text x="84.5" y="86.0" text-anchor="middle" font-size="10" fill="#a0612a">open app</text>
-<rect x="340" y="66" width="170" height="58" rx="14" fill="#e8f1fd" stroke="#3f78c4" stroke-width="1.7" filter="url(#sds)"/>
-<text x="425.0" y="88" text-anchor="middle" font-size="13" font-weight="700" fill="#1d4e86">Authenticating</text>
-<line x1="340" y1="96" x2="510" y2="96" stroke="#3f78c4" stroke-width="1.1"/>
-<text x="352" y="112" font-size="10.5" fill="#3a4654">do / login or register</text>
-<path d="M260,92 L340,92" fill="none" stroke="#3f4f63" stroke-width="1.5" marker-end="url(#sarr)"/>
-<text x="300.0" y="86.0" text-anchor="middle" font-size="10" fill="#a0612a">enter credentials</text>
-<path d="M420,124 Q360,140 420,158" fill="none" stroke="#3f4f63" stroke-width="1.5" marker-end="url(#sarr)"/>
-<text x="320" y="150" text-anchor="middle" font-size="10" fill="#a0612a">[invalid] / error</text>
+<circle cx="55" cy="92" r="9" fill="#3f4f63"/>
+<rect x="150" y="66" width="160" height="52" rx="14" fill="#e8f1fd" stroke="#3f78c4" stroke-width="1.7" filter="url(#sds)"/>
+<text x="230.0" y="97.0" text-anchor="middle" font-size="13" font-weight="700" fill="#1d4e86">AppLaunched</text>
+<path d="M64,92 L150,92" fill="none" stroke="#3f4f63" stroke-width="1.5" marker-end="url(#sarr)"/>
+<rect x="78.4" y="73" width="51.2" height="17" fill="#ffffff" opacity="0.88" rx="2"/>
+<text x="104" y="84" text-anchor="middle" font-size="10" fill="#a0612a">open app</text>
+<rect x="430" y="66" width="180" height="58" rx="14" fill="#e8f1fd" stroke="#3f78c4" stroke-width="1.7" filter="url(#sds)"/>
+<text x="520.0" y="88" text-anchor="middle" font-size="13" font-weight="700" fill="#1d4e86">Authenticating</text>
+<line x1="430" y1="96" x2="610" y2="96" stroke="#3f78c4" stroke-width="1.1"/>
+<text x="442" y="112" font-size="10.5" fill="#3a4654">do / login or register</text>
+<path d="M310,92 L430,92" fill="none" stroke="#3f4f63" stroke-width="1.5" marker-end="url(#sarr)"/>
+<rect x="320.1" y="73" width="99.80000000000001" height="17" fill="#ffffff" opacity="0.88" rx="2"/>
+<text x="370" y="84" text-anchor="middle" font-size="10" fill="#a0612a">enter credentials</text>
+<path d="M520,124 Q460,142 520,158" fill="none" stroke="#3f4f63" stroke-width="1.5" marker-end="url(#sarr)"/>
+<rect x="380.1" y="141" width="99.80000000000001" height="17" fill="#ffffff" opacity="0.88" rx="2"/>
+<text x="430" y="152" text-anchor="middle" font-size="10" fill="#a0612a">[invalid] / error</text>
 <rect x="90" y="180" width="1160" height="520" rx="16" fill="#f7f9fc" stroke="#6a86a8" stroke-width="2"/>
 <text x="108" y="204" font-size="14" font-weight="800" fill="#42566e">Authenticated Session   (role-routed)</text>
 <line x1="90" y1="214" x2="1250" y2="214" stroke="#6a86a8" stroke-width="1.2"/>
-<path d="M510,100 L600,180" fill="none" stroke="#3f4f63" stroke-width="1.5" marker-end="url(#sarr)"/>
-<text x="560" y="150" text-anchor="middle" font-size="10" fill="#a0612a">[valid] / issue JWT</text>
+<path d="M610,100 L650,180" fill="none" stroke="#3f4f63" stroke-width="1.5" marker-end="url(#sarr)"/>
+<rect x="584.7" y="139" width="110.60000000000001" height="17" fill="#ffffff" opacity="0.88" rx="2"/>
+<text x="640" y="150" text-anchor="middle" font-size="10" fill="#a0612a">[valid] / issue JWT</text>
 <line x1="90" y1="200" x2="1250" y2="200" stroke="#bcd0e0" stroke-width="0.8" stroke-dasharray="3 4"/>
 <text x="112" y="222" font-size="12" font-weight="800" fill="#1d6b39">[role = Merchant]</text>
 <circle cx="140" cy="262" r="9" fill="#3f4f63"/>
@@ -35,18 +39,22 @@
 <rect x="372" y="238" width="130" height="50" rx="14" fill="#e7f5ec" stroke="#3a9d5d" stroke-width="1.7" filter="url(#sds)"/>
 <text x="437.0" y="268.0" text-anchor="middle" font-size="13" font-weight="700" fill="#1d6b39">Uploading</text>
 <path d="M320,262 L372,262" fill="none" stroke="#3f4f63" stroke-width="1.5" marker-end="url(#sarr)"/>
+<rect x="325.8" y="245.0" width="40.400000000000006" height="17" fill="#ffffff" opacity="0.88" rx="2"/>
 <text x="346.0" y="256.0" text-anchor="middle" font-size="10" fill="#a0612a">upload</text>
 <rect x="554" y="238" width="140" height="50" rx="14" fill="#e7f5ec" stroke="#3a9d5d" stroke-width="1.7" filter="url(#sds)"/>
 <text x="624.0" y="268.0" text-anchor="middle" font-size="13" font-weight="700" fill="#1d6b39">ViewingReport</text>
 <path d="M502,262 L554,262" fill="none" stroke="#3f4f63" stroke-width="1.5" marker-end="url(#sarr)"/>
+<rect x="513.2" y="245.0" width="29.6" height="17" fill="#ffffff" opacity="0.88" rx="2"/>
 <text x="528.0" y="256.0" text-anchor="middle" font-size="10" fill="#a0612a">done</text>
 <rect x="746" y="238" width="150" height="50" rx="14" fill="#e7f5ec" stroke="#3a9d5d" stroke-width="1.7" filter="url(#sds)"/>
 <text x="821.0" y="268.0" text-anchor="middle" font-size="13" font-weight="700" fill="#1d6b39">MatchingProduct</text>
 <path d="M694,262 L746,262" fill="none" stroke="#3f4f63" stroke-width="1.5" marker-end="url(#sarr)"/>
+<rect x="697.1" y="245.0" width="45.800000000000004" height="17" fill="#ffffff" opacity="0.88" rx="2"/>
 <text x="720.0" y="256.0" text-anchor="middle" font-size="10" fill="#a0612a">finance</text>
 <rect x="948" y="238" width="150" height="50" rx="14" fill="#e7f5ec" stroke="#3a9d5d" stroke-width="1.7" filter="url(#sds)"/>
 <text x="1023.0" y="268.0" text-anchor="middle" font-size="13" font-weight="700" fill="#1d6b39">ApplyingLoan</text>
 <path d="M896,262 L948,262" fill="none" stroke="#3f4f63" stroke-width="1.5" marker-end="url(#sarr)"/>
+<rect x="904.5" y="245.0" width="35.0" height="17" fill="#ffffff" opacity="0.88" rx="2"/>
 <text x="922.0" y="256.0" text-anchor="middle" font-size="10" fill="#a0612a">apply</text>
 <line x1="90" y1="330" x2="1250" y2="330" stroke="#d6cbef" stroke-width="0.8" stroke-dasharray="3 4"/>
 <text x="112" y="352" font-size="12" font-weight="800" fill="#43308a">[role = Investor]</text>
@@ -57,18 +65,22 @@
 <rect x="372" y="376" width="150" height="50" rx="14" fill="#efeaf9" stroke="#7659bf" stroke-width="1.7" filter="url(#sds)"/>
 <text x="447.0" y="406.0" text-anchor="middle" font-size="13" font-weight="700" fill="#43308a">ProductDetail</text>
 <path d="M320,400 L372,400" fill="none" stroke="#3f4f63" stroke-width="1.5" marker-end="url(#sarr)"/>
+<rect x="325.8" y="383.0" width="40.400000000000006" height="17" fill="#ffffff" opacity="0.88" rx="2"/>
 <text x="346.0" y="394.0" text-anchor="middle" font-size="10" fill="#a0612a">select</text>
 <rect x="574" y="376" width="150" height="58" rx="14" fill="#efeaf9" stroke="#7659bf" stroke-width="1.7" filter="url(#sds)"/>
 <text x="649.0" y="398" text-anchor="middle" font-size="13" font-weight="700" fill="#43308a">Purchasing</text>
 <line x1="574" y1="406" x2="724" y2="406" stroke="#7659bf" stroke-width="1.1"/>
 <text x="586" y="422" font-size="10.5" fill="#3a4654">do / pay + on-chain</text>
 <path d="M522,400 L574,400" fill="none" stroke="#3f4f63" stroke-width="1.5" marker-end="url(#sarr)"/>
+<rect x="535.9" y="383.0" width="24.200000000000003" height="17" fill="#ffffff" opacity="0.88" rx="2"/>
 <text x="548.0" y="394.0" text-anchor="middle" font-size="10" fill="#a0612a">buy</text>
 <rect x="776" y="376" width="150" height="50" rx="14" fill="#efeaf9" stroke="#7659bf" stroke-width="1.7" filter="url(#sds)"/>
 <text x="851.0" y="406.0" text-anchor="middle" font-size="13" font-weight="700" fill="#43308a">Portfolio</text>
 <path d="M724,400 L776,400" fill="none" stroke="#3f4f63" stroke-width="1.5" marker-end="url(#sarr)"/>
+<rect x="721.7" y="383.0" width="56.6" height="17" fill="#ffffff" opacity="0.88" rx="2"/>
 <text x="750.0" y="394.0" text-anchor="middle" font-size="10" fill="#a0612a">confirmed</text>
 <path d="M833.0,376 C825.0,340 877.0,340 869.0,374" fill="none" stroke="#3f4f63" stroke-width="1.4" marker-end="url(#sarr)"/>
+<rect x="808.0" y="334" width="86.0" height="13" fill="#ffffff" opacity="0.88" rx="2"/>
 <text x="851.0" y="344" text-anchor="middle" font-size="9.5" fill="#a0612a">dividend update</text>
 <line x1="90" y1="460" x2="1250" y2="460" stroke="#f4c6d8" stroke-width="0.8" stroke-dasharray="3 4"/>
 <text x="112" y="482" font-size="12" font-weight="800" fill="#88385c">[role = Administrator]</text>
@@ -81,14 +93,17 @@
 <line x1="372" y1="546" x2="522" y2="546" stroke="#cc5a86" stroke-width="1.1"/>
 <text x="384" y="562" font-size="10.5" fill="#3a4654">do / poll metrics</text>
 <path d="M320,540 L372,540" fill="none" stroke="#3f4f63" stroke-width="1.5" marker-end="url(#sarr)"/>
+<rect x="317.7" y="523.0" width="56.6" height="17" fill="#ffffff" opacity="0.88" rx="2"/>
 <text x="346.0" y="534.0" text-anchor="middle" font-size="10" fill="#a0612a">dashboard</text>
 <rect x="574" y="516" width="150" height="50" rx="14" fill="#fce8f0" stroke="#cc5a86" stroke-width="1.7" filter="url(#sds)"/>
 <text x="649.0" y="546.0" text-anchor="middle" font-size="13" font-weight="700" fill="#88385c">IssuingSTO</text>
 <path d="M522,540 L574,540" fill="none" stroke="#3f4f63" stroke-width="1.5" marker-end="url(#sarr)"/>
+<rect x="525.1" y="523.0" width="45.800000000000004" height="17" fill="#ffffff" opacity="0.88" rx="2"/>
 <text x="548.0" y="534.0" text-anchor="middle" font-size="10" fill="#a0612a">new STO</text>
 <rect x="776" y="516" width="160" height="50" rx="14" fill="#fce8f0" stroke="#cc5a86" stroke-width="1.7" filter="url(#sds)"/>
 <text x="856.0" y="546.0" text-anchor="middle" font-size="13" font-weight="700" fill="#88385c">ManagingUsers</text>
 <path d="M724,540 L776,540" fill="none" stroke="#3f4f63" stroke-width="1.5" marker-end="url(#sarr)"/>
+<rect x="729.8" y="523.0" width="40.400000000000006" height="17" fill="#ffffff" opacity="0.88" rx="2"/>
 <text x="750.0" y="534.0" text-anchor="middle" font-size="10" fill="#a0612a">manage</text>
 <rect x="990" y="610" width="180" height="56" rx="14" fill="#e8f1fd" stroke="#3f78c4" stroke-width="1.7" filter="url(#sds)"/>
 <text x="1080.0" y="632" text-anchor="middle" font-size="13" font-weight="700" fill="#1d4e86">ViewingHistory</text>
@@ -96,5 +111,6 @@
 <text x="1002" y="656" font-size="10.5" fill="#3a4654">any role</text>
 <circle cx="670" cy="728" r="12" fill="#ffffff" stroke="#3f4f63" stroke-width="1.8"/><circle cx="670" cy="728" r="6" fill="#3f4f63"/>
 <path d="M670,700 L670,716" fill="none" stroke="#3f4f63" stroke-width="1.5" marker-end="url(#sarr)"/>
+<rect x="609.3" y="711" width="121.4" height="17" fill="#ffffff" opacity="0.88" rx="2"/>
 <text x="670" y="722" text-anchor="middle" font-size="10" fill="#a0612a">logout / token expire</text>
 </svg>
