@@ -7,7 +7,16 @@ DB 스키마는 Alembic 마이그레이션으로 관리한다(앱이 자동 생�
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from app.api.routers import auth, business_data, esg, loans, products, reports, sto
+from app.api.routers import (
+    auth,
+    business_data,
+    esg,
+    loans,
+    marketplace,
+    products,
+    reports,
+    sto,
+)
 from app.core.config import get_settings
 
 settings = get_settings()
@@ -31,6 +40,7 @@ app.include_router(esg.router)
 app.include_router(products.router)
 app.include_router(loans.router)
 app.include_router(sto.router)
+app.include_router(marketplace.router)
 
 
 @app.get("/health", tags=["system"])
