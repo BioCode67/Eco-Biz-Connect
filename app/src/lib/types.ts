@@ -1,0 +1,90 @@
+// 백엔드 API 응답 타입(웹과 동일 스키마).
+
+export type Role = "MERCHANT" | "INVESTOR" | "ADMIN";
+
+export interface User {
+  id: number;
+  email: string;
+  role: Role;
+  verification_status: string;
+  store_name?: string | null;
+  esg_score?: string | null;
+  kyc_status?: string | null;
+  total_invested?: string | null;
+}
+
+export interface TokenResponse {
+  access_token: string;
+  refresh_token: string;
+  token_type: string;
+}
+
+export interface ESGScore {
+  id: number;
+  composite_score: string;
+  score_grade: string;
+  on_chain_tx_hash: string | null;
+}
+
+export interface BusinessData {
+  id: number;
+  file_name: string;
+  processing_status: string;
+}
+
+export interface MatchedProduct {
+  id: number;
+  bank_name: string;
+  product_name: string;
+  base_rate: string;
+  preferential_rate: number;
+  max_amount: number;
+  term_months: number;
+}
+
+export interface LoanApplication {
+  id: number;
+  amount: number;
+  applied_rate: string;
+  term_months: number;
+  status: string;
+}
+
+export interface STOAsset {
+  id: number;
+  asset_type: "SOLAR" | "WIND" | "FOREST" | "HYDRO";
+  name: string;
+  description: string | null;
+  total_token_supply: number;
+  remaining_tokens: number;
+  token_price: string;
+  status: string;
+}
+
+export interface Holding {
+  sto_asset_id: number;
+  asset_name: string;
+  quantity: number;
+  total_paid: string;
+  current_value: string;
+  dividends_received: string;
+}
+
+export interface Portfolio {
+  total_invested: string;
+  total_current_value: string;
+  total_dividends_received: string;
+  holdings: Holding[];
+}
+
+export interface SystemMetrics {
+  subsystems: Record<string, Record<string, unknown>>;
+  totals: Record<string, number>;
+}
+
+export interface AdminUser {
+  id: number;
+  email: string;
+  role: Role;
+  is_active: boolean;
+}
