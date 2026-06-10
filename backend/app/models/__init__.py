@@ -3,6 +3,7 @@
 from app.models.audit import AuditLog
 from app.models.blockchain import BlockchainRecord, RecordType
 from app.models.business import BusinessData, ProcessingStatus
+from app.models.dividend import Dividend
 from app.models.esg import ESGScore
 from app.models.finance import FinancialProduct
 from app.models.loan import LoanApplication, LoanStatus
@@ -30,4 +31,5 @@ __all__ = [
     "STOStatus",
     "AuditLog",
     "TokenTransaction",
+    "Dividend",
 ]
