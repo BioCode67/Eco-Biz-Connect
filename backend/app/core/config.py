@@ -1,0 +1,47 @@
+"""애플리케이션 설정 모듈.
+
+.env 파일의 환경변수를 pydantic-settings로 읽어 타입 안전한 설정 객체로 제공한다.
+민감값(JWT_SECRET 등)은 .env 에만 두고 절대 커밋하지 않는다.
+"""
+
+from functools import lru_cache
+
+from pydantic_settings import BaseSettings, SettingsConfigDict
+
+
+class Settings(BaseSettings):
+    """환경변수 기반 설정 클래스."""
+
+    # 프로젝트 메타
+    PROJECT_NAME: str = "Eco-Biz Connect API"
+    API_V1_PREFIX: str = "/api/v1"
+
+    # 데이터베이스
+    DATABASE_URL: str = "postgresql+psycopg2://ebc:ebc@localhost:5432/ebc"
+
+    # JWT 인증
+    JWT_SECRET: str = "change-me-in-env"
+    JWT_ALGORITHM: str = "HS256"
+    ACCESS_TOKEN_EXPIRE_MINUTES: int = 30
+    REFRESH_TOKEN_EXPIRE_MINUTES: int = 60 * 24 * 7  # 7일
+
+    # CORS (개발용: 콤마로 구분된 허용 오리진 목록)
+    BACKEND_CORS_ORIGINS: str = "http://localhost:3000,http://localhost:8081"
+
+    model_config = SettingsConfigDict(
+        env_file=".env",
+        env_file_encoding="utf-8",
+        case_sensitive=True,
+        extra="ignore",
+    )
+
+    @property
+    def cors_origins_list(self) -> list[str]:
+        """콤마로 구분된 CORS 오리진 문자열을 리스트로 변환한다."""
+        return [origin.strip() for origin in self.BACKEND_CORS_ORIGINS.split(",") if origin.strip()]
+
+
+@lru_cache
+def get_settings() -> Settings:
+    """설정 싱글턴을 반환한다(프로세스당 1회만 로드)."""
+    return Settings()
