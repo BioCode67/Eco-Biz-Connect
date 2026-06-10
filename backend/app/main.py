@@ -1,12 +1,13 @@
 """FastAPI 애플리케이션 엔트리포인트.
 
-Phase 0: 개발 환경 뼈대만 구성한다. 비즈니스 로직(인증 등)은 아직 없다.
-헬스체크 엔드포인트와 개발용 CORS 미들웨어만 제공한다.
+헬스체크 + 개발용 CORS + 기능별 라우터(auth 등)를 조립한다.
+DB 스키마는 Alembic 마이그레이션으로 관리한다(앱이 자동 생성하지 않음).
 """
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
+from app.api.routers import auth
 from app.core.config import get_settings
 
 settings = get_settings()
@@ -21,6 +22,9 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# 기능별 라우터 등록
+app.include_router(auth.router)
 
 
 @app.get("/health", tags=["system"])

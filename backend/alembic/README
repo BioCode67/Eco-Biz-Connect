@@ -1,0 +1,7 @@
+Alembic 마이그레이션 디렉터리.
+
+생성: alembic revision --autogenerate -m "메시지"
+적용: alembic upgrade head
+되돌리기: alembic downgrade -1
+
+DATABASE_URL 은 .env 에서 읽는다(alembic/env.py 참고). DB 가 떠 있어야 한다(docker compose up -d).
