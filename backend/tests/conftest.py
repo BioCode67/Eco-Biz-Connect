@@ -57,3 +57,22 @@ def investor_payload() -> dict:
         "role": "INVESTOR",
         "wallet_address": "0xABC123",
     }
+
+
+@pytest.fixture
+def admin_payload() -> dict:
+    return {
+        "email": "admin@example.com",
+        "password": "secret123",
+        "role": "ADMIN",
+    }
+
+
+def auth_headers(client, payload: dict) -> dict:
+    """주어진 사용자로 가입+로그인 후 Authorization 헤더를 만든다."""
+    client.post("/auth/register", json=payload)
+    tokens = client.post(
+        "/auth/login",
+        json={"email": payload["email"], "password": payload["password"]},
+    ).json()
+    return {"Authorization": f"Bearer {tokens['access_token']}"}
