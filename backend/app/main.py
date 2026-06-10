@@ -18,6 +18,7 @@ from app.api.routers import (
     products,
     reports,
     sto,
+    transactions,
 )
 from app.core.config import get_settings
 
@@ -45,6 +46,7 @@ app.include_router(sto.router)
 app.include_router(marketplace.router)
 app.include_router(investor.router)
 app.include_router(dividends.router)
+app.include_router(transactions.router)
 
 
 @app.get("/health", tags=["system"])

@@ -5,6 +5,7 @@
 """
 
 import hashlib
+import uuid
 
 from sqlalchemy.orm import Session
 
@@ -18,11 +19,13 @@ def _sha256(payload: str) -> str:
 def anchor(db: Session, record_type: RecordType, payload: str) -> BlockchainRecord:
     """payload 의 해시를 온체인에 앵커링(mock)하고 BlockchainRecord 를 생성한다.
 
-    커밋은 호출자가 수행한다(db.flush 로 id 만 확보).
+    data_hash 는 payload 에 대해 결정적이지만, tx_hash 는 매 트랜잭션마다 고유해야 하므로
+    nonce 를 섞는다(동일 내용의 반복 거래도 서로 다른 트랜잭션). 커밋은 호출자가 수행한다.
     """
     data_hash = _sha256(payload)
-    tx_hash = "0x" + _sha256(payload + record_type.value)[:64]
-    block_number = int(data_hash[:8], 16) % 9_000_000 + 1_000_000
+    nonce = uuid.uuid4().hex
+    tx_hash = "0x" + _sha256(payload + record_type.value + nonce)[:64]
+    block_number = int(_sha256(nonce)[:8], 16) % 9_000_000 + 1_000_000
     record = BlockchainRecord(
         record_type=record_type,
         data_hash=data_hash,
