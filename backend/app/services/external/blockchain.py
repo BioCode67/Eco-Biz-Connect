@@ -32,3 +32,29 @@ def anchor(db: Session, record_type: RecordType, payload: str) -> BlockchainReco
     db.add(record)
     db.flush()
     return record
+
+
+def deploy_contract(db: Session, payload: str) -> tuple[str, dict, BlockchainRecord]:
+    """ERC-1400 보안 토큰 컨트랙트를 배포(mock)하고 주소/ABI/앵커 레코드를 반환한다.
+
+    실제로는 Solidity 컴파일 + 네트워크 배포가 일어나지만, 여기서는 결정적 가짜 주소/ABI 를 만든다.
+    """
+    record = anchor(db, RecordType.STO_DEPLOY, payload)
+    contract_address = "0x" + _sha256("contract:" + payload)[:40]
+    contract_abi = {
+        "standard": "ERC-1400",
+        "functions": ["issue", "purchase", "distributeDividend", "balanceOf", "totalSupply"],
+    }
+    return contract_address, contract_abi, record
+
+
+def purchase_tokens(db: Session, contract_address: str, buyer: str, quantity: int) -> BlockchainRecord:
+    """컨트랙트의 purchase 함수 호출(mock)을 앵커링한다."""
+    payload = f"purchase:{contract_address}:{buyer}:{quantity}"
+    return anchor(db, RecordType.TOKEN_PURCHASE, payload)
+
+
+def distribute_dividend(db: Session, contract_address: str, per_token_amount: float) -> BlockchainRecord:
+    """컨트랙트의 distributeDividend 호출(mock)을 앵커링한다."""
+    payload = f"dividend:{contract_address}:{per_token_amount}"
+    return anchor(db, RecordType.DIVIDEND, payload)
