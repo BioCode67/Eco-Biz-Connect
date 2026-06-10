@@ -28,6 +28,11 @@ yarn-error.log*
 *.key
 *.mobileprovision
 
+# ---- 로컬 SQLite DB (개발/테스트용, 운영은 PostgreSQL) ----
+*.db
+*.sqlite
+*.sqlite3
+
 # ---- 환경파일 / 비밀값 (절대 커밋 금지) ----
 .env
 .env.*
