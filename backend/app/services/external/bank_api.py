@@ -67,6 +67,16 @@ def compute_preferential_rate(base_rate: float, composite_score: float) -> float
     return max(round(base_rate - discount, 2), 3.0)
 
 
+async def process_payment(payload: dict) -> dict:
+    """결제를 처리한다(MOCK).
+
+    실제로는 PG/은행 결제를 호출하지만, 여기서는 항상 성공으로 처리하고 결제 참조번호를 반환한다.
+    """
+    await asyncio.sleep(0.01)
+    ref = f"PAY-{payload.get('investor_id', 0)}-{payload.get('amount', 0)}"
+    return {"success": True, "payment_ref": ref}
+
+
 async def submit_loan_application(payload: dict) -> dict:
     """대출 신청을 Bank API 로 제출한다(MOCK).
 

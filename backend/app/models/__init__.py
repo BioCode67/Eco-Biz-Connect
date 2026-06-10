@@ -8,6 +8,7 @@ from app.models.finance import FinancialProduct
 from app.models.loan import LoanApplication, LoanStatus
 from app.models.report import AIAnalysisReport
 from app.models.sto import AssetType, STOAsset, STOStatus
+from app.models.transaction import TokenTransaction
 from app.models.user import KYCStatus, User, UserRole, VerificationStatus
 
 __all__ = [
@@ -28,4 +29,5 @@ __all__ = [
     "AssetType",
     "STOStatus",
     "AuditLog",
+    "TokenTransaction",
 ]

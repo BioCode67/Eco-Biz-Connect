@@ -11,6 +11,7 @@ from app.api.routers import (
     auth,
     business_data,
     esg,
+    investor,
     loans,
     marketplace,
     products,
@@ -41,6 +42,7 @@ app.include_router(products.router)
 app.include_router(loans.router)
 app.include_router(sto.router)
 app.include_router(marketplace.router)
+app.include_router(investor.router)
 
 
 @app.get("/health", tags=["system"])
