@@ -39,11 +39,11 @@ Eco-Biz Connect (EBC) — AI·블록체인 기반 ESG 통합 금융 웹/앱 플�
 - 프론트: 함수형 컴포넌트, 명확한 타입. 과도한 추상화 금지.
 
 ## 진행 로드맵 (이 순서대로)
-- [ ] Phase 0: 프로젝트 뼈대 + docker-compose(PostgreSQL) + 헬스체크
-- [ ] Phase 1: 인증 (회원가입 UC1, 로그인 UC2) — 백엔드 API
-- [ ] Phase 2: 나머지 백엔드 API (UC3~UC13, 외부연동은 mock)
-- [ ] Phase 3: 웹앱 (Next.js) — proto SVG 5개 기반 화면
-- [ ] Phase 4: 모바일앱 (Expo)
-- [ ] Phase 5: 외부연동 실제화 (블록체인/AI/Bank) — 맨 마지막
+- [x] Phase 0: 프로젝트 뼈대 + docker-compose(PostgreSQL) + 헬스체크
+- [x] Phase 1: 인증 (회원가입 UC1, 로그인 UC2) — 백엔드 API
+- [x] Phase 2: 나머지 백엔드 API (UC3~UC13, 외부연동은 mock)
+- [x] Phase 3: 웹앱 (Next.js) — proto SVG 5개 기반 화면
+- [x] Phase 4: 모바일앱 (Expo)
+- [ ] Phase 5: 외부연동 실제화 (블록체인/AI/Bank) — 맨 마지막 (실제 계정·API 키 필요)
 
 작업 단계를 시작할 때 이 체크리스트에서 어디인지 확인하고 진행한다.
