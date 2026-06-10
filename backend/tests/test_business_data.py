@@ -10,8 +10,8 @@ def test_upload_csv_success(client, merchant_payload):
     assert res.status_code == 201
     body = res.json()
     assert body["file_name"] == "sales.csv"
-    # 파이프라인이 AI 분석까지 진행됨(UC4 확장)
-    assert body["processing_status"] == "AI_COMPLETED"
+    # 파이프라인이 AI 분석 + ESG 산출까지 완료됨(UC4/UC5)
+    assert body["processing_status"] == "ESG_COMPLETED"
 
 
 def test_upload_rejects_unsupported_extension(client, merchant_payload):

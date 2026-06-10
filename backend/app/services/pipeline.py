@@ -9,11 +9,17 @@
   UC5: ESG 점수 산출 + 블록체인 앵커링 → ESGCompleted
 """
 
+from decimal import Decimal
+
 from sqlalchemy.orm import Session
 
+from app.models.blockchain import RecordType
 from app.models.business import BusinessData, ProcessingStatus
+from app.models.esg import ESGScore
 from app.models.report import AIAnalysisReport
-from app.services.external import ai_engine
+from app.models.user import User
+from app.services import esg_engine
+from app.services.external import ai_engine, blockchain
 
 
 def run_pipeline(db: Session, business_data: BusinessData) -> None:
@@ -34,6 +40,29 @@ def run_pipeline(db: Session, business_data: BusinessData) -> None:
     )
     db.add(report)
     business_data.processing_status = ProcessingStatus.AI_COMPLETED
+
+    # UC5: ESG 점수 산출 + 블록체인 앵커링
+    scores = esg_engine.calculate(business_data)
+    payload = f"esg:{business_data.id}:{scores['composite_score']}"
+    record = blockchain.anchor(db, RecordType.ESG_ANCHOR, payload)
+    esg = ESGScore(
+        merchant_id=business_data.merchant_id,
+        business_data_id=business_data.id,
+        env_score=scores["env_score"],
+        social_score=scores["social_score"],
+        governance_score=scores["governance_score"],
+        composite_score=scores["composite_score"],
+        score_grade=scores["score_grade"],
+        on_chain_tx_hash=record.tx_hash,
+    )
+    db.add(esg)
+
+    # Merchant 의 최신 ESG 점수 캐시 갱신
+    merchant = db.get(User, business_data.merchant_id)
+    if merchant is not None:
+        merchant.esg_score = Decimal(str(scores["composite_score"]))
+
+    business_data.processing_status = ProcessingStatus.ESG_COMPLETED
 
     db.commit()
     db.refresh(business_data)
