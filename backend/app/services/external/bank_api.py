@@ -65,3 +65,14 @@ def compute_preferential_rate(base_rate: float, composite_score: float) -> float
     """
     discount = round(composite_score * 0.02, 2)  # 최대 ~1.8%p
     return max(round(base_rate - discount, 2), 3.0)
+
+
+async def submit_loan_application(payload: dict) -> dict:
+    """대출 신청을 Bank API 로 제출한다(MOCK).
+
+    실제로는 ESG 증명서를 포함해 은행 심사 시스템에 제출하고 외부 접수번호를 받는다.
+    여기서는 항상 접수 성공으로 처리하고 결정적 접수번호를 반환한다.
+    """
+    await asyncio.sleep(0.01)
+    ref = f"BANK-REF-{payload.get('merchant_id', 0)}-{payload.get('product_code', 'NA')}"
+    return {"accepted": True, "external_ref": ref}

@@ -4,6 +4,7 @@ from app.models.blockchain import BlockchainRecord, RecordType
 from app.models.business import BusinessData, ProcessingStatus
 from app.models.esg import ESGScore
 from app.models.finance import FinancialProduct
+from app.models.loan import LoanApplication, LoanStatus
 from app.models.report import AIAnalysisReport
 from app.models.user import KYCStatus, User, UserRole, VerificationStatus
 
@@ -19,4 +20,6 @@ __all__ = [
     "BlockchainRecord",
     "RecordType",
     "FinancialProduct",
+    "LoanApplication",
+    "LoanStatus",
 ]
