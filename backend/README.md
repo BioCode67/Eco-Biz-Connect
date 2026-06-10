@@ -77,13 +77,42 @@ curl http://localhost:8000/health
 pytest -q
 ```
 
-## 인증 API (Phase 1)
+## API 개요 (UC1~UC13)
+
+### 인증 (Phase 1, UC1·UC2)
 | 메서드 | 경로 | 설명 |
 | :--- | :--- | :--- |
-| POST | `/auth/register` | 회원가입(UC1). 이메일 중복 확인, 비밀번호 bcrypt 해시, role 지정. Merchant 는 사업자번호 mock 검증. |
-| POST | `/auth/login` | 로그인(UC2). JWT access/refresh 발급. 5회 실패 시 15분 잠금. |
-| POST | `/auth/refresh` | 리프레시 토큰으로 새 access/refresh 발급. |
-| GET | `/auth/me` | 현재 인증 사용자 조회(Bearer 토큰 필요). |
+| POST | `/auth/register` | 회원가입(UC1). 이메일 중복 확인, bcrypt 해시, role 지정. Merchant 사업자번호 mock 검증. |
+| POST | `/auth/login` | 로그인(UC2). JWT access/refresh. 5회 실패 시 15분 잠금, 정지 계정 차단. |
+| POST | `/auth/refresh` | 리프레시 토큰으로 재발급. |
+| GET | `/auth/me` | 현재 사용자 조회. |
+
+### 소상공인 (Phase 2, UC3~UC7)
+| 메서드 | 경로 | UC | 설명 |
+| :--- | :--- | :--- | :--- |
+| POST | `/business-data/upload` | UC3 | 경영 데이터 업로드(CSV/Excel) → 분석 파이프라인 트리거. |
+| GET | `/business-data` | UC3 | 내 업로드 목록. |
+| GET | `/reports/latest`, `/reports/by-business-data/{id}` | UC4 | AI 분석 리포트 조회. |
+| GET | `/esg/me`, `/esg/history` | UC5 | ESG 점수 조회(블록체인 앵커링). |
+| GET | `/products/match` | UC6 | ESG 기반 우대 대출 상품 매칭. |
+| POST | `/loans/apply`, `GET /loans`, `GET /loans/{id}` | UC7 | 대출 신청/조회. |
+| POST | `/loans/{id}/bank-webhook` | UC7 | 은행 심사 결과 콜백(mock). |
+
+### 투자자·관리자 (Phase 2, UC8~UC13)
+| 메서드 | 경로 | UC | 설명 |
+| :--- | :--- | :--- | :--- |
+| POST | `/sto`, `GET /sto` | UC8 | STO 발행/목록(관리자). ERC-1400 컨트랙트 배포 mock. |
+| GET | `/marketplace`, `/marketplace/{id}` | UC9 | STO 상품 탐색(투자자). |
+| POST | `/investor/kyc/verify` | UC10 | KYC 검증(mock). |
+| POST | `/marketplace/{id}/purchase` | UC10 | 토큰 구매(결제·온체인 mock). |
+| POST | `/sto/{id}/dividend` | UC11 | 배당 분배(관리자). |
+| GET | `/portfolio`, `/dividends` | UC11 | 포트폴리오·배당 조회(투자자). |
+| GET | `/transactions` | UC12 | 거래 내역(역할별, 페이지네이션). |
+| GET | `/admin/monitor` | UC13 | 시스템 모니터링(관리자). |
+| GET/POST | `/admin/users`, `/admin/users/{id}/suspend\|restore\|role` | UC13 | 사용자 관리(감사 로그 기록). |
+| GET | `/admin/audit-log` | UC13 | 감사 로그 조회. |
+
+> 모든 외부연동(Bank API, AI 엔진, 블록체인, KYC, 오브젝트 스토리지)은 `app/services/external/` 의 **mock** 이다. Phase 5 에서 실제 연동으로 교체한다.
 
 ## 폴더 구조
 ```
