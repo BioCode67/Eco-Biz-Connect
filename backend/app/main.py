@@ -8,6 +8,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.api.routers import (
+    admin,
     auth,
     business_data,
     dividends,
@@ -47,6 +48,7 @@ app.include_router(marketplace.router)
 app.include_router(investor.router)
 app.include_router(dividends.router)
 app.include_router(transactions.router)
+app.include_router(admin.router)
 
 
 @app.get("/health", tags=["system"])

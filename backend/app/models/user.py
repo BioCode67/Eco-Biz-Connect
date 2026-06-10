@@ -9,7 +9,7 @@ import enum
 from datetime import datetime
 from decimal import Decimal
 
-from sqlalchemy import DateTime, Enum as SAEnum, Integer, Numeric, String, func
+from sqlalchemy import Boolean, DateTime, Enum as SAEnum, Integer, Numeric, String, func
 from sqlalchemy.orm import Mapped, mapped_column
 
 from app.core.database import Base
@@ -54,6 +54,8 @@ class User(Base):
         default=VerificationStatus.PENDING,
         nullable=False,
     )
+    # 계정 활성 여부(관리자 정지/복원 대상, UC13)
+    is_active: Mapped[bool] = mapped_column(Boolean, default=True, nullable=False)
 
     # ----- 로그인 보안 (UC2: 5회 실패 시 15분 잠금) -----
     failed_login_attempts: Mapped[int] = mapped_column(Integer, default=0, nullable=False)

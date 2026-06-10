@@ -111,6 +111,10 @@ def login(payload: LoginRequest, db: Session = Depends(get_db)) -> TokenResponse
             db.commit()
         raise HTTPException(status.HTTP_401_UNAUTHORIZED, "이메일 또는 비밀번호가 올바르지 않습니다.")
 
+    # 정지된 계정 차단(UC13 관리자 정지)
+    if not user.is_active:
+        raise HTTPException(status.HTTP_403_FORBIDDEN, "정지된 계정입니다. 관리자에게 문의하세요.")
+
     # 인증 성공: 실패 카운터 초기화
     user.failed_login_attempts = 0
     user.locked_until = None
