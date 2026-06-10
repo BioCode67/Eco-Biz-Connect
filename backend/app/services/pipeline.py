@@ -2,22 +2,38 @@
 
 설계서상 업로드 성공 시 AI 분석 파이프라인이 비동기로 트리거된다(UC3→UC4→UC5).
 실제 비동기 큐/워커 대신, 여기서는 동기적으로 상태를 진행시키는 mock 으로 구현한다.
-각 UC 구현이 진행되며 단계가 확장된다(UC4: 리포트 생성, UC5: ESG 산출/앵커링).
+
+단계:
+  UC3: Uploaded → Parsing → Parsed → AIQueued
+  UC4: AI 분석 리포트 생성 → AICompleted
+  UC5: ESG 점수 산출 + 블록체인 앵커링 → ESGCompleted
 """
 
 from sqlalchemy.orm import Session
 
 from app.models.business import BusinessData, ProcessingStatus
+from app.models.report import AIAnalysisReport
+from app.services.external import ai_engine
 
 
 def run_pipeline(db: Session, business_data: BusinessData) -> None:
-    """업로드된 데이터를 분석 큐에 올리고 상태를 AI_QUEUED 까지 진행한다(mock).
-
-    UC4/UC5 에서 리포트 생성·ESG 산출 단계가 이 함수에 연결된다.
-    """
+    """업로드된 데이터를 분석 파이프라인에 통과시킨다(mock, 동기 실행)."""
     business_data.processing_status = ProcessingStatus.PARSING
-    # (mock) 파싱 성공 가정
     business_data.processing_status = ProcessingStatus.PARSED
     business_data.processing_status = ProcessingStatus.AI_QUEUED
+
+    # UC4: AI 분석 리포트 생성
+    analysis = ai_engine.generate_analysis(business_data)
+    report = AIAnalysisReport(
+        business_data_id=business_data.id,
+        merchant_id=business_data.merchant_id,
+        summary=analysis["summary"],
+        sales_forecast=analysis["sales_forecast"],
+        cost_optimization_tips=analysis["cost_optimization_tips"],
+        district_comparison=analysis["district_comparison"],
+    )
+    db.add(report)
+    business_data.processing_status = ProcessingStatus.AI_COMPLETED
+
     db.commit()
     db.refresh(business_data)
