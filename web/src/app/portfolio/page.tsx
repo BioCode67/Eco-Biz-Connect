@@ -4,6 +4,7 @@
 
 import { useCallback, useEffect, useState } from "react";
 
+import { DonutBreakdown } from "@/components/charts";
 import DashboardShell from "@/components/DashboardShell";
 import { Badge, Button, EmptyState, ErrorBanner, Section, Skeleton, StatCard } from "@/components/ui";
 import { api, downloadCsv, safe } from "@/lib/api";
@@ -18,6 +19,8 @@ const NAV = [
 const TYPE_KO: Record<string, string> = {
   TOKEN_PURCHASE: "토큰 구매", DIVIDEND_RECEIVED: "배당 수령", LOAN_APPLICATION: "대출 신청", DATA_UPLOAD: "데이터 업로드",
 };
+
+const ALLOC_COLORS = ["var(--forest)", "var(--sky)", "var(--gold)", "var(--leaf)", "#8e8e93", "#5856d6"];
 
 export default function PortfolioPage() {
   return (
@@ -82,6 +85,16 @@ function PortfolioBody() {
       <div className="grid-2">
         <Section title="보유 자산" description="자산별 평가">
           {!portfolio || portfolio.holdings.length === 0 ? <EmptyState icon="🪙" text="보유 자산이 없습니다. 마켓플레이스에서 투자해보세요." /> : (
+            <>
+            {portfolio.holdings.length > 1 && (
+              <div style={{ paddingBottom: 18, marginBottom: 6, borderBottom: "1px solid var(--line)" }}>
+                <DonutBreakdown
+                  segments={portfolio.holdings.map((h, i) => ({ label: h.asset_name, value: Math.round(Number(h.current_value)), color: ALLOC_COLORS[i % ALLOC_COLORS.length] }))}
+                  centerLabel={`${portfolio.holdings.length}`}
+                  centerSub="보유 종목"
+                />
+              </div>
+            )}
             <table style={{ width: "100%", fontSize: 13.5, borderCollapse: "collapse" }}>
               <thead><tr style={{ textAlign: "left", color: "var(--ink-soft)", fontSize: 11.5 }}>
                 <th style={{ padding: "0 0 8px" }}>자산</th><th>수량</th><th>투자금</th><th>평가액</th><th>배당</th>
@@ -101,6 +114,7 @@ function PortfolioBody() {
                 })}
               </tbody>
             </table>
+            </>
           )}
         </Section>
 
