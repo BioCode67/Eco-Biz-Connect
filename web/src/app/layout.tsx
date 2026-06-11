@@ -11,7 +11,10 @@ const geistSans = Geist({
   subsets: ["latin"],
 });
 
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
+
 export const metadata: Metadata = {
+  metadataBase: new URL(SITE_URL),
   title: {
     default: "Eco-Biz Connect — AI·ESG 통합 금융",
     template: "%s · Eco-Biz Connect",
@@ -20,6 +23,18 @@ export const metadata: Metadata = {
   applicationName: "Eco-Biz Connect",
   keywords: ["ESG", "탄소중립", "STO", "소상공인", "AI 경영분석", "블록체인 금융"],
   authors: [{ name: "22311898 김주형" }],
+  openGraph: {
+    type: "website",
+    siteName: "Eco-Biz Connect",
+    title: "Eco-Biz Connect — AI·ESG 통합 금융",
+    description: "소상공인 AI 경영 분석과 개인 투자자 탄소 STO 투자를 잇는 ESG 통합 금융 플랫폼",
+    locale: "ko_KR",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Eco-Biz Connect — AI·ESG 통합 금융",
+    description: "소상공인 AI 경영 분석과 개인 투자자 탄소 STO 투자를 잇는 ESG 통합 금융 플랫폼",
+  },
 };
 
 export const viewport = {

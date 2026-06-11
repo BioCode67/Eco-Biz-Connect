@@ -62,6 +62,7 @@
    | Name | Value |
    |------|-------|
    | `NEXT_PUBLIC_API_BASE` | `https://ebc-backend.onrender.com` (1단계의 Render URL, **끝 슬래시 없이**) |
+   | `NEXT_PUBLIC_SITE_URL` | `https://<프로젝트이름>.vercel.app` (배포 후 발급되는 본인 Vercel 주소, **끝 슬래시 없이** — 링크 미리보기 이미지용) |
 
 6. **Deploy** 클릭 → 1~2분 후 **`https://<프로젝트이름>.vercel.app`** 발급
    - 이 주소가 **교수님께 드릴 최종 평가 링크**다.
