@@ -43,6 +43,7 @@ function MarketplaceBody() {
   const [assets, setAssets] = useState<STOAsset[]>([]);
   const [loading, setLoading] = useState(true);
   const [buyTarget, setBuyTarget] = useState<STOAsset | null>(null);
+  const [detailTarget, setDetailTarget] = useState<STOAsset | null>(null);
   const [search, setSearch] = useState("");
   const [typeFilter, setTypeFilter] = useState<string>("ALL");
   const [sort, setSort] = useState<SortKey>("yield");
@@ -122,7 +123,7 @@ function MarketplaceBody() {
               const soldOut = a.status === "SOLD_OUT" || a.remaining_tokens <= 0;
               const soldPct = (1 - a.remaining_tokens / a.total_token_supply) * 100;
               return (
-                <div key={a.id} className="card card-hover" style={{ padding: 18, display: "flex", flexDirection: "column" }}>
+                <div key={a.id} className="card card-hover" onClick={() => setDetailTarget(a)} style={{ padding: 18, display: "flex", flexDirection: "column", cursor: "pointer" }}>
                   <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
                     <span style={{ fontSize: 30 }}>{meta.icon}</span>
                     <Badge tone="green">{meta.label}</Badge>
@@ -142,8 +143,9 @@ function MarketplaceBody() {
                       <div style={{ height: "100%", width: `${100 - soldPct}%`, background: "linear-gradient(90deg, var(--leaf), var(--forest))", borderRadius: 999 }} />
                     </div>
                   </div>
-                  <div style={{ marginTop: 14 }}>
+                  <div style={{ marginTop: 14, display: "flex", alignItems: "center", gap: 12 }} onClick={(e) => e.stopPropagation()}>
                     <Button onClick={() => setBuyTarget(a)} disabled={soldOut || !kycVerified}>{soldOut ? "판매 완료" : "토큰 구매"}</Button>
+                    <button className="link" onClick={() => setDetailTarget(a)} style={{ fontSize: 13 }}>상세보기 →</button>
                   </div>
                 </div>
               );
@@ -152,8 +154,63 @@ function MarketplaceBody() {
         )}
       </Section>
 
+      {detailTarget && <DetailModal asset={detailTarget} kycVerified={kycVerified} onClose={() => setDetailTarget(null)} onBuy={() => { setBuyTarget(detailTarget); setDetailTarget(null); }} />}
       {buyTarget && <PurchaseModal asset={buyTarget} walletReady={kycVerified} onClose={() => setBuyTarget(null)} onDone={async () => { setBuyTarget(null); await load(); await refresh(); }} />}
     </div>
+  );
+}
+
+function DetailModal({ asset, kycVerified, onClose, onBuy }: { asset: STOAsset; kycVerified: boolean; onClose: () => void; onBuy: () => void }) {
+  const meta = ASSET_META[asset.asset_type] ?? { icon: "🌱", label: asset.asset_type };
+  const soldPct = (1 - asset.remaining_tokens / asset.total_token_supply) * 100;
+  const soldOut = asset.status === "SOLD_OUT" || asset.remaining_tokens <= 0;
+  const facts: { label: string; value: string }[] = [
+    { label: "예상 연수익률", value: pct(asset.expected_yield) },
+    { label: "토큰 단가", value: won(asset.token_price) },
+    { label: "연 CO₂ 저감", value: `${asset.co2_offset_per_year} ton` },
+    { label: "설비 용량", value: asset.installed_capacity_mw ? `${asset.installed_capacity_mw} MW` : "—" },
+    { label: "배당 주기", value: `${asset.dividend_period_months}개월` },
+    { label: "총 발행량", value: asset.total_token_supply.toLocaleString() },
+    { label: "잔여 토큰", value: asset.remaining_tokens.toLocaleString() },
+    { label: "판매율", value: `${soldPct.toFixed(0)}%` },
+  ];
+  return (
+    <Modal onClose={onClose} title="">
+      <div style={{ marginTop: -8 }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 8 }}>
+          <span style={{ fontSize: 40 }}>{meta.icon}</span>
+          <div>
+            <div className="t-title" style={{ fontSize: 21 }}>{asset.name}</div>
+            <div style={{ fontSize: 13, color: "var(--ink-soft)" }}>{meta.label}{asset.location ? ` · 📍 ${asset.location}` : ""}</div>
+          </div>
+        </div>
+        {asset.description && <p style={{ fontSize: 14, color: "var(--ink-soft)", lineHeight: 1.6, margin: "10px 0 16px" }}>{asset.description}</p>}
+
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 1, background: "var(--line)", borderRadius: 14, overflow: "hidden", marginBottom: 16 }}>
+          {facts.map((f) => (
+            <div key={f.label} style={{ background: "var(--card)", padding: "12px 14px" }}>
+              <div style={{ fontSize: 11.5, color: "var(--ink-soft)" }}>{f.label}</div>
+              <div style={{ fontSize: 16, fontWeight: 600, marginTop: 2 }}>{f.value}</div>
+            </div>
+          ))}
+        </div>
+
+        <div style={{ height: 8, borderRadius: 999, background: "var(--paper-2)", overflow: "hidden", marginBottom: 8 }}>
+          <div style={{ height: "100%", width: `${100 - soldPct}%`, background: "linear-gradient(90deg, var(--leaf), var(--forest))", borderRadius: 999 }} />
+        </div>
+
+        {asset.contract_address && (
+          <div style={{ fontSize: 11.5, color: "var(--ink-soft)", marginBottom: 16, wordBreak: "break-all" }}>
+            ⛓ ERC-1400 컨트랙트: <span style={{ fontFamily: "monospace" }}>{asset.contract_address}</span>
+          </div>
+        )}
+
+        <div style={{ display: "flex", gap: 10, justifyContent: "flex-end" }}>
+          <Button variant="ghost" onClick={onClose}>닫기</Button>
+          <Button onClick={onBuy} disabled={soldOut || !kycVerified}>{soldOut ? "판매 완료" : "토큰 구매"}</Button>
+        </div>
+      </div>
+    </Modal>
   );
 }
 
