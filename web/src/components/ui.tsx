@@ -110,11 +110,18 @@ export function ErrorBanner({ onRetry }: { onRetry: () => void }) {
   );
 }
 
-export function EmptyState({ icon = "🌱", text }: { icon?: string; text: string }) {
+export function EmptyState({ icon = "🌱", text, action }: { icon?: string; text: string; action?: React.ReactNode }) {
   return (
-    <div style={{ textAlign: "center", padding: "36px 16px", color: "var(--ink-soft)" }}>
-      <div style={{ fontSize: 32, marginBottom: 10, opacity: 0.6 }}>{icon}</div>
-      <div style={{ fontSize: 14.5 }}>{text}</div>
+    <div style={{ textAlign: "center", padding: "44px 16px", color: "var(--ink-soft)" }}>
+      <div style={{ position: "relative", width: 84, height: 84, margin: "0 auto 16px" }}>
+        <svg width="84" height="84" viewBox="0 0 84 84" style={{ position: "absolute", inset: 0 }} aria-hidden>
+          <circle cx="42" cy="42" r="40" fill="var(--paper-2)" />
+          <circle cx="42" cy="42" r="40" fill="none" stroke="var(--line)" strokeWidth="1.5" strokeDasharray="4 6" />
+        </svg>
+        <div style={{ position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 34, opacity: 0.85 }}>{icon}</div>
+      </div>
+      <div style={{ fontSize: 14.5, maxWidth: 320, margin: "0 auto" }}>{text}</div>
+      {action && <div style={{ marginTop: 16 }}>{action}</div>}
     </div>
   );
 }
