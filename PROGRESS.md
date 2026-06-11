@@ -29,3 +29,4 @@
 | 22 | **모바일 버그:** 관리자 `name` 스타일의 `textTransform:"capitalize"`가 이메일에도 적용돼 "Merchant@ebc.com"으로 깨짐; 서브시스템 "Ai Engine"·역할 영문 raw | (c) 버그·일관성 | format.ts에 subsystemName·roleKo 추가, capitalize 제거, AdminScreen 적용(웹과 동일) | tsc 통과, expo export 통과 |
 | 23 | 모바일 매출예측 제목이 "30일"인데 데이터는 3개월(웹은 이미 90일로 수정됨) — 라벨-데이터 불일치 | (c) AI템플릿 티(불일치) | "90일 매출 예측 · AI 예측"으로 정합 | tsc 통과, expo export ios 통과(710 modules) |
 | 24 | 배포 startCommand가 끝까지 동작하는지 미검증(마이그레이션 체인·시드↔스키마 호환은 대표적 배포 실패 지점) | (검증) | 빈 DB에서 운영 순서 그대로 재현: `alembic upgrade head` → `seed --if-empty` → 데이터 확인 → 재실행 | 12개 마이그레이션 무결 적용, alembic 스키마 위 시드 성공(users 8·STO 5), 재실행 시 건너뜀. 배포 end-to-end de-risk |
+| 25 | 교수님이 클릭할 기능들의 실제 산출물 미검증(PDF·대출 상태머신 등) | (검증) | PDF 내보내기·대출신청(30일가드)·은행웹훅 전이를 실제 호출로 점검 | PDF 200·유효 PDF1.4·내용 정확(매출 1100/1250/1400·ESG 81.75 B+) 렌더 확인; 대출 재신청 409(30일 중복가드 작동); 웹훅 UNDER_REVIEW→APPROVED 200(decision_received_at 기록). 테스트 변경분 재시드로 복원 |
