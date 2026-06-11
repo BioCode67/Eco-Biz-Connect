@@ -45,6 +45,36 @@ def test_register_short_password(client, investor_payload):
     assert res.status_code == 422
 
 
+def test_register_weak_password_rejected(client, investor_payload):
+    # 길이는 충족하나 대문자/숫자/특수문자 누락 → 정책 위반
+    investor_payload["password"] = "weakpassword"
+    res = client.post("/auth/register", json=investor_payload)
+    assert res.status_code == 422
+
+
+def test_register_stores_name_and_phone(client, investor_payload):
+    investor_payload["name"] = "김투자"
+    investor_payload["phone"] = "010-1234-5678"
+    headers = None
+    client.post("/auth/register", json=investor_payload)
+    tokens = client.post(
+        "/auth/login", json={"email": investor_payload["email"], "password": investor_payload["password"]}
+    ).json()
+    headers = {"Authorization": f"Bearer {tokens['access_token']}"}
+    me = client.get("/auth/me", headers=headers).json()
+    assert me["name"] == "김투자"
+    assert me["phone"] == "010-1234-5678"
+
+
+def test_register_representative_name_mismatch(client, merchant_payload):
+    # 사업자번호가 000 으로 시작 + 대표자명 제출 → 대표자명 불일치(mock)
+    merchant_payload["business_reg_no"] = "000-45-67890"
+    merchant_payload["representative_name"] = "홍길동"
+    res = client.post("/auth/register", json=merchant_payload)
+    assert res.status_code == 400
+    assert "대표자명" in res.json()["detail"]
+
+
 def test_login_success(client, investor_payload):
     client.post("/auth/register", json=investor_payload)
     res = client.post(

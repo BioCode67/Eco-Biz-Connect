@@ -86,6 +86,7 @@ async def purchase_token(
         quantity_purchased=payload.quantity,
         unit_price=asset.token_price,
         total_amount_paid=total,
+        payment_gateway_ref=payment.get("payment_ref"),
         on_chain_tx_hash=record.tx_hash,
         block_number=record.block_number,
     )

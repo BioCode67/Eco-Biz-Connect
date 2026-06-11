@@ -6,17 +6,26 @@
 
 import hashlib
 import uuid
+from datetime import datetime, timezone
 
 from sqlalchemy.orm import Session
 
 from app.models.blockchain import BlockchainRecord, RecordType
+
+NETWORK_ID = "ebc-l2-testnet"
 
 
 def _sha256(payload: str) -> str:
     return hashlib.sha256(payload.encode("utf-8")).hexdigest()
 
 
-def anchor(db: Session, record_type: RecordType, payload: str) -> BlockchainRecord:
+def anchor(
+    db: Session,
+    record_type: RecordType,
+    payload: str,
+    entity_type: str | None = None,
+    entity_id: int | None = None,
+) -> BlockchainRecord:
     """payload 의 해시를 온체인에 앵커링(mock)하고 BlockchainRecord 를 생성한다.
 
     data_hash 는 payload 에 대해 결정적이지만, tx_hash 는 매 트랜잭션마다 고유해야 하므로
@@ -31,10 +40,19 @@ def anchor(db: Session, record_type: RecordType, payload: str) -> BlockchainReco
         data_hash=data_hash,
         tx_hash=tx_hash,
         block_number=block_number,
+        associated_entity_type=entity_type,
+        associated_entity_id=entity_id,
+        network_id=NETWORK_ID,
+        confirmed_at=datetime.now(timezone.utc),  # mock: 즉시 확정
     )
     db.add(record)
     db.flush()
     return record
+
+
+def verify(record: BlockchainRecord, payload: str) -> bool:
+    """저장된 data_hash 를 payload 의 라이브 해시와 교차 확인한다(설계서 verify())."""
+    return record.data_hash == _sha256(payload)
 
 
 def deploy_contract(db: Session, payload: str) -> tuple[str, dict, BlockchainRecord]:

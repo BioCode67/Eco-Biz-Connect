@@ -34,6 +34,10 @@ class BlockchainRecord(Base):
     data_hash: Mapped[str] = mapped_column(String(64), nullable=False)
     tx_hash: Mapped[str] = mapped_column(String(66), unique=True, nullable=False)
     block_number: Mapped[int] = mapped_column(BigInteger, nullable=False)
+    associated_entity_type: Mapped[str | None] = mapped_column(String(48), nullable=True)
+    associated_entity_id: Mapped[int | None] = mapped_column(Integer, nullable=True)
+    network_id: Mapped[str] = mapped_column(String(32), default="ebc-l2-testnet", nullable=False)
+    confirmed_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), server_default=func.now(), nullable=False
     )

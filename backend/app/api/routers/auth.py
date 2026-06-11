@@ -58,12 +58,14 @@ async def register(payload: RegisterRequest, db: Session = Depends(get_db)) -> U
     verification_status = VerificationStatus.PENDING
 
     if payload.role == UserRole.MERCHANT:
-        # Merchant 는 사업자등록번호 필수 + 외부(Bank API) 검증(mock)
+        # Merchant 는 사업자등록번호 필수 + 외부(Bank API) 검증(mock): 번호 + 대표자명 대조
         if not payload.business_reg_no:
             raise HTTPException(status.HTTP_422_UNPROCESSABLE_ENTITY, "사업자등록번호는 필수입니다.")
-        is_valid = await verify_business_registration(payload.business_reg_no)
-        if not is_valid:
-            raise HTTPException(status.HTTP_400_BAD_REQUEST, "유효하지 않은 사업자등록번호입니다.")
+        result = await verify_business_registration(payload.business_reg_no, payload.representative_name)
+        if result == "NOT_FOUND":
+            raise HTTPException(status.HTTP_400_BAD_REQUEST, "사업자 등록번호를 찾을 수 없습니다. 확인 후 다시 입력해 주세요.")
+        if result == "NAME_MISMATCH":
+            raise HTTPException(status.HTTP_400_BAD_REQUEST, "대표자명이 일치하지 않습니다.")
         verification_status = VerificationStatus.VERIFIED
 
     user = User(
@@ -71,6 +73,8 @@ async def register(payload: RegisterRequest, db: Session = Depends(get_db)) -> U
         password_hash=hash_password(payload.password),
         role=payload.role,
         verification_status=verification_status,
+        name=payload.name,
+        phone=payload.phone,
     )
 
     if payload.role == UserRole.MERCHANT:

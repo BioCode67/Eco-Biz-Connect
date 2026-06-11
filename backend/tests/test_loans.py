@@ -16,7 +16,7 @@ def test_apply_loan_success(client, merchant_payload):
     res = client.post(
         "/loans/apply",
         headers=headers,
-        json={"financial_product_id": product["id"], "amount": 10_000_000, "term_months": 24},
+        json={"financial_product_id": product["id"], "amount": 10_000_000, "term_months": 24, "consent": True},
     )
     assert res.status_code == 201
     body = res.json()
@@ -29,9 +29,26 @@ def test_apply_loan_exceeds_max_amount(client, merchant_payload):
     res = client.post(
         "/loans/apply",
         headers=headers,
-        json={"financial_product_id": product["id"], "amount": 10_000_000_000, "term_months": 24},
+        json={"financial_product_id": product["id"], "amount": 10_000_000_000, "term_months": 24, "consent": True},
     )
     assert res.status_code == 400
+
+
+def test_apply_loan_requires_consent(client, merchant_payload):
+    headers, product = _prepare_merchant_with_match(client, merchant_payload)
+    res = client.post(
+        "/loans/apply",
+        headers=headers,
+        json={"financial_product_id": product["id"], "amount": 5_000_000, "term_months": 12, "consent": False},
+    )
+    assert res.status_code == 400
+
+
+def test_apply_loan_duplicate_blocked(client, merchant_payload):
+    headers, product = _prepare_merchant_with_match(client, merchant_payload)
+    body = {"financial_product_id": product["id"], "amount": 5_000_000, "term_months": 12, "consent": True}
+    assert client.post("/loans/apply", headers=headers, json=body).status_code == 201
+    assert client.post("/loans/apply", headers=headers, json=body).status_code == 409
 
 
 def test_bank_webhook_updates_status(client, merchant_payload):
@@ -39,7 +56,7 @@ def test_bank_webhook_updates_status(client, merchant_payload):
     loan = client.post(
         "/loans/apply",
         headers=headers,
-        json={"financial_product_id": product["id"], "amount": 5_000_000, "term_months": 12},
+        json={"financial_product_id": product["id"], "amount": 5_000_000, "term_months": 12, "consent": True},
     ).json()
     res = client.post(
         f"/loans/{loan['id']}/bank-webhook",
@@ -57,11 +74,11 @@ def test_cannot_view_others_loan(client, merchant_payload, investor_payload):
     loan = client.post(
         "/loans/apply",
         headers=headers,
-        json={"financial_product_id": product["id"], "amount": 5_000_000, "term_months": 12},
+        json={"financial_product_id": product["id"], "amount": 5_000_000, "term_months": 12, "consent": True},
     ).json()
     other = {
         "email": "merchant2@example.com",
-        "password": "secret123",
+        "password": "Secret123!",
         "role": "MERCHANT",
         "business_reg_no": "999-88-77665",
     }

@@ -33,7 +33,7 @@ def test_merchant_history_lists_loans(client, merchant_payload):
     client.post(
         "/loans/apply",
         headers=headers,
-        json={"financial_product_id": product["id"], "amount": 1_000_000, "term_months": 12},
+        json={"financial_product_id": product["id"], "amount": 1_000_000, "term_months": 12, "consent": True},
     )
     res = client.get("/transactions", headers=headers)
     assert res.status_code == 200

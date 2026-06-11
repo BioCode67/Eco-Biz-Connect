@@ -52,6 +52,8 @@ class STOAsset(Base):
     expected_yield: Mapped[Decimal] = mapped_column(Numeric(5, 2), default=0, nullable=False)
     co2_offset_per_year: Mapped[int] = mapped_column(Integer, default=0, nullable=False)
     location: Mapped[str | None] = mapped_column(String(255), nullable=True)
+    installed_capacity_mw: Mapped[Decimal | None] = mapped_column(Numeric(10, 2), nullable=True)
+    dividend_period_months: Mapped[int] = mapped_column(Integer, default=3, nullable=False)
     contract_address: Mapped[str | None] = mapped_column(String(64), nullable=True)
     contract_abi: Mapped[dict | None] = mapped_column(JSON, nullable=True)
     status: Mapped[STOStatus] = mapped_column(

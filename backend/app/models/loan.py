@@ -38,10 +38,13 @@ class LoanApplication(Base):
     amount: Mapped[int] = mapped_column(Integer, nullable=False)
     applied_rate: Mapped[Decimal] = mapped_column(Numeric(5, 2), nullable=False)
     term_months: Mapped[int] = mapped_column(Integer, nullable=False)
+    loan_purpose: Mapped[str | None] = mapped_column(String(255), nullable=True)
+    bank_reference_id: Mapped[str | None] = mapped_column(String(64), nullable=True)
     status: Mapped[LoanStatus] = mapped_column(
         SAEnum(LoanStatus, name="loan_status"), default=LoanStatus.UNDER_REVIEW, nullable=False
     )
     decision_reason: Mapped[str | None] = mapped_column(String(512), nullable=True)
+    decision_received_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), server_default=func.now(), nullable=False
     )

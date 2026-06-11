@@ -25,6 +25,7 @@ class TokenTransactionOut(BaseModel):
     quantity_purchased: int
     unit_price: Decimal
     total_amount_paid: Decimal
+    payment_gateway_ref: str | None
     on_chain_tx_hash: str | None
     block_number: int | None
     created_at: datetime

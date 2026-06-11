@@ -4,6 +4,8 @@
 저장하며, 심사 결과는 비동기 웹훅(mock)으로 수신해 상태를 갱신한다.
 """
 
+from datetime import datetime, timedelta, timezone
+
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy import select
 from sqlalchemy.orm import Session
@@ -35,6 +37,20 @@ async def apply_for_loan(
             status.HTTP_400_BAD_REQUEST,
             f"신청 금액이 상품 최대 한도({product.max_amount:,}원)를 초과했습니다.",
         )
+    if not payload.consent:
+        raise HTTPException(status.HTTP_400_BAD_REQUEST, "대출 신청 약관에 동의해야 합니다.")
+
+    # 최근 30일 이내 동일 상품 중복 신청 차단(UC7 전제조건)
+    cutoff = datetime.now(timezone.utc) - timedelta(days=30)
+    duplicate = db.scalar(
+        select(LoanApplication).where(
+            LoanApplication.merchant_id == current_user.id,
+            LoanApplication.financial_product_id == product.id,
+            LoanApplication.created_at >= cutoff,
+        )
+    )
+    if duplicate is not None:
+        raise HTTPException(status.HTTP_409_CONFLICT, "이 상품에 이미 최근 신청 이력이 있습니다(30일 이내).")
 
     esg = db.scalar(
         select(ESGScore)
@@ -61,6 +77,8 @@ async def apply_for_loan(
         amount=payload.amount,
         applied_rate=applied_rate,
         term_months=payload.term_months,
+        loan_purpose=payload.loan_purpose,
+        bank_reference_id=result.get("external_ref"),
         status=LoanStatus.UNDER_REVIEW,
     )
     db.add(application)
@@ -115,6 +133,7 @@ def bank_decision_webhook(
 
     application.status = payload.decision
     application.decision_reason = payload.reason
+    application.decision_received_at = datetime.now(timezone.utc)
     db.commit()
     db.refresh(application)
     return application

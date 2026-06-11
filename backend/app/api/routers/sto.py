@@ -37,6 +37,8 @@ def issue_sto(
         expected_yield=payload.expected_yield,
         co2_offset_per_year=payload.co2_offset_per_year,
         location=payload.location,
+        installed_capacity_mw=payload.installed_capacity_mw,
+        dividend_period_months=payload.dividend_period_months,
         status=STOStatus.DEPLOYING,
     )
     db.add(asset)

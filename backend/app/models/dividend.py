@@ -22,6 +22,7 @@ class Dividend(Base):
         ForeignKey("sto_assets.id", ondelete="CASCADE"), index=True, nullable=False
     )
     per_token_amount: Mapped[Decimal] = mapped_column(Numeric(18, 2), nullable=False)
+    total_distributed_amount: Mapped[Decimal] = mapped_column(Numeric(18, 2), default=0, nullable=False)
     distribution_date: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), server_default=func.now(), nullable=False
     )

@@ -14,6 +14,8 @@ class LoanApplyRequest(BaseModel):
     financial_product_id: int
     amount: int = Field(gt=0, description="신청 금액(원)")
     term_months: int = Field(gt=0, le=120)
+    loan_purpose: str | None = Field(default=None, max_length=255, description="대출 목적")
+    consent: bool = Field(default=False, description="약관 동의 여부")
 
 
 class LoanWebhookRequest(BaseModel):
@@ -34,7 +36,10 @@ class LoanApplicationOut(BaseModel):
     amount: int
     applied_rate: Decimal
     term_months: int
+    loan_purpose: str | None
+    bank_reference_id: str | None
     status: LoanStatus
     decision_reason: str | None
+    decision_received_at: datetime | None
     created_at: datetime
     updated_at: datetime

@@ -43,9 +43,13 @@ def distribute_dividend(
     record = blockchain.distribute_dividend(
         db, asset.contract_address or "0x0", float(payload.per_token_amount)
     )
+    # 분배 총액 = 토큰당 배당액 × 판매된 토큰 수
+    sold_tokens = asset.total_token_supply - asset.remaining_tokens
+    total_distributed = payload.per_token_amount * sold_tokens
     dividend = Dividend(
         sto_asset_id=asset.id,
         per_token_amount=payload.per_token_amount,
+        total_distributed_amount=total_distributed,
         on_chain_tx_hash=record.tx_hash,
     )
     db.add(dividend)

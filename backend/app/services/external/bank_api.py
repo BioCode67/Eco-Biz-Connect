@@ -42,15 +42,24 @@ _LOAN_PRODUCT_CATALOG = [
 ]
 
 
-async def verify_business_registration(business_reg_no: str | None) -> bool:
-    """사업자등록번호 유효성 검증(MOCK).
+async def verify_business_registration(
+    business_reg_no: str | None, representative_name: str | None = None
+) -> str:
+    """사업자등록번호 + 대표자명 검증(MOCK).
 
-    실제로는 정부 등록부(국세청 등)와 대조하지만, 여기서는 숫자 10자리이면 유효한 것으로 간주한다.
-    네트워크 지연을 흉내 내기 위해 짧게 대기한다.
+    실제로는 국세청 사업자등록 상태조회 API 와 대조한다. 여기서는:
+    - 숫자 10자리가 아니면 "NOT_FOUND"
+    - 대표자명을 제출했고 사업자번호가 000 으로 시작하면(시뮬레이션) "NAME_MISMATCH"
+    - 그 외 "OK"
+    반환값은 설계서 UC1 확장 흐름(5a/5b)을 따른다.
     """
     await asyncio.sleep(0.01)  # 외부 호출 지연 시뮬레이션
     digits = re.sub(r"\D", "", business_reg_no or "")
-    return len(digits) == 10
+    if len(digits) != 10:
+        return "NOT_FOUND"
+    if representative_name is not None and digits.startswith("000"):
+        return "NAME_MISMATCH"
+    return "OK"
 
 
 def fetch_loan_products() -> list[dict]:

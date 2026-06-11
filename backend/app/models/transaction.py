@@ -27,6 +27,7 @@ class TokenTransaction(Base):
     quantity_purchased: Mapped[int] = mapped_column(Integer, nullable=False)
     unit_price: Mapped[Decimal] = mapped_column(Numeric(18, 2), nullable=False)
     total_amount_paid: Mapped[Decimal] = mapped_column(Numeric(18, 2), nullable=False)
+    payment_gateway_ref: Mapped[str | None] = mapped_column(String(64), nullable=True)
     on_chain_tx_hash: Mapped[str | None] = mapped_column(String(66), nullable=True)
     block_number: Mapped[int | None] = mapped_column(BigInteger, nullable=True)
     created_at: Mapped[datetime] = mapped_column(

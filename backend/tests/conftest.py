@@ -40,7 +40,7 @@ def client():
 def merchant_payload() -> dict:
     return {
         "email": "merchant@example.com",
-        "password": "secret123",
+        "password": "Secret123!",
         "role": "MERCHANT",
         "business_reg_no": "123-45-67890",
         "store_name": "그린마트",
@@ -53,7 +53,7 @@ def merchant_payload() -> dict:
 def investor_payload() -> dict:
     return {
         "email": "investor@example.com",
-        "password": "secret123",
+        "password": "Secret123!",
         "role": "INVESTOR",
         "wallet_address": "0xABC123",
     }
@@ -63,7 +63,7 @@ def investor_payload() -> dict:
 def admin_payload() -> dict:
     return {
         "email": "admin@example.com",
-        "password": "secret123",
+        "password": "Secret123!",
         "role": "ADMIN",
     }
 

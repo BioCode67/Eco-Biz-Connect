@@ -19,6 +19,8 @@ class STOCreateRequest(BaseModel):
     expected_yield: Decimal = Field(default=0, ge=0, le=100)
     co2_offset_per_year: int = Field(default=0, ge=0)
     location: str | None = None
+    installed_capacity_mw: Decimal | None = Field(default=None, ge=0)
+    dividend_period_months: int = Field(default=3, ge=1, le=12)
 
 
 class STOAssetOut(BaseModel):
@@ -37,6 +39,8 @@ class STOAssetOut(BaseModel):
     expected_yield: Decimal
     co2_offset_per_year: int
     location: str | None
+    installed_capacity_mw: Decimal | None
+    dividend_period_months: int
     contract_address: str | None
     status: STOStatus
     created_at: datetime
