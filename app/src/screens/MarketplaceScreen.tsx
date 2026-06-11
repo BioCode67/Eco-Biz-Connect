@@ -1,9 +1,12 @@
-// 투자 마켓플레이스 (proto_03 모바일). UC9 탐색 · UC10 구매(KYC 선결).
+// 투자 마켓플레이스 (proto_03 모바일). UC9 탐색 · UC10 구매(동적계산·위험고지·KYC).
 
 import React, { useCallback, useEffect, useState } from "react";
-import { ScrollView, StyleSheet, Text, TextInput, View } from "react-native";
+import { ScrollView, StyleSheet, Text, View } from "react-native";
 
-import { Badge, Button, Section } from "../components/ui";
+import { AppModal } from "../components/AppModal";
+import { Skeleton } from "../components/Skeleton";
+import { useToast } from "../components/Toast";
+import { Badge, Button, EmptyState, Field, Section } from "../components/ui";
 import { api, ApiError } from "../lib/api";
 import { useAuth } from "../lib/auth";
 import { num, pct, won } from "../lib/format";
@@ -11,43 +14,29 @@ import type { STOAsset } from "../lib/types";
 import { colors } from "../theme";
 
 const ICON: Record<string, string> = { SOLAR: "☀", WIND: "💨", FOREST: "🌲", HYDRO: "💧" };
+const LABEL: Record<string, string> = { SOLAR: "태양광", WIND: "풍력", FOREST: "탄소숲", HYDRO: "수력" };
 
 export default function MarketplaceScreen() {
   const { user, refresh } = useAuth();
+  const toast = useToast();
   const [assets, setAssets] = useState<STOAsset[]>([]);
-  const [qty, setQty] = useState<Record<number, string>>({});
-  const [msg, setMsg] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [buyTarget, setBuyTarget] = useState<STOAsset | null>(null);
   const kycVerified = user?.kyc_status === "VERIFIED";
 
   const load = useCallback(async () => {
     setAssets(await api<STOAsset[]>("/marketplace").catch(() => []));
+    setLoading(false);
   }, []);
-
-  useEffect(() => {
-    load();
-  }, [load]);
+  useEffect(() => { load(); }, [load]);
 
   async function verifyKyc() {
-    setMsg(null);
     try {
       await api("/investor/kyc/verify", { method: "POST" });
       await refresh();
-      setMsg("KYC 인증 완료. 이제 구매할 수 있습니다.");
+      toast.show("KYC 인증 완료 — 투자 가능", "success");
     } catch (err) {
-      setMsg(err instanceof ApiError ? err.message : "KYC 실패");
-    }
-  }
-
-  async function buy(asset: STOAsset) {
-    const quantity = Number(qty[asset.id] || "1");
-    setMsg(null);
-    try {
-      await api(`/marketplace/${asset.id}/purchase`, { method: "POST", body: { quantity } });
-      setMsg(`${asset.name} ${quantity}토큰 구매 완료.`);
-      await load();
-      await refresh();
-    } catch (err) {
-      setMsg(err instanceof ApiError ? err.message : "구매 실패");
+      toast.show(err instanceof ApiError ? err.message : "KYC 실패", "error");
     }
   }
 
@@ -55,61 +44,104 @@ export default function MarketplaceScreen() {
     <ScrollView contentContainerStyle={styles.container}>
       {!kycVerified ? (
         <View style={styles.kyc}>
-          <Text style={styles.kycText}>토큰 구매를 위해 KYC 인증이 필요합니다.</Text>
+          <Text style={styles.kycText}>토큰 투자를 위해 KYC 인증이 필요합니다.</Text>
           <Button title="KYC 인증" onPress={verifyKyc} />
         </View>
       ) : null}
-      {msg ? <Text style={styles.msg}>{msg}</Text> : null}
 
-      <Section title="Carbon-Neutral STO" subtitle="탄소중립 환경 자산 토큰증권">
-        {assets.length === 0 ? (
-          <Text style={styles.muted}>공개된 상품이 없습니다.</Text>
+      <Section title="탄소중립 STO 상품" subtitle={`${assets.length}개 상품`}>
+        {loading ? (
+          <View style={{ gap: 10 }}><Skeleton height={120} radius={12} /><Skeleton height={120} radius={12} /></View>
+        ) : assets.length === 0 ? (
+          <EmptyState icon="🪙" text="공개된 상품이 없습니다." />
         ) : (
           assets.map((a) => {
             const soldOut = a.status === "SOLD_OUT" || a.remaining_tokens <= 0;
+            const soldPct = (1 - a.remaining_tokens / a.total_token_supply) * 100;
             return (
               <View key={a.id} style={styles.product}>
-                <View style={styles.productHead}>
+                <View style={styles.head}>
                   <Text style={{ fontSize: 26 }}>{ICON[a.asset_type] ?? "🌱"}</Text>
-                  <Badge tone="green">{a.asset_type}</Badge>
+                  <Badge tone="green">{LABEL[a.asset_type] ?? a.asset_type}</Badge>
                 </View>
-                <Text style={styles.productName}>{a.name}</Text>
+                <Text style={styles.pname}>{a.name}</Text>
                 {a.location ? <Text style={styles.muted}>📍 {a.location}</Text> : null}
-                <View style={{ flexDirection: "row", alignItems: "baseline", gap: 6, marginTop: 4 }}>
-                  <Text style={styles.yield}>{pct(a.expected_yield)}</Text>
+                <View style={{ flexDirection: "row", alignItems: "baseline", gap: 6, marginTop: 6 }}>
+                  <Text style={styles.yieldTxt}>{pct(a.expected_yield)}</Text>
                   <Text style={styles.muted}>예상 연수익률</Text>
                 </View>
-                <Text style={styles.muted}>가격 {won(a.token_price)} · CO₂ {a.co2_offset_per_year}t/년</Text>
-                <Text style={styles.muted}>잔여 {num(a.remaining_tokens)}/{num(a.total_token_supply)}</Text>
-                <View style={styles.buyRow}>
-                  <TextInput
-                    style={styles.qty}
-                    keyboardType="number-pad"
-                    value={qty[a.id] ?? "1"}
-                    onChangeText={(v) => setQty({ ...qty, [a.id]: v })}
-                    editable={!soldOut && kycVerified}
-                  />
-                  <Button title={soldOut ? "Sold Out" : "Buy"} onPress={() => buy(a)} disabled={soldOut || !kycVerified} />
+                <Text style={styles.muted}>토큰 {won(a.token_price)} · CO₂ {a.co2_offset_per_year}t/년</Text>
+                <View style={styles.barOuter}><View style={[styles.barInner, { width: `${100 - soldPct}%` }]} /></View>
+                <Text style={styles.muted}>잔여 {num(a.remaining_tokens)} / {num(a.total_token_supply)}</Text>
+                <View style={{ marginTop: 10 }}>
+                  <Button title={soldOut ? "판매 완료" : "토큰 구매"} onPress={() => setBuyTarget(a)} disabled={soldOut || !kycVerified} />
                 </View>
               </View>
             );
           })
         )}
       </Section>
+
+      <PurchaseModal asset={buyTarget} onClose={() => setBuyTarget(null)} onDone={async () => { setBuyTarget(null); await load(); await refresh(); }} />
     </ScrollView>
   );
 }
 
+function PurchaseModal({ asset, onClose, onDone }: { asset: STOAsset | null; onClose: () => void; onDone: () => void }) {
+  const toast = useToast();
+  const [qty, setQty] = useState("1");
+  const [busy, setBusy] = useState(false);
+  if (!asset) return null;
+  const q = Math.max(1, Number(qty) || 1);
+  const total = Number(asset.token_price) * q;
+  const expReturn = total * (Number(asset.expected_yield) / 100);
+
+  async function submit() {
+    if (!asset) return;
+    setBusy(true);
+    try {
+      await api(`/marketplace/${asset.id}/purchase`, { method: "POST", body: { quantity: q } });
+      toast.show(`${asset.name} ${q}토큰 구매 완료`, "success");
+      onDone();
+    } catch (err) {
+      toast.show(err instanceof ApiError ? err.message : "구매 실패", "error");
+    } finally { setBusy(false); }
+  }
+
+  return (
+    <AppModal visible={!!asset} title={`${asset.name} 투자`} onClose={onClose}>
+      <Field label={`구매 수량 (잔여 ${num(asset.remaining_tokens)})`} value={qty} onChangeText={setQty} keyboardType="number-pad" />
+      <View style={styles.calc}>
+        <Row label="총 결제 금액" value={won(total)} strong />
+        <Row label="예상 연 수익" value={`${won(expReturn)} (${pct(asset.expected_yield)})`} />
+        <Row label="탄소 저감 환산" value={`${((asset.co2_offset_per_year * q) / asset.total_token_supply).toFixed(2)} t/년`} />
+      </View>
+      <Text style={styles.warn}>본 투자는 원금 손실이 발생할 수 있습니다.</Text>
+      <Button title={busy ? "결제 중…" : "결제 및 투자"} onPress={submit} disabled={busy} />
+    </AppModal>
+  );
+}
+
+function Row({ label, value, strong }: { label: string; value: string; strong?: boolean }) {
+  return (
+    <View style={{ flexDirection: "row", justifyContent: "space-between", paddingVertical: 3 }}>
+      <Text style={{ fontSize: strong ? 14 : 12.5, color: strong ? colors.text : colors.muted, fontWeight: strong ? "700" : "400" }}>{label}</Text>
+      <Text style={{ fontSize: strong ? 14 : 12.5, color: strong ? colors.brand : colors.text, fontWeight: strong ? "700" : "400" }}>{value}</Text>
+    </View>
+  );
+}
+
 const styles = StyleSheet.create({
-  container: { padding: 16 },
-  kyc: { backgroundColor: "#fbedd4", borderRadius: 10, padding: 12, marginBottom: 10, gap: 8 },
+  container: { padding: 16, paddingBottom: 40 },
+  kyc: { backgroundColor: "#fbedd4", borderRadius: 12, padding: 14, marginBottom: 12, gap: 8 },
   kycText: { color: colors.warning, fontSize: 13 },
-  msg: { backgroundColor: colors.brandLight, color: colors.brandDark, padding: 10, borderRadius: 8, marginBottom: 10, fontSize: 13 },
-  muted: { color: colors.muted, fontSize: 13 },
+  muted: { color: colors.muted, fontSize: 12, marginTop: 3 },
   product: { paddingVertical: 12, borderTopColor: colors.border, borderTopWidth: 1 },
-  productHead: { flexDirection: "row", justifyContent: "space-between", alignItems: "center" },
-  productName: { fontSize: 15, fontWeight: "700", color: colors.text, marginTop: 4 },
-  yield: { fontSize: 20, fontWeight: "800", color: colors.brand },
-  buyRow: { flexDirection: "row", alignItems: "center", gap: 8, marginTop: 8 },
-  qty: { width: 64, borderColor: colors.border, borderWidth: 1, borderRadius: 8, paddingHorizontal: 10, paddingVertical: 8, color: colors.text },
+  head: { flexDirection: "row", justifyContent: "space-between", alignItems: "center" },
+  pname: { fontSize: 15, fontWeight: "700", color: colors.text, marginTop: 4 },
+  yieldTxt: { fontSize: 22, fontWeight: "800", color: colors.brand },
+  barOuter: { height: 7, borderRadius: 999, backgroundColor: colors.border, overflow: "hidden", marginTop: 8 },
+  barInner: { height: "100%", borderRadius: 999, backgroundColor: colors.brand },
+  calc: { backgroundColor: colors.bg, borderRadius: 12, padding: 14, marginVertical: 12 },
+  warn: { fontSize: 12, color: colors.muted, marginBottom: 12, lineHeight: 17 },
 });

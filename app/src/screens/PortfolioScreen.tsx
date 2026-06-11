@@ -3,7 +3,8 @@
 import React, { useEffect, useState } from "react";
 import { ScrollView, StyleSheet, Text, View } from "react-native";
 
-import { Section, StatCard } from "../components/ui";
+import { Skeleton } from "../components/Skeleton";
+import { EmptyState, Section, StatCard } from "../components/ui";
 import { api } from "../lib/api";
 import { won } from "../lib/format";
 import type { Portfolio } from "../lib/types";
@@ -11,12 +12,23 @@ import { colors } from "../theme";
 
 export default function PortfolioScreen() {
   const [portfolio, setPortfolio] = useState<Portfolio | null>(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     (async () => {
       setPortfolio(await api<Portfolio>("/portfolio").catch(() => null));
+      setLoading(false);
     })();
   }, []);
+
+  if (loading) {
+    return (
+      <ScrollView contentContainerStyle={styles.container}>
+        <View style={{ flexDirection: "row", gap: 10, marginBottom: 12 }}><Skeleton height={84} /><Skeleton height={84} /></View>
+        <Skeleton height={160} radius={14} />
+      </ScrollView>
+    );
+  }
 
   const invested = Number(portfolio?.total_invested ?? 0);
   const current = Number(portfolio?.total_current_value ?? 0);
@@ -46,7 +58,7 @@ export default function PortfolioScreen() {
 
       <Section title="Holdings" subtitle="보유 자산">
         {!portfolio || portfolio.holdings.length === 0 ? (
-          <Text style={styles.muted}>보유 자산이 없습니다.</Text>
+          <EmptyState icon="🪙" text="보유 자산이 없습니다. 마켓플레이스에서 투자해보세요." />
         ) : (
           portfolio.holdings.map((h) => (
             <View key={h.sto_asset_id} style={styles.row}>

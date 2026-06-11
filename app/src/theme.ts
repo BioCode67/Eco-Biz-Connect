@@ -6,6 +6,9 @@ export const colors = {
   brand: "#1f8a52",
   brandDark: "#14633a",
   brandLight: "#e6f4ec",
+  leaf: "#3a9b63",
+  sky: "#2b6f8f",
+  gold: "#b8893b",
   muted: "#6b7c74",
   card: "#ffffff",
   border: "#e3eae5",
@@ -15,3 +18,12 @@ export const colors = {
 };
 
 export const radius = 14;
+
+// iOS/Android 공통 카드 그림자
+export const shadow = {
+  shadowColor: "#14241c",
+  shadowOpacity: 0.06,
+  shadowRadius: 10,
+  shadowOffset: { width: 0, height: 4 },
+  elevation: 2,
+};

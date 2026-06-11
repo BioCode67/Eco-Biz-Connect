@@ -1,9 +1,40 @@
 // 재사용 RN UI 프리미티브.
 
 import React from "react";
-import { Pressable, StyleSheet, Text, View } from "react-native";
+import { Pressable, StyleSheet, Text, TextInput, View } from "react-native";
 
-import { colors, radius } from "../theme";
+import { colors, radius, shadow } from "../theme";
+
+export function EmptyState({ icon = "🌱", text }: { icon?: string; text: string }) {
+  return (
+    <View style={{ alignItems: "center", paddingVertical: 26 }}>
+      <Text style={{ fontSize: 28, marginBottom: 6, opacity: 0.7 }}>{icon}</Text>
+      <Text style={{ fontSize: 13, color: colors.muted, textAlign: "center" }}>{text}</Text>
+    </View>
+  );
+}
+
+export function Field({ label, value, onChangeText, placeholder, keyboardType, secure }: { label: string; value: string; onChangeText: (v: string) => void; placeholder?: string; keyboardType?: "default" | "email-address" | "number-pad"; secure?: boolean }) {
+  return (
+    <View style={{ marginBottom: 12 }}>
+      <Text style={{ fontSize: 12, color: colors.muted, marginBottom: 5 }}>{label}</Text>
+      <TextInput
+        style={fieldStyles.input}
+        value={value}
+        onChangeText={onChangeText}
+        placeholder={placeholder}
+        placeholderTextColor="#aab2ac"
+        keyboardType={keyboardType ?? "default"}
+        secureTextEntry={secure}
+        autoCapitalize="none"
+      />
+    </View>
+  );
+}
+
+const fieldStyles = StyleSheet.create({
+  input: { borderColor: colors.border, borderWidth: 1, borderRadius: 10, paddingHorizontal: 12, paddingVertical: 11, fontSize: 14, color: colors.text, backgroundColor: colors.bg },
+});
 
 export function Card({ children, style }: { children: React.ReactNode; style?: object }) {
   return <View style={[styles.card, style]}>{children}</View>;
@@ -79,6 +110,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderRadius: radius,
     padding: 16,
+    ...shadow,
   },
   stat: { flex: 1, minWidth: 140, margin: 4 },
   statLabel: { fontSize: 11, color: colors.muted, textTransform: "uppercase" },

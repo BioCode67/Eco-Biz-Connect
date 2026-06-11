@@ -21,9 +21,27 @@ export interface TokenResponse {
 
 export interface ESGScore {
   id: number;
+  env_score: string;
+  social_score: string;
+  governance_score: string;
   composite_score: string;
   score_grade: string;
   on_chain_tx_hash: string | null;
+}
+
+export interface AnalysisReport {
+  id: number;
+  summary: string;
+  sales_forecast: { unit: string; labels?: string[]; next_3_months: number[] };
+  cost_optimization_tips: { title: string; detail: string; impact: string }[];
+}
+
+export interface AdminStats {
+  merchants: number;
+  investors: number;
+  total_sto: number;
+  onchain_records: number;
+  tx_volume_7d: { label: string; amount: number }[];
 }
 
 export interface BusinessData {
