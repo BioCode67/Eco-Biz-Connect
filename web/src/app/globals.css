@@ -11,33 +11,35 @@
   --paper-2: #f5f5f7;
   --card: #ffffff;
 
-  /* 텍스트 */
+  /* 텍스트 — Apple 정확 그레이 */
   --ink: #1d1d1f;
-  --ink-soft: #6e6e73;
-  --line: #d2d2d7;
+  --ink-soft: #86868b;
+  --ink-faint: #aeaeb2;
+  --line: #e5e5ea;
+  --hairline: rgba(0, 0, 0, 0.07);
 
-  /* 브랜드(녹색 — 최소한 사용) + 보조 */
+  /* 브랜드(녹색 — 절제된 액센트) + 보조 */
   --forest: #1f8a52;
   --forest-deep: #15633a;
-  --forest-soft: #eef7f1;
-  --leaf: #34a853;
-  --gold: #b8893b;
-  --gold-soft: #f6efe2;
+  --forest-soft: #f0f7f2;
+  --leaf: #30b85a;
+  --gold: #bf8a30;
+  --gold-soft: #f7f0e2;
   --sky: #0071e3; /* Apple 블루 — 링크/보조 액센트 */
 
   /* 상태 */
   --danger: #d6342a;
-  --danger-soft: #fbeae8;
+  --danger-soft: #fceeec;
   --warn: #b9842a;
-  --warn-soft: #f8efd9;
+  --warn-soft: #f9f1de;
 
-  /* 그림자(은은하게) */
-  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.04);
-  --shadow-md: 0 6px 24px rgba(0, 0, 0, 0.07);
-  --shadow-lg: 0 24px 60px rgba(0, 0, 0, 0.12);
+  /* 그림자(Apple soft — 깊이감) */
+  --shadow-sm: 0 0.5px 1px rgba(0, 0, 0, 0.04), 0 1px 2px rgba(0, 0, 0, 0.03);
+  --shadow-md: 0 2px 6px rgba(0, 0, 0, 0.04), 0 12px 28px -12px rgba(0, 0, 0, 0.14);
+  --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.08), 0 40px 80px -24px rgba(0, 0, 0, 0.22);
 
-  --radius: 18px;
-  --radius-sm: 12px;
+  --radius: 22px;
+  --radius-sm: 14px;
 }
 
 @theme inline {
@@ -70,8 +72,20 @@ body {
   font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text",
     "Helvetica Neue", var(--font-sans), system-ui, sans-serif;
   -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
-  letter-spacing: -0.01em;
+  letter-spacing: -0.012em;
+}
+
+/* 숫자는 폭 고정(표·금액 정렬이 깔끔하게) */
+.font-display,
+.t-display,
+.t-headline,
+.t-title,
+table,
+.tnum {
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum";
 }
 
 /* ---- 타이포그래피 스케일 ---- */
@@ -116,19 +130,20 @@ body {
   background: transparent;
 } /* (구 질감 제거 — Apple 클린) */
 
-/* ---- 카드 ---- */
+/* ---- 카드 (회색 배경 위에 떠 있는 흰 카드, 테두리 없이 부드러운 그림자) ---- */
 .card {
   background: var(--card);
-  border: 1px solid var(--line);
+  border: 1px solid var(--hairline);
   border-radius: var(--radius);
   box-shadow: var(--shadow-sm);
 }
 .card-hover {
-  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.3s ease;
+  transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.35s ease;
 }
 .card-hover:hover {
-  transform: translateY(-3px);
+  transform: translateY(-2px);
   box-shadow: var(--shadow-md);
+  border-color: transparent;
 }
 
 /* ---- 입력 ---- */
@@ -293,17 +308,18 @@ input:focus-visible,
   .grid-2-even { grid-template-columns: 1fr 1fr; }
 }
 
-/* ---- 대시보드 셸(반응형) ---- */
+/* ---- 대시보드 셸(반응형) — 회색 배경 위 흰 카드로 깊이감 ---- */
 .shell {
   display: flex;
   min-height: 100vh;
+  background: var(--paper-2);
 }
 .shell-aside {
   width: 240px;
   flex-shrink: 0;
-  background: rgba(255, 255, 255, 0.8);
+  background: rgba(250, 250, 252, 0.72);
   backdrop-filter: saturate(180%) blur(20px);
-  border-right: 1px solid var(--line);
+  border-right: 1px solid var(--hairline);
   display: flex;
   flex-direction: column;
   position: sticky;
