@@ -73,7 +73,7 @@ export default function MerchantScreen() {
       </View>
 
       {report ? (
-        <Section title="30일 매출 예측" subtitle={`단위 ${report.sales_forecast.unit}`}>
+        <Section title="90일 매출 예측" subtitle={`AI 예측 · 단위 ${report.sales_forecast.unit}`}>
           <LineChart values={report.sales_forecast.next_3_months} labels={report.sales_forecast.labels} />
           <Text style={styles.muted}>{report.summary}</Text>
         </Section>
