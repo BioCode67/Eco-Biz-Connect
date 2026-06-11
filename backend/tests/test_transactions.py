@@ -35,12 +35,18 @@ def test_merchant_history_lists_loans(client, merchant_payload):
         headers=headers,
         json={"financial_product_id": product["id"], "amount": 1_000_000, "term_months": 12, "consent": True},
     )
+    # 통합 내역: 업로드 1건 + 대출 1건 = 2건
     res = client.get("/transactions", headers=headers)
     assert res.status_code == 200
     body = res.json()
-    assert body["total"] == 1
-    assert body["items"][0]["type"] == "LOAN_APPLICATION"
-    assert body["items"][0]["status"] == "UNDER_REVIEW"
+    assert body["total"] == 2
+    types = {item["type"] for item in body["items"]}
+    assert types == {"LOAN_APPLICATION", "DATA_UPLOAD"}
+
+    # 유형 필터
+    loans_only = client.get("/transactions?type=LOAN_APPLICATION", headers=headers).json()
+    assert loans_only["total"] == 1
+    assert loans_only["items"][0]["status"] == "UNDER_REVIEW"
 
 
 def test_empty_history(client, investor_payload):

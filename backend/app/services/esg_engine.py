@@ -12,12 +12,16 @@ GOVERNANCE_WEIGHT = 0.25
 
 
 def _grade(composite: float) -> str:
-    """종합 점수를 등급으로 변환한다."""
-    if composite >= 85:
+    """종합 점수를 등급으로 변환한다(설계서 6단계: A/B+/B/C+/C/D)."""
+    if composite >= 90:
         return "A"
+    if composite >= 80:
+        return "B+"
     if composite >= 70:
         return "B"
-    if composite >= 55:
+    if composite >= 60:
+        return "C+"
+    if composite >= 50:
         return "C"
     return "D"
 

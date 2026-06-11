@@ -8,7 +8,7 @@ import asyncio
 import re
 
 # ESG 등급 순서(높을수록 우대). 매칭 가능 여부 비교에 사용한다.
-GRADE_ORDER = {"D": 0, "C": 1, "B": 2, "A": 3}
+GRADE_ORDER = {"D": 0, "C": 1, "C+": 2, "B": 3, "B+": 4, "A": 5}
 
 # 은행 대출 상품 카탈로그(MOCK). 실제로는 Bank API 응답.
 _LOAN_PRODUCT_CATALOG = [

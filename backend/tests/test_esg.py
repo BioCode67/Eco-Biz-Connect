@@ -25,7 +25,7 @@ def test_esg_score_generated_after_upload(client, merchant_payload):
         2,
     )
     assert float(body["composite_score"]) == expected
-    assert body["score_grade"] in {"A", "B", "C", "D"}
+    assert body["score_grade"] in {"A", "B+", "B", "C+", "C", "D"}
     # 블록체인 앵커링 해시가 연결됨
     assert body["on_chain_tx_hash"].startswith("0x")
 
