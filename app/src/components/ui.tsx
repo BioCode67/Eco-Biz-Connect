@@ -98,7 +98,7 @@ export function Button({
         (pressed || disabled) && { opacity: 0.6 },
       ]}
     >
-      <Text style={[styles.buttonText, isGhost && { color: colors.muted }]}>{title}</Text>
+      <Text style={[styles.buttonText, isGhost && { color: colors.text }]}>{title}</Text>
     </Pressable>
   );
 }
@@ -113,16 +113,16 @@ const styles = StyleSheet.create({
     ...shadow,
   },
   stat: { flex: 1, minWidth: 140, margin: 4 },
-  statLabel: { fontSize: 11, color: colors.muted, textTransform: "uppercase" },
-  statValue: { fontSize: 20, fontWeight: "700", color: colors.text, marginTop: 2 },
-  statHint: { fontSize: 11, color: colors.muted, marginTop: 2 },
+  statLabel: { fontSize: 12, color: colors.muted, fontWeight: "500" },
+  statValue: { fontSize: 24, fontWeight: "700", color: colors.text, marginTop: 4, letterSpacing: -0.4 },
+  statHint: { fontSize: 12, color: colors.muted, marginTop: 4 },
   section: { marginBottom: 14 },
-  sectionTitle: { fontSize: 16, fontWeight: "700", color: colors.text },
-  sectionSubtitle: { fontSize: 12, color: colors.muted, marginTop: 2 },
-  badge: { alignSelf: "flex-start", borderRadius: 999, paddingHorizontal: 10, paddingVertical: 2 },
-  badgeText: { fontSize: 11, fontWeight: "700" },
-  button: { borderRadius: 10, paddingHorizontal: 16, paddingVertical: 10, alignItems: "center" },
+  sectionTitle: { fontSize: 19, fontWeight: "700", color: colors.text, letterSpacing: -0.3 },
+  sectionSubtitle: { fontSize: 13, color: colors.muted, marginTop: 3 },
+  badge: { alignSelf: "flex-start", borderRadius: 999, paddingHorizontal: 11, paddingVertical: 3 },
+  badgeText: { fontSize: 11.5, fontWeight: "600" },
+  button: { borderRadius: 980, paddingHorizontal: 20, paddingVertical: 11, alignItems: "center" },
   buttonPrimary: { backgroundColor: colors.brand },
-  buttonGhost: { borderColor: colors.border, borderWidth: 1 },
-  buttonText: { color: colors.white, fontWeight: "700", fontSize: 14 },
+  buttonGhost: { backgroundColor: "#e8e8ed" },
+  buttonText: { color: colors.white, fontWeight: "600", fontSize: 14.5 },
 });
