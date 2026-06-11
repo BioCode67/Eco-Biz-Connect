@@ -18,14 +18,14 @@ export function StatCard({
   const trendColor = trend?.dir === "up" ? "var(--leaf)" : trend?.dir === "down" ? "var(--danger)" : "var(--ink-soft)";
   const arrow = trend?.dir === "up" ? "↑" : trend?.dir === "down" ? "↓" : "→";
   return (
-    <div className="card card-hover" style={{ padding: 22, background: accent ? "var(--forest-soft)" : undefined, borderColor: accent ? "#cde8d7" : undefined }}>
+    <div className="card card-hover" style={{ padding: "22px 24px 24px", background: accent ? "var(--forest-soft)" : undefined, borderColor: accent ? "transparent" : undefined }}>
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-        <span style={{ fontSize: 13, fontWeight: 500, color: "var(--ink-soft)" }}>{label}</span>
-        {icon && <span style={{ color: "var(--forest)", opacity: 0.9, fontSize: 15 }}>{icon}</span>}
+        <span style={{ fontSize: 13, fontWeight: 500, color: "var(--ink-soft)", letterSpacing: "-0.01em" }}>{label}</span>
+        {icon && <span style={{ color: "var(--ink-faint)", fontSize: 15 }}>{icon}</span>}
       </div>
-      <div className="font-display" style={{ fontSize: 30, fontWeight: 600, color: "var(--ink)", marginTop: 8, lineHeight: 1.05 }}>{value}</div>
-      {trend && <div style={{ fontSize: 13, color: trendColor, marginTop: 6, fontWeight: 500 }}>{arrow} {trend.text}</div>}
-      {hint && !trend && <div style={{ fontSize: 13, color: "var(--ink-soft)", marginTop: 6 }}>{hint}</div>}
+      <div className="font-display" style={{ fontSize: 32, fontWeight: 600, color: "var(--ink)", marginTop: 10, lineHeight: 1.04, letterSpacing: "-0.025em" }}>{value}</div>
+      {trend && <div style={{ fontSize: 13, color: trendColor, marginTop: 7, fontWeight: 500 }}>{arrow} {trend.text}</div>}
+      {hint && !trend && <div style={{ fontSize: 13, color: "var(--ink-soft)", marginTop: 7 }}>{hint}</div>}
     </div>
   );
 }
@@ -44,11 +44,11 @@ export function Section({
   id?: string;
 }) {
   return (
-    <section id={id} className="card" style={{ marginBottom: 24, padding: "26px 26px 28px" }}>
-      <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 16, marginBottom: 18 }}>
+    <section id={id} className="card" style={{ marginBottom: 28, padding: "28px 30px 30px" }}>
+      <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 16, marginBottom: 22 }}>
         <div>
           <h2 className="t-title">{title}</h2>
-          {description && <p style={{ fontSize: 14.5, color: "var(--ink-soft)", marginTop: 4 }}>{description}</p>}
+          {description && <p style={{ fontSize: 14.5, color: "var(--ink-soft)", marginTop: 5 }}>{description}</p>}
         </div>
         {action}
       </div>
