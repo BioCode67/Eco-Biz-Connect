@@ -9,6 +9,7 @@ import { Skeleton } from "../components/Skeleton";
 import { useToast } from "../components/Toast";
 import { Badge, Button, EmptyState, Field, Section, StatCard } from "../components/ui";
 import { api, ApiError } from "../lib/api";
+import { roleKo, subsystemName } from "../lib/format";
 import type { AdminStats, AdminUser, STOAsset, SystemMetrics } from "../lib/types";
 import { colors } from "../theme";
 
@@ -52,7 +53,7 @@ export default function AdminScreen() {
           const status = String((val as Record<string, unknown>).status ?? "—");
           return (
             <View key={key} style={styles.row}>
-              <Text style={styles.name}>{key.replace(/_/g, " ")}</Text>
+              <Text style={styles.name}>{subsystemName(key)}</Text>
               <Badge tone={STATUS_TONE[status] ?? "gray"}>{status}</Badge>
             </View>
           );
@@ -81,7 +82,7 @@ export default function AdminScreen() {
           <View key={u.id} style={styles.row}>
             <View style={{ flex: 1 }}>
               <Text style={styles.name}>{u.email}</Text>
-              <Text style={styles.muted}>{u.role}</Text>
+              <Text style={styles.muted}>{roleKo(u.role)}</Text>
             </View>
             <Badge tone={u.is_active ? "green" : "red"}>{u.is_active ? "활성" : "정지"}</Badge>
             <View style={{ marginLeft: 8 }}><Button title={u.is_active ? "정지" : "복원"} variant="ghost" onPress={() => toggle(u)} /></View>
@@ -132,6 +133,6 @@ const styles = StyleSheet.create({
   container: { padding: 16, paddingBottom: 40 },
   statRow: { flexDirection: "row", gap: 10 },
   row: { flexDirection: "row", alignItems: "center", paddingVertical: 10, borderTopColor: colors.border, borderTopWidth: 1 },
-  name: { fontSize: 14, fontWeight: "600", color: colors.text, textTransform: "capitalize" },
+  name: { fontSize: 14, fontWeight: "600", color: colors.text },
   muted: { color: colors.muted, fontSize: 12, marginTop: 3 },
 });

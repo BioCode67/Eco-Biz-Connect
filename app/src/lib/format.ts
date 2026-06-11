@@ -25,3 +25,21 @@ export function shortHash(hash: string | null | undefined): string {
   if (!hash) return "-";
   return hash.length > 14 ? `${hash.slice(0, 8)}…${hash.slice(-4)}` : hash;
 }
+
+// 서브시스템 표시명 — 약어 보존(AI/API). 미정의 키는 단어별 첫 글자만 대문자.
+const SUBSYSTEM_LABEL: Record<string, string> = {
+  ai_engine: "AI Engine",
+  blockchain_network: "Blockchain Network",
+  bank_api: "Bank API",
+};
+export function subsystemName(key: string): string {
+  return SUBSYSTEM_LABEL[key] ?? key.replace(/_/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
+}
+
+const ROLE_KO: Record<string, string> = {
+  ADMIN: "관리자", MERCHANT: "소상공인", INVESTOR: "투자자",
+};
+export function roleKo(role: string | null | undefined): string {
+  if (!role) return "-";
+  return ROLE_KO[role] ?? role;
+}
