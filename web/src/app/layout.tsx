@@ -12,8 +12,20 @@ const geistSans = Geist({
 });
 
 export const metadata: Metadata = {
-  title: "Eco-Biz Connect — AI·ESG 통합 금융",
-  description: "AI 경영 분석과 블록체인 탄소 투자를 결합한 ESG 통합 금융 플랫폼",
+  title: {
+    default: "Eco-Biz Connect — AI·ESG 통합 금융",
+    template: "%s · Eco-Biz Connect",
+  },
+  description: "소상공인 AI 경영 분석과 개인 투자자 탄소 STO 투자를 잇는 ESG 통합 금융 플랫폼",
+  applicationName: "Eco-Biz Connect",
+  keywords: ["ESG", "탄소중립", "STO", "소상공인", "AI 경영분석", "블록체인 금융"],
+  authors: [{ name: "22311898 김주형" }],
+};
+
+export const viewport = {
+  themeColor: "#1f8a52",
+  width: "device-width",
+  initialScale: 1,
 };
 
 export default function RootLayout({

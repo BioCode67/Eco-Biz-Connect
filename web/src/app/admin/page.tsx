@@ -14,10 +14,10 @@ import { dateStr } from "@/lib/format";
 import type { AdminStats, AdminUser, AuditLog, STOAsset, SystemMetrics } from "@/lib/types";
 
 const NAV = [
-  { label: "시스템 모니터", href: "#monitor", icon: "◉", active: true },
-  { label: "STO 발행", href: "#issue", icon: "✦" },
-  { label: "사용자 관리", href: "#users", icon: "◑" },
-  { label: "감사 로그", href: "#audit", icon: "▤" },
+  { label: "시스템 모니터", href: "#monitor", icon: "monitor", active: true },
+  { label: "STO 발행", href: "#issue", icon: "spark" },
+  { label: "사용자 관리", href: "#users", icon: "users" },
+  { label: "감사 로그", href: "#audit", icon: "log" },
 ];
 
 const STATUS_TONE: Record<string, "green" | "amber" | "red"> = { UP: "green", HEALTHY: "green", SYNCED: "green", DEGRADED: "amber", DOWN: "red" };

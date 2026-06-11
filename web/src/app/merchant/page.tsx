@@ -14,11 +14,11 @@ import { pct, won } from "@/lib/format";
 import type { AnalysisReport, BusinessData, ESGScore, LoanApplication, MatchedProduct } from "@/lib/types";
 
 const NAV = [
-  { label: "대시보드", href: "#top", icon: "▦", active: true },
-  { label: "경영 데이터", href: "#data", icon: "↑" },
-  { label: "분석 리포트", href: "#report", icon: "▤" },
-  { label: "금융 상품", href: "#products", icon: "₩" },
-  { label: "대출 신청", href: "#loans", icon: "✓" },
+  { label: "대시보드", href: "#top", icon: "grid", active: true },
+  { label: "경영 데이터", href: "#data", icon: "upload" },
+  { label: "분석 리포트", href: "#report", icon: "report" },
+  { label: "금융 상품", href: "#products", icon: "won" },
+  { label: "대출 신청", href: "#loans", icon: "check" },
 ];
 
 export default function MerchantPage() {

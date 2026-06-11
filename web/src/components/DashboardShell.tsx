@@ -6,6 +6,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
+import { Icon } from "@/components/Icon";
 import { useAuth } from "@/lib/auth";
 import type { Role } from "@/lib/types";
 
@@ -84,7 +85,7 @@ export default function DashboardShell({
                 background: item.active ? "var(--forest-soft)" : "transparent", textDecoration: "none",
               }}
             >
-              <span aria-hidden style={{ width: 18, textAlign: "center", opacity: item.active ? 1 : 0.7 }}>{item.icon}</span>
+              <span aria-hidden style={{ display: "inline-flex", width: 18, opacity: item.active ? 1 : 0.65 }}><Icon name={item.icon} /></span>
               {item.label}
             </Link>
           ))}

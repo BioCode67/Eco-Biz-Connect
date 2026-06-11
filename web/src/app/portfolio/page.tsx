@@ -11,8 +11,8 @@ import { dateStr, shortHash, won } from "@/lib/format";
 import type { Dividend, Portfolio, TransactionPage } from "@/lib/types";
 
 const NAV = [
-  { label: "마켓플레이스", href: "/marketplace", icon: "◎" },
-  { label: "포트폴리오", href: "/portfolio", icon: "▣", active: true },
+  { label: "마켓플레이스", href: "/marketplace", icon: "market" },
+  { label: "포트폴리오", href: "/portfolio", icon: "portfolio", active: true },
 ];
 
 const TYPE_KO: Record<string, string> = {

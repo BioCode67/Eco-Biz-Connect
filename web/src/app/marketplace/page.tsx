@@ -14,8 +14,8 @@ import { pct, won } from "@/lib/format";
 import type { STOAsset } from "@/lib/types";
 
 const NAV = [
-  { label: "마켓플레이스", href: "/marketplace", icon: "◎", active: true },
-  { label: "포트폴리오", href: "/portfolio", icon: "▣" },
+  { label: "마켓플레이스", href: "/marketplace", icon: "market", active: true },
+  { label: "포트폴리오", href: "/portfolio", icon: "portfolio" },
 ];
 
 const ASSET_META: Record<string, { icon: string; label: string }> = {
