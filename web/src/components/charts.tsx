@@ -21,31 +21,42 @@ function smoothPath(pts: Pt[]): string {
 export function AreaChart({
   values,
   labels,
+  lower,
+  upper,
   height = 140,
   color = "var(--forest)",
   unit = "",
 }: {
   values: number[];
   labels?: string[];
+  lower?: number[];
+  upper?: number[];
   height?: number;
   color?: string;
   unit?: string;
 }) {
   const w = 520;
   const pad = { l: 8, r: 8, t: 14, b: 22 };
-  const max = Math.max(...values) * 1.12 || 1;
-  const min = Math.min(...values, 0);
+  const hasBand = !!(lower && upper && lower.length === values.length && upper.length === values.length);
+  const max = Math.max(...(hasBand ? upper! : values)) * 1.12 || 1;
+  const min = Math.min(...values, ...(hasBand ? lower! : []), 0);
   const innerW = w - pad.l - pad.r;
   const innerH = height - pad.t - pad.b;
-  const pts: Pt[] = values.map((v, i) => ({
-    x: pad.l + (values.length === 1 ? innerW / 2 : (i / (values.length - 1)) * innerW),
-    y: pad.t + innerH - ((v - min) / (max - min || 1)) * innerH,
-  }));
+  const xAt = (i: number) => pad.l + (values.length === 1 ? innerW / 2 : (i / (values.length - 1)) * innerW);
+  const yAt = (v: number) => pad.t + innerH - ((v - min) / (max - min || 1)) * innerH;
+  const pts: Pt[] = values.map((v, i) => ({ x: xAt(i), y: yAt(v) }));
   const line = smoothPath(pts);
   const area = `${line} L ${pts[pts.length - 1].x} ${pad.t + innerH} L ${pts[0].x} ${pad.t + innerH} Z`;
 
+  let band = "";
+  if (hasBand) {
+    const up = upper!.map((v, i) => ({ x: xAt(i), y: yAt(v) }));
+    const lo = lower!.map((v, i) => ({ x: xAt(i), y: yAt(v) }));
+    band = smoothPath(up) + " " + lo.slice().reverse().map((p) => `L ${p.x} ${p.y}`).join(" ") + " Z";
+  }
+
   return (
-    <svg viewBox={`0 0 ${w} ${height}`} width="100%" height={height} preserveAspectRatio="none" role="img" aria-label={`매출 예측 추이: ${values.join(", ")}${unit}`}>
+    <svg viewBox={`0 0 ${w} ${height}`} width="100%" height={height} preserveAspectRatio="none" role="img" aria-label={`매출 예측 추이: ${values.join(", ")}${unit}${hasBand ? " (신뢰구간 포함)" : ""}`}>
       <defs>
         <linearGradient id="areaFill" x1="0" y1="0" x2="0" y2="1">
           <stop offset="0%" stopColor={color} stopOpacity="0.22" />
@@ -55,6 +66,7 @@ export function AreaChart({
       {[0.25, 0.5, 0.75].map((g) => (
         <line key={g} x1={pad.l} x2={w - pad.r} y1={pad.t + innerH * g} y2={pad.t + innerH * g} stroke="var(--line)" strokeWidth="1" strokeDasharray="3 4" />
       ))}
+      {hasBand && <path d={band} fill={color} fillOpacity="0.1" stroke="none" />}
       <path d={area} fill="url(#areaFill)" />
       <path d={line} fill="none" stroke={color} strokeWidth="2.5" strokeLinecap="round" />
       {pts.map((p, i) => (

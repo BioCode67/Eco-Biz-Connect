@@ -130,10 +130,10 @@ function MerchantBody() {
 
       {/* 리포트: 매출 예측 + ESG */}
       <div id="report" className="grid-2" style={{ marginBottom: 20 }}>
-        <Section title="30일 매출 예측" description={forecast ? `신뢰수준 ${(forecast.confidence_level ?? 0.9) * 100}% · 단위 ${forecast.unit}` : "AI 시계열 예측"} action={report ? <Button variant="ghost" onClick={exportPdf}>PDF 내보내기</Button> : undefined}>
+        <Section title="90일 매출 예측" description={forecast ? `LSTM 앙상블 · 신뢰수준 ${(forecast.confidence_level ?? 0.9) * 100}% (음영) · 단위 ${forecast.unit}` : "AI 시계열 예측"} action={report ? <Button variant="ghost" onClick={exportPdf}>PDF 내보내기</Button> : undefined}>
           {!forecast ? <EmptyState text="데이터를 업로드하면 매출 예측이 표시됩니다." /> : (
             <>
-              <AreaChart values={forecast.next_3_months} labels={forecast.labels} unit="" />
+              <AreaChart values={forecast.next_3_months} labels={forecast.labels} lower={forecast.confidence_lower} upper={forecast.confidence_upper} unit="" />
               {report?.summary && <p style={{ fontSize: 13, color: "var(--ink-soft)", marginTop: 12, lineHeight: 1.6 }}>{report.summary}</p>}
             </>
           )}
