@@ -15,8 +15,9 @@ services:
     plan: free
     rootDir: backend
     buildCommand: pip install -r requirements.txt
-    # 시작 시 마이그레이션 적용 후 서버 기동 (alembic upgrade 는 멱등)
-    startCommand: alembic upgrade head && uvicorn app.main:app --host 0.0.0.0 --port $PORT
+    # 시작: 마이그레이션 적용 → 비어 있으면 데모 데이터 시드(멱등) → 서버 기동.
+    # alembic upgrade 와 seed --if-empty 모두 멱등이라 재기동 시 데이터가 보존된다.
+    startCommand: alembic upgrade head && python -m scripts.seed_demo --if-empty && uvicorn app.main:app --host 0.0.0.0 --port $PORT
     healthCheckPath: /health
     envVars:
       # 로컬 개발(3.12)과 동일하게 고정 — passlib/bcrypt 호환을 위해 3.13 사용 금지

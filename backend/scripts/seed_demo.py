@@ -1,11 +1,13 @@
 """데모용 시드 스크립트 — 빈 화면 없이 현실적인 평가 시나리오를 채운다.
 
 설계서의 실제 서비스(파이프라인·블록체인 앵커·ESG 엔진)를 그대로 호출해 충실도를 유지한다.
-재실행 시 전체 테이블을 초기화하고 다시 채운다(데모 전용).
 
-실행: (backend 디렉터리, 가상환경)  python -m scripts.seed_demo
+실행:
+  python -m scripts.seed_demo             # 개발용: 전체 초기화 후 재시드
+  python -m scripts.seed_demo --if-empty  # 운영 부팅용: 비어 있을 때만 시드(초기화 안 함, 멱등)
 """
 
+import sys
 from datetime import datetime, timedelta, timezone
 from decimal import Decimal
 
@@ -91,8 +93,20 @@ def distribute(db, admin: User, asset: STOAsset, per_token: str) -> None:
     db.flush()
 
 
-def main() -> None:
-    reset()
+def main(if_empty: bool = False) -> None:
+    if if_empty:
+        # 운영 부팅용: 스키마는 alembic 이 관리하므로 drop 하지 않는다.
+        # 이미 데이터가 있으면 건너뛴다(재기동마다 안전·멱등).
+        Base.metadata.create_all(bind=engine)
+        probe = SessionLocal()
+        try:
+            if probe.query(User).first() is not None:
+                print("ℹ️  기존 데이터 존재 — 시드 건너뜀")
+                return
+        finally:
+            probe.close()
+    else:
+        reset()
     db = SessionLocal()
     try:
         # ── 관리자 ──
@@ -204,4 +218,4 @@ def main() -> None:
 
 
 if __name__ == "__main__":
-    main()
+    main(if_empty="--if-empty" in sys.argv)
