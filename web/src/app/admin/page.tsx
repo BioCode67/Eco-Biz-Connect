@@ -71,6 +71,25 @@ function AdminBody() {
   const subsystems = metrics?.subsystems ?? {};
   const volume = stats?.tx_volume_7d ?? [];
 
+  // UC13: 알림 피드 — 서브시스템 경고 + 최근 감사 이벤트
+  type Alert = { level: "danger" | "warn" | "info"; title: string; detail: string; time: string };
+  const alerts: Alert[] = [];
+  Object.entries(subsystems).forEach(([key, val]) => {
+    const status = String((val as Record<string, unknown>).status ?? "");
+    if (status === "DEGRADED" || status === "DOWN") {
+      alerts.push({
+        level: status === "DOWN" ? "danger" : "warn",
+        title: `${key.replace(/_/g, " ")} · ${status}`,
+        detail: String((val as Record<string, unknown>).note ?? "응답 지연 감지"),
+        time: "실시간",
+      });
+    }
+  });
+  logs.slice(0, 5).forEach((l) =>
+    alerts.push({ level: "info", title: l.action.replace(/_/g, " "), detail: l.target_type ? `${l.target_type}#${l.target_id}` : "관리 작업", time: dateStr(l.created_at) })
+  );
+  const ALERT_DOT: Record<string, string> = { danger: "var(--danger)", warn: "var(--warn)", info: "var(--sky)" };
+
   return (
     <div>
       {netError && <ErrorBanner onRetry={() => { setLoading(true); load(); }} />}
@@ -118,6 +137,24 @@ function AdminBody() {
           </div>
         </Section>
       </div>
+
+      {/* 시스템 알림 (UC13) */}
+      <Section title="시스템 알림" description="실시간 경고 및 최근 이벤트">
+        {alerts.length === 0 ? <EmptyState icon="🔔" text="알림이 없습니다." /> : (
+          <div style={{ display: "flex", flexDirection: "column" }}>
+            {alerts.map((al, i) => (
+              <div key={i} style={{ display: "flex", alignItems: "flex-start", gap: 12, padding: "11px 0", borderTop: i === 0 ? "none" : "1px solid var(--line)" }}>
+                <span style={{ width: 9, height: 9, borderRadius: 999, background: ALERT_DOT[al.level], marginTop: 5, flexShrink: 0 }} />
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <div style={{ fontSize: 13.5, fontWeight: 600, textTransform: "capitalize" }}>{al.title}</div>
+                  <div style={{ fontSize: 12.5, color: "var(--ink-soft)" }}>{al.detail}</div>
+                </div>
+                <span style={{ fontSize: 11.5, color: "var(--ink-soft)", flexShrink: 0 }}>{al.time}</span>
+              </div>
+            ))}
+          </div>
+        )}
+      </Section>
 
       {/* STO 발행 */}
       <Section id="issue" title="STO 발행" description="탄소 환경 자산을 토큰증권으로 발행 (ERC-1400)" action={<Button onClick={() => setShowIssue(true)}>+ 새 STO 발행</Button>}>
