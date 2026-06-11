@@ -94,6 +94,7 @@ function PortfolioBody() {
                   segments={portfolio.holdings.map((h, i) => ({ label: h.asset_name, value: Math.round(Number(h.current_value)), color: ALLOC_COLORS[i % ALLOC_COLORS.length] }))}
                   centerLabel={`${portfolio.holdings.length}`}
                   centerSub="보유 종목"
+                  formatValue={won}
                 />
               </div>
             )}

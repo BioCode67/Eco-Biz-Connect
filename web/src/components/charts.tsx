@@ -180,7 +180,8 @@ export function RadarChart({ axes, reference = 50 }: { axes: { label: string; va
 }
 
 /** 다중 세그먼트 도넛 + 범례 (역할 구성 등) */
-export function DonutBreakdown({ segments, centerLabel, centerSub }: { segments: { label: string; value: number; color: string }[]; centerLabel: string; centerSub?: string }) {
+export function DonutBreakdown({ segments, centerLabel, centerSub, formatValue }: { segments: { label: string; value: number; color: string }[]; centerLabel: string; centerSub?: string; formatValue?: (n: number) => string }) {
+  const fmt = formatValue ?? ((n: number) => String(n));
   const size = 150;
   const stroke = 18;
   const r = (size - stroke) / 2;
@@ -213,7 +214,7 @@ export function DonutBreakdown({ segments, centerLabel, centerSub }: { segments:
           <div key={s.label} style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 13 }}>
             <span style={{ width: 10, height: 10, borderRadius: 3, background: s.color }} />
             <span style={{ color: "var(--ink-soft)" }}>{s.label}</span>
-            <span style={{ fontWeight: 600, marginLeft: 2 }}>{s.value}</span>
+            <span style={{ fontWeight: 600, marginLeft: 2 }}>{fmt(s.value)}</span>
           </div>
         ))}
       </div>
