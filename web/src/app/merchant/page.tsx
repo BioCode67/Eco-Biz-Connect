@@ -4,7 +4,7 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 
-import { AreaChart, BarRows, DonutGauge } from "@/components/charts";
+import { AreaChart, BarRows, DonutGauge, RadarChart } from "@/components/charts";
 import DashboardShell from "@/components/DashboardShell";
 import { Badge, Button, EmptyState, ErrorBanner, Section, Skeleton, StatCard } from "@/components/ui";
 import { useToast } from "@/components/Toast";
@@ -155,6 +155,28 @@ function MerchantBody() {
           )}
         </Section>
       </div>
+
+      {/* 상권 비교 (UC4 레이더) */}
+      {report?.district_comparison?.metrics && (
+        <Section title="상권 비교 분석" description="동일 상권 동종 업종 대비 백분위 (점선 = 상권 평균)">
+          <div className="grid-2-even" style={{ alignItems: "center" }}>
+            <RadarChart axes={Object.entries(report.district_comparison.metrics).map(([label, value]) => ({ label, value: Number(value) }))} />
+            <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+              <div className="card" style={{ padding: 16, background: "var(--forest-soft)", borderColor: "#cde8d7" }}>
+                <div style={{ fontSize: 13, color: "var(--forest-deep)" }}>종합 상권 순위</div>
+                <div className="font-display" style={{ fontSize: 30, fontWeight: 600, color: "var(--forest-deep)" }}>상위 {100 - (report.district_comparison.your_percentile ?? 50)}%</div>
+              </div>
+              {report.district_comparison.your_sales != null && (
+                <div style={{ fontSize: 13.5, color: "var(--ink-soft)", lineHeight: 1.6 }}>
+                  내 매장 매출 <b style={{ color: "var(--ink)" }}>{won((report.district_comparison.your_sales ?? 0) * 10000)}</b> ·
+                  상권 평균 <b style={{ color: "var(--ink)" }}>{won((report.district_comparison.district_avg_sales ?? 0) * 10000)}</b>
+                  <br />{report.district_comparison.note}
+                </div>
+              )}
+            </div>
+          </div>
+        </Section>
+      )}
 
       {/* 비용 최적화 + 이상치 */}
       {report && (

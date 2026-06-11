@@ -127,6 +127,46 @@ export function BarRows({ rows }: { rows: { label: string; value: number; max?: 
   );
 }
 
+/** 레이더 차트 — 내 매장 KPI 백분위 vs 상권 평균(UC4 상권 비교) */
+export function RadarChart({ axes, reference = 50 }: { axes: { label: string; value: number }[]; reference?: number }) {
+  const size = 240;
+  const cx = size / 2;
+  const cy = size / 2 + 6;
+  const r = 78;
+  const n = axes.length;
+  const angle = (i: number) => (Math.PI * 2 * i) / n - Math.PI / 2;
+  const point = (i: number, v: number) => {
+    const rad = (Math.max(0, Math.min(100, v)) / 100) * r;
+    return [cx + rad * Math.cos(angle(i)), cy + rad * Math.sin(angle(i))];
+  };
+  const poly = (vals: number[]) => vals.map((v, i) => point(i, v).join(",")).join(" ");
+  const valuePoly = poly(axes.map((a) => a.value));
+  const refPoly = poly(axes.map(() => reference));
+  return (
+    <svg viewBox={`0 0 ${size} ${size}`} width="100%" height={size} role="img" aria-label={`상권 비교: ${axes.map((a) => `${a.label} ${a.value}`).join(", ")}`}>
+      {[25, 50, 75, 100].map((g) => (
+        <polygon key={g} points={poly(axes.map(() => g))} fill="none" stroke="var(--line)" strokeWidth="1" />
+      ))}
+      {axes.map((a, i) => {
+        const [x, y] = point(i, 100);
+        return <line key={i} x1={cx} y1={cy} x2={x} y2={y} stroke="var(--line)" strokeWidth="1" />;
+      })}
+      <polygon points={refPoly} fill="none" stroke="var(--ink-soft)" strokeWidth="1.5" strokeDasharray="4 4" />
+      <polygon points={valuePoly} fill="var(--forest)" fillOpacity="0.16" stroke="var(--forest)" strokeWidth="2" />
+      {axes.map((a, i) => {
+        const [x, y] = point(i, 100);
+        const lx = cx + (x - cx) * 1.18;
+        const ly = cy + (y - cy) * 1.18;
+        return <text key={i} x={lx} y={ly} textAnchor="middle" dominantBaseline="middle" fontSize="11.5" fill="var(--ink-soft)">{a.label}</text>;
+      })}
+      {axes.map((a, i) => {
+        const [x, y] = point(i, a.value);
+        return <circle key={i} cx={x} cy={y} r="3.2" fill="#fff" stroke="var(--forest)" strokeWidth="2" />;
+      })}
+    </svg>
+  );
+}
+
 /** 다중 세그먼트 도넛 + 범례 (역할 구성 등) */
 export function DonutBreakdown({ segments, centerLabel, centerSub }: { segments: { label: string; value: number; color: string }[]; centerLabel: string; centerSub?: string }) {
   const size = 150;
