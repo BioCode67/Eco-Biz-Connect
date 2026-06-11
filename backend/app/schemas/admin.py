@@ -31,6 +31,20 @@ class SystemMetricsOut(BaseModel):
     totals: dict
 
 
+class AdminStatsOut(BaseModel):
+    """관리자 대시보드 통계."""
+
+    merchants: int
+    investors: int
+    admins: int
+    total_users: int
+    total_sto: int
+    total_transactions: int
+    total_loans: int
+    onchain_records: int
+    tx_volume_7d: list[dict]  # [{label, amount}]
+
+
 class AuditLogOut(BaseModel):
     """감사 로그 항목."""
 

@@ -18,6 +18,20 @@ def test_non_admin_cannot_monitor(client, investor_payload):
     assert client.get("/admin/monitor", headers=headers).status_code == 403
 
 
+def test_admin_stats(client, admin_payload, merchant_payload, investor_payload):
+    headers = auth_headers(client, admin_payload)
+    auth_headers(client, merchant_payload)
+    auth_headers(client, investor_payload)
+    res = client.get("/admin/stats", headers=headers)
+    assert res.status_code == 200
+    body = res.json()
+    assert body["merchants"] == 1
+    assert body["investors"] == 1
+    assert body["admins"] == 1
+    assert body["total_users"] == 3
+    assert len(body["tx_volume_7d"]) == 7
+
+
 def test_suspend_blocks_login(client, admin_payload, merchant_payload):
     admin_headers = auth_headers(client, admin_payload)
     # 소상공인 가입

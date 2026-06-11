@@ -4,15 +4,27 @@
 모든 사용자 관리 작업은 불변 감사 로그에 기록된다.
 """
 
+from datetime import datetime, timedelta, timezone
+
 from fastapi import APIRouter, Depends, HTTPException, status
-from sqlalchemy import select
+from sqlalchemy import func, select
 from sqlalchemy.orm import Session
 
 from app.api.deps import require_roles
 from app.core.database import get_db
 from app.models.audit import AuditLog
+from app.models.blockchain import BlockchainRecord
+from app.models.loan import LoanApplication
+from app.models.sto import STOAsset
+from app.models.transaction import TokenTransaction
 from app.models.user import User, UserRole
-from app.schemas.admin import AdminUserOut, AuditLogOut, RoleChangeRequest, SystemMetricsOut
+from app.schemas.admin import (
+    AdminStatsOut,
+    AdminUserOut,
+    AuditLogOut,
+    RoleChangeRequest,
+    SystemMetricsOut,
+)
 from app.services import audit, monitoring
 
 router = APIRouter(prefix="/admin", tags=["admin"])
@@ -25,6 +37,51 @@ def monitor_system(
 ) -> dict:
     """서브시스템 지표 스냅샷(mock 폴링)."""
     return monitoring.collect_metrics(db)
+
+
+@router.get("/stats", response_model=AdminStatsOut)
+def admin_stats(
+    current_user: User = Depends(require_roles(UserRole.ADMIN)),
+    db: Session = Depends(get_db),
+) -> AdminStatsOut:
+    """대시보드 통계(역할별 사용자 수, 거래량 7일 추이 등)."""
+    def count(model, *where) -> int:
+        stmt = select(func.count()).select_from(model)
+        for w in where:
+            stmt = stmt.where(w)
+        return db.scalar(stmt) or 0
+
+    # 최근 7일 거래량 버킷(포터블하게 파이썬에서 집계)
+    now = datetime.now(timezone.utc)
+    since = now - timedelta(days=6)
+    txs = db.execute(
+        select(TokenTransaction.total_amount_paid, TokenTransaction.created_at)
+    ).all()
+    buckets: dict[str, float] = {}
+    for i in range(7):
+        day = (since + timedelta(days=i)).strftime("%m/%d")
+        buckets[day] = 0.0
+    for amount, created in txs:
+        if created is None:
+            continue
+        c = created if created.tzinfo else created.replace(tzinfo=timezone.utc)
+        if c >= since.replace(hour=0, minute=0, second=0, microsecond=0):
+            key = c.strftime("%m/%d")
+            if key in buckets:
+                buckets[key] += float(amount)
+    tx_volume = [{"label": k, "amount": round(v)} for k, v in buckets.items()]
+
+    return AdminStatsOut(
+        merchants=count(User, User.role == UserRole.MERCHANT),
+        investors=count(User, User.role == UserRole.INVESTOR),
+        admins=count(User, User.role == UserRole.ADMIN),
+        total_users=count(User),
+        total_sto=count(STOAsset),
+        total_transactions=count(TokenTransaction),
+        total_loans=count(LoanApplication),
+        onchain_records=count(BlockchainRecord),
+        tx_volume_7d=tx_volume,
+    )
 
 
 @router.get("/users", response_model=list[AdminUserOut])

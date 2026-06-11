@@ -16,6 +16,9 @@ class STOCreateRequest(BaseModel):
     description: str | None = None
     total_token_supply: int = Field(gt=0)
     token_price: Decimal = Field(gt=0)
+    expected_yield: Decimal = Field(default=0, ge=0, le=100)
+    co2_offset_per_year: int = Field(default=0, ge=0)
+    location: str | None = None
 
 
 class STOAssetOut(BaseModel):
@@ -31,6 +34,9 @@ class STOAssetOut(BaseModel):
     total_token_supply: int
     remaining_tokens: int
     token_price: Decimal
+    expected_yield: Decimal
+    co2_offset_per_year: int
+    location: str | None
     contract_address: str | None
     status: STOStatus
     created_at: datetime

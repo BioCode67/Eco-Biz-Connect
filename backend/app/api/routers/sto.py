@@ -34,6 +34,9 @@ def issue_sto(
         total_token_supply=payload.total_token_supply,
         remaining_tokens=payload.total_token_supply,
         token_price=payload.token_price,
+        expected_yield=payload.expected_yield,
+        co2_offset_per_year=payload.co2_offset_per_year,
+        location=payload.location,
         status=STOStatus.DEPLOYING,
     )
     db.add(asset)

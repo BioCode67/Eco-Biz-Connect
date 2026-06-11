@@ -49,6 +49,9 @@ class STOAsset(Base):
     total_token_supply: Mapped[int] = mapped_column(Integer, nullable=False)
     remaining_tokens: Mapped[int] = mapped_column(Integer, nullable=False)
     token_price: Mapped[Decimal] = mapped_column(Numeric(18, 2), nullable=False)
+    expected_yield: Mapped[Decimal] = mapped_column(Numeric(5, 2), default=0, nullable=False)
+    co2_offset_per_year: Mapped[int] = mapped_column(Integer, default=0, nullable=False)
+    location: Mapped[str | None] = mapped_column(String(255), nullable=True)
     contract_address: Mapped[str | None] = mapped_column(String(64), nullable=True)
     contract_abi: Mapped[dict | None] = mapped_column(JSON, nullable=True)
     status: Mapped[STOStatus] = mapped_column(

@@ -10,7 +10,18 @@ def _sto_body() -> dict:
         "description": "옥상 태양광 발전 자산",
         "total_token_supply": 10000,
         "token_price": "5000.00",
+        "expected_yield": "6.20",
+        "co2_offset_per_year": 42,
+        "location": "경주",
     }
+
+
+def test_sto_carries_yield_and_co2(client, admin_payload):
+    headers = auth_headers(client, admin_payload)
+    body = client.post("/sto", headers=headers, json=_sto_body()).json()
+    assert float(body["expected_yield"]) == 6.20
+    assert body["co2_offset_per_year"] == 42
+    assert body["location"] == "경주"
 
 
 def test_admin_issues_sto(client, admin_payload):
