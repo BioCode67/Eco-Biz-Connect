@@ -1,0 +1,44 @@
+# Render Blueprint — Eco-Biz Connect 백엔드 + PostgreSQL (무료 플랜)
+# Render 대시보드 → New → Blueprint 로 이 저장소를 연결하면 자동 생성된다.
+# 자세한 클릭 가이드는 DEPLOYMENT.md 참고.
+
+databases:
+  - name: ebc-db
+    plan: free
+    databaseName: ebc
+    user: ebc
+
+services:
+  - type: web
+    name: ebc-backend
+    runtime: python
+    plan: free
+    rootDir: backend
+    buildCommand: pip install -r requirements.txt
+    # 시작 시 마이그레이션 적용 후 서버 기동 (alembic upgrade 는 멱등)
+    startCommand: alembic upgrade head && uvicorn app.main:app --host 0.0.0.0 --port $PORT
+    healthCheckPath: /health
+    envVars:
+      # 로컬 개발(3.12)과 동일하게 고정 — passlib/bcrypt 호환을 위해 3.13 사용 금지
+      - key: PYTHON_VERSION
+        value: "3.12.7"
+      # PostgreSQL 접속 문자열을 위 데이터베이스에서 자동 주입
+      - key: DATABASE_URL
+        fromDatabase:
+          name: ebc-db
+          property: connectionString
+      # JWT 서명 시크릿 — Render 가 안전한 랜덤값 자동 생성
+      - key: JWT_SECRET
+        generateValue: true
+      - key: JWT_ALGORITHM
+        value: "HS256"
+      - key: ACCESS_TOKEN_EXPIRE_MINUTES
+        value: "30"
+      - key: REFRESH_TOKEN_EXPIRE_MINUTES
+        value: "10080"
+      # Vercel 프리뷰/프로덕션 도메인(*.vercel.app) 일괄 허용
+      - key: BACKEND_CORS_ORIGIN_REGEX
+        value: "https://.*\\.vercel\\.app"
+      # 커스텀 도메인을 쓸 경우에만 대시보드에서 직접 입력(콤마 구분)
+      - key: BACKEND_CORS_ORIGINS
+        sync: false

@@ -6,6 +6,7 @@
 
 from functools import lru_cache
 
+from pydantic import field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -25,8 +26,10 @@ class Settings(BaseSettings):
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 30
     REFRESH_TOKEN_EXPIRE_MINUTES: int = 60 * 24 * 7  # 7일
 
-    # CORS (개발용: 콤마로 구분된 허용 오리진 목록)
+    # CORS — 콤마로 구분된 허용 오리진 목록 + (선택) 정규식
     BACKEND_CORS_ORIGINS: str = "http://localhost:3000,http://localhost:8081"
+    # 예: https://.*\.vercel\.app  (Vercel 프리뷰/프로덕션 도메인 일괄 허용)
+    BACKEND_CORS_ORIGIN_REGEX: str | None = None
 
     model_config = SettingsConfigDict(
         env_file=".env",
@@ -34,6 +37,14 @@ class Settings(BaseSettings):
         case_sensitive=True,
         extra="ignore",
     )
+
+    @field_validator("DATABASE_URL")
+    @classmethod
+    def _normalize_database_url(cls, v: str) -> str:
+        """Render 등이 주는 `postgres://` 스킴을 SQLAlchemy 호환 `postgresql://` 로 정규화한다."""
+        if v.startswith("postgres://"):
+            return v.replace("postgres://", "postgresql://", 1)
+        return v
 
     @property
     def cors_origins_list(self) -> list[str]:

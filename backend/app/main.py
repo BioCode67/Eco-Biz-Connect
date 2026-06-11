@@ -28,10 +28,11 @@ settings = get_settings()
 
 app = FastAPI(title=settings.PROJECT_NAME)
 
-# 개발용 CORS: 웹(Next.js 3000), Expo(8081) 등 localhost 오리진 허용
+# CORS: 명시 오리진 목록(localhost·배포 도메인) + 선택적 정규식(Vercel 등)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=settings.cors_origins_list,
+    allow_origin_regex=settings.BACKEND_CORS_ORIGIN_REGEX,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
