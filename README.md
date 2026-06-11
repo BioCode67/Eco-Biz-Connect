@@ -77,12 +77,62 @@
 Eco-Biz-Connect/
 ├── Conceptualization_[22311898_김주형].md   # 1단계
 ├── Analysis_[22311898_김주형].md            # 2단계
-├── Design_[22311898_김주형].md              # 3단계 (본문)
-├── Design_[22311898_김주형].pdf             # 3단계 제출용 PDF
-├── class_diagram_ebc.svg                    # Class Diagram
-├── seq_uc01_register.svg ~ seq_uc13_monitor.svg   # Sequence (13)
-├── state_*.svg                              # State Machine (4)
-├── proto_01_login.svg ~ proto_05_admin_console.svg # UI 프로토타입 (5)
-├── logo.png  /  logo_univ.png               # 로고
+├── Design_[22311898_김주형].md / .pdf        # 3단계 (본문 + 제출 PDF)
+├── class_diagram_ebc.svg · seq_uc01~13.svg · state_*.svg · proto_01~05.svg  # UML
+│
+├── backend/   # ⚙️ FastAPI + SQLAlchemy + Alembic (REST API, UC1~13)
+├── web/       # 🌐 Next.js + TypeScript SPA (소상공인·투자자·관리자 화면)
+├── app/       # 📱 Expo(React Native) 모바일앱
+│
+├── render.yaml · DEPLOYMENT.md               # 배포(Render+Vercel) 설정/가이드
+├── GAP_ANALYSIS.md · QA_REVIEW.md · ISSUES.md # 설계대비·품질·진단 기록
 └── README.md
 ```
+
+---
+
+## 💻 구현 (Implementation)
+
+설계 문서(위)를 실제로 동작하는 풀스택 애플리케이션으로 구현했다. **UC1~13 전체 흐름**, **13개 도메인 클래스의 모든 필드**, **상태 머신 전이**가 백엔드 API와 웹·앱에서 실제로 동작한다.
+
+### 실제 기술 스택
+| 영역 | 스택 |
+| :--- | :--- |
+| **백엔드** | FastAPI · SQLAlchemy 2 · Alembic · PostgreSQL(운영)/SQLite(개발) · JWT(python-jose) · bcrypt |
+| **웹** | Next.js 16 (App Router) · TypeScript · 자체 디자인 시스템(Apple 스타일) · 무의존 SVG 차트 |
+| **모바일** | Expo SDK 56 · React Native · TypeScript · react-native-svg |
+| **외부연동** | Bank API · AI 엔진(LSTM) · Blockchain(ERC-1400) · KYC — 설계서 입출력 형태를 따른 **mock**(Phase 5에서 실연동 예정) |
+
+### 구현된 기능 (UC1~13)
+| UC | 기능 | 구현 |
+| :--- | :--- | :---: |
+| 1·2 | 회원가입(비밀번호 정책·사업자/대표자 검증)·로그인(JWT·계정잠금) | ✅ |
+| 3·4·5 | 경영 데이터 업로드 → AI 분석 리포트(차트·PDF) → ESG 6등급 산출(온체인 앵커) | ✅ |
+| 6·7 | ESG 기반 우대 대출 매칭 → 대출 신청(동의·30일 중복차단·웹훅) | ✅ |
+| 8·9·10 | STO 발행(컨트랙트 배포) → 마켓 탐색(필터·상세) → 토큰 구매(KYC·동적계산) | ✅ |
+| 11·12·13 | 포트폴리오·배당·예정배당 → 통합 거래내역(CSV) → 시스템 모니터·사용자관리·감사로그 | ✅ |
+
+- **검증:** 백엔드 `pytest` 64개 통과 · 웹 `next build` 통과 · 앱 `tsc`+`expo export` 통과 · 3개 역할 브라우저 클릭 점검 완료([`ISSUES.md`](./ISSUES.md))
+- **품질 기록:** 설계 대비 갭([`GAP_ANALYSIS.md`](./GAP_ANALYSIS.md)) · 출시 자가진단([`QA_REVIEW.md`](./QA_REVIEW.md))
+- **UI:** Analysis 단계 프로토타입(`proto_01~05.svg`)을 시각 기준으로 삼아 실제 제품 수준 화면으로 구현(반응형·다크 대비·접근성·마이크로 인터랙션)
+
+### 빠른 실행
+```bash
+# 1) 백엔드 (http://localhost:8000)
+cd backend && python3 -m venv .venv && source .venv/bin/activate
+pip install -r requirements.txt
+export DATABASE_URL="sqlite:///./_e2e.db"
+python -m scripts.seed_demo          # 데모 데이터 시드(SQLite)
+uvicorn app.main:app --port 8000
+
+# 2) 웹 (http://localhost:3000)
+cd web && npm install && npm run dev
+```
+> 운영 배포(무료 Render + Vercel)는 [`DEPLOYMENT.md`](./DEPLOYMENT.md) 참고. 클릭만으로 공개 링크가 생성된다.
+
+### 데모 계정
+| 역할 | 이메일 | 비밀번호 |
+| :--- | :--- | :--- |
+| 소상공인 | `merchant@ebc.com` | `Merch123!` |
+| 투자자 | `investor@ebc.com` | `Invest123!` |
+| 관리자 | `admin@ebc.com` | `Admin123!` |
