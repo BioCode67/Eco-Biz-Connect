@@ -37,12 +37,12 @@ export default function PortfolioScreen() {
   return (
     <ScrollView contentContainerStyle={styles.container}>
       <View style={styles.statRow}>
-        <StatCard label="Invested" value={won(portfolio?.total_invested)} />
-        <StatCard label="Valuation" value={won(portfolio?.total_current_value)} />
+        <StatCard label="총 투자금" value={won(portfolio?.total_invested)} />
+        <StatCard label="평가액" value={won(portfolio?.total_current_value)} />
       </View>
       <View style={styles.statRow}>
-        <StatCard label="Return" value={`${ret >= 0 ? "+" : ""}${ret.toFixed(2)}%`} />
-        <StatCard label="Dividends" value={won(portfolio?.total_dividends_received)} />
+        <StatCard label="수익률" value={`${ret >= 0 ? "+" : ""}${ret.toFixed(2)}%`} />
+        <StatCard label="누적 배당" value={won(portfolio?.total_dividends_received)} />
       </View>
 
       {portfolio && portfolio.upcoming_dividends.length > 0 ? (
@@ -56,7 +56,7 @@ export default function PortfolioScreen() {
         </Section>
       ) : null}
 
-      <Section title="Holdings" subtitle="보유 자산">
+      <Section title="보유 자산" subtitle="자산별 평가">
         {!portfolio || portfolio.holdings.length === 0 ? (
           <EmptyState icon="🪙" text="보유 자산이 없습니다. 마켓플레이스에서 투자해보세요." />
         ) : (

@@ -7,7 +7,7 @@ import { Button } from "../components/ui";
 import { ApiError } from "../lib/api";
 import { useAuth } from "../lib/auth";
 import type { Role } from "../lib/types";
-import { colors, radius } from "../theme";
+import { colors, radius, shadow } from "../theme";
 
 const ROLES: Role[] = ["MERCHANT", "INVESTOR", "ADMIN"];
 const ROLE_LABEL: Record<Role, string> = { MERCHANT: "소상공인", INVESTOR: "투자자", ADMIN: "관리자" };
@@ -54,11 +54,11 @@ export default function LoginScreen() {
             <Text style={styles.logoText}>E</Text>
           </View>
           <Text style={styles.brandTitle}>Eco-Biz Connect</Text>
-          <Text style={styles.brandSubtitle}>AI & ESG Financial Platform</Text>
+          <Text style={styles.brandSubtitle}>AI · ESG · Blockchain</Text>
         </View>
 
         <View style={styles.card}>
-          <Text style={styles.title}>{mode === "login" ? "Welcome Back" : "Create Account"}</Text>
+          <Text style={styles.title}>{mode === "login" ? "로그인" : "계정 만들기"}</Text>
 
           <View style={styles.roleRow}>
             {ROLES.map((r) => (
@@ -88,7 +88,7 @@ export default function LoginScreen() {
           {error ? <Text style={styles.error}>{error}</Text> : null}
 
           <View style={{ marginTop: 8 }}>
-            <Button title={busy ? "처리 중…" : mode === "login" ? "Sign In" : "Create Account"} onPress={onSubmit} disabled={busy} />
+            <Button title={busy ? "처리 중…" : mode === "login" ? "로그인" : "가입하기"} onPress={onSubmit} disabled={busy} />
           </View>
 
           <Text style={styles.switch} onPress={() => { setMode(mode === "login" ? "register" : "login"); setError(null); }}>
@@ -139,7 +139,7 @@ const styles = StyleSheet.create({
   logoText: { color: colors.white, fontSize: 28, fontWeight: "800" },
   brandTitle: { fontSize: 20, fontWeight: "800", color: colors.brandDark, marginTop: 10 },
   brandSubtitle: { fontSize: 12, color: colors.muted },
-  card: { backgroundColor: colors.card, borderRadius: radius, borderColor: colors.border, borderWidth: 1, padding: 20 },
+  card: { backgroundColor: colors.card, borderRadius: radius, borderColor: colors.border, borderWidth: 1, padding: 20, ...shadow },
   title: { fontSize: 22, fontWeight: "800", color: colors.text, marginBottom: 14 },
   roleRow: { flexDirection: "row", backgroundColor: colors.brandLight, borderRadius: 10, padding: 4, marginBottom: 16 },
   roleChip: { flex: 1, textAlign: "center", paddingVertical: 8, fontSize: 12, fontWeight: "700", color: colors.muted, borderRadius: 8, overflow: "hidden" },
