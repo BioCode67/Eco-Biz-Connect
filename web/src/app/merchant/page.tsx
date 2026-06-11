@@ -2,7 +2,7 @@
 
 // 소상공인 대시보드 (proto_02). UC3 업로드 · UC4 리포트(차트·PDF) · UC5 ESG · UC6 매칭 · UC7 대출.
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { Fragment, useCallback, useEffect, useRef, useState } from "react";
 
 import { AreaChart, BarRows, DonutGauge, RadarChart } from "@/components/charts";
 import DashboardShell from "@/components/DashboardShell";
@@ -235,24 +235,22 @@ function MerchantBody() {
       </Section>
 
       {/* 대출 내역 */}
-      <Section id="loans" title="대출 신청 현황">
-        {loans.length === 0 ? <EmptyState icon="📋" text="신청 내역이 없습니다." /> : (
-          <table style={{ width: "100%", fontSize: 13.5, borderCollapse: "collapse" }}>
-            <thead><tr style={{ textAlign: "left", color: "var(--ink-soft)", fontSize: 11.5 }}>
-              <th style={{ padding: "0 0 8px" }}>금액</th><th>금리</th><th>기간</th><th>목적</th><th>상태</th>
-            </tr></thead>
-            <tbody>
-              {loans.map((l) => (
-                <tr key={l.id} style={{ borderTop: "1px solid var(--line)" }}>
-                  <td style={{ padding: "10px 0" }}>{won(l.amount)}</td>
-                  <td>{pct(l.applied_rate)}</td>
-                  <td>{l.term_months}개월</td>
-                  <td style={{ color: "var(--ink-soft)" }}>{l.loan_purpose || "-"}</td>
-                  <td><Badge tone={l.status === "APPROVED" ? "green" : l.status === "REJECTED" ? "red" : "amber"}>{statusKo(l.status)}</Badge></td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+      <Section id="loans" title="대출 신청 현황" description="신청 → 심사 → 결과 흐름">
+        {loans.length === 0 ? <EmptyState icon="📋" text="신청 내역이 없습니다. 우대 상품에서 신청해보세요." /> : (
+          <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+            {loans.map((l) => (
+              <div key={l.id} style={{ border: "1px solid var(--line)", borderRadius: 14, padding: 16 }}>
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: 12, flexWrap: "wrap" }}>
+                  <div>
+                    <div style={{ fontSize: 16, fontWeight: 600 }}>{won(l.amount)} <span style={{ fontSize: 13, color: "var(--ink-soft)", fontWeight: 400 }}>· {pct(l.applied_rate)} · {l.term_months}개월</span></div>
+                    <div style={{ fontSize: 12.5, color: "var(--ink-soft)", marginTop: 2 }}>{l.loan_purpose || "목적 미입력"}{l.bank_reference_id ? ` · 접수번호 ${l.bank_reference_id}` : ""}</div>
+                  </div>
+                  <Badge tone={l.status === "APPROVED" ? "green" : l.status === "REJECTED" ? "red" : "amber"}>{statusKo(l.status)}</Badge>
+                </div>
+                <div style={{ marginTop: 14 }}><LoanStepper status={l.status} reason={l.decision_reason} /></div>
+              </div>
+            ))}
+          </div>
         )}
       </Section>
 
@@ -321,6 +319,35 @@ export function Modal({ title, children, onClose }: { title: string; children: R
         </div>
         {children}
       </div>
+    </div>
+  );
+}
+
+function LoanStepper({ status, reason }: { status: string; reason: string | null }) {
+  const decided = status === "APPROVED" || status === "REJECTED";
+  const approved = status === "APPROVED";
+  const steps = [
+    { label: "신청 완료", state: "done" as const },
+    { label: "은행 심사", state: (decided ? "done" : "active") as "done" | "active" },
+    { label: approved ? "승인" : status === "REJECTED" ? "거절" : "결과 대기", state: (decided ? (approved ? "done" : "rejected") : "pending") as "done" | "rejected" | "pending" },
+  ];
+  const color = (s: string) => (s === "done" ? "var(--forest)" : s === "active" ? "var(--warn)" : s === "rejected" ? "var(--danger)" : "var(--line)");
+  return (
+    <div>
+      <div style={{ display: "flex", alignItems: "flex-start" }}>
+        {steps.map((st, i) => (
+          <Fragment key={i}>
+            <div style={{ display: "flex", flexDirection: "column", alignItems: "center", flex: "0 0 auto" }}>
+              <div style={{ width: 22, height: 22, borderRadius: 999, background: st.state === "pending" ? "var(--paper-2)" : color(st.state), color: st.state === "pending" ? "var(--ink-soft)" : "#fff", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 12, fontWeight: 700 }}>
+                {st.state === "done" ? "✓" : st.state === "rejected" ? "✕" : i + 1}
+              </div>
+              <span style={{ fontSize: 11.5, marginTop: 5, color: st.state === "pending" ? "var(--ink-soft)" : "var(--ink)", whiteSpace: "nowrap" }}>{st.label}</span>
+            </div>
+            {i < steps.length - 1 && <div style={{ flex: 1, height: 2, background: steps[i + 1].state === "pending" ? "var(--line)" : color(steps[i + 1].state), margin: "10px 8px 0" }} />}
+          </Fragment>
+        ))}
+      </div>
+      {decided && reason && <div style={{ fontSize: 12, color: "var(--ink-soft)", marginTop: 10 }}>심사 의견: {reason}</div>}
     </div>
   );
 }

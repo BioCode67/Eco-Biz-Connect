@@ -36,7 +36,7 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
   return (
     <ToastContext.Provider value={{ show }}>
       {children}
-      <div style={{ position: "fixed", right: 20, bottom: 20, zIndex: 60, display: "flex", flexDirection: "column", gap: 10 }}>
+      <div role="status" aria-live="polite" aria-atomic="true" style={{ position: "fixed", right: 20, bottom: 20, zIndex: 60, display: "flex", flexDirection: "column", gap: 10 }}>
         {toasts.map((t) => {
           const s = STYLES[t.kind];
           return (
