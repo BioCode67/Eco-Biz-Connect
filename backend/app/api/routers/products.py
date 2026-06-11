@@ -46,7 +46,7 @@ def match_products(
     esg = db.scalar(
         select(ESGScore)
         .where(ESGScore.merchant_id == current_user.id)
-        .order_by(ESGScore.created_at.desc())
+        .order_by(ESGScore.created_at.desc(), ESGScore.id.desc())
     )
     if esg is None:
         raise HTTPException(

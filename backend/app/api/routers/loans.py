@@ -55,7 +55,7 @@ async def apply_for_loan(
     esg = db.scalar(
         select(ESGScore)
         .where(ESGScore.merchant_id == current_user.id)
-        .order_by(ESGScore.created_at.desc())
+        .order_by(ESGScore.created_at.desc(), ESGScore.id.desc())
     )
     if esg is None:
         raise HTTPException(status.HTTP_409_CONFLICT, "ESG 점수가 없어 우대 대출을 신청할 수 없습니다.")
@@ -96,7 +96,7 @@ def list_loans(
     rows = db.scalars(
         select(LoanApplication)
         .where(LoanApplication.merchant_id == current_user.id)
-        .order_by(LoanApplication.created_at.desc())
+        .order_by(LoanApplication.created_at.desc(), LoanApplication.id.desc())
     ).all()
     return list(rows)
 

@@ -29,7 +29,7 @@ def browse_products(
     stmt = select(STOAsset).where(STOAsset.status.in_(_VISIBLE_STATUSES))
     if asset_type is not None:
         stmt = stmt.where(STOAsset.asset_type == asset_type)
-    stmt = stmt.order_by(STOAsset.created_at.desc())
+    stmt = stmt.order_by(STOAsset.created_at.desc(), STOAsset.id.desc())
     return list(db.scalars(stmt).all())
 
 

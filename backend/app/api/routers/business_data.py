@@ -68,6 +68,6 @@ def list_business_data(
     rows = db.scalars(
         select(BusinessData)
         .where(BusinessData.merchant_id == current_user.id)
-        .order_by(BusinessData.created_at.desc())
+        .order_by(BusinessData.created_at.desc(), BusinessData.id.desc())
     ).all()
     return list(rows)

@@ -24,7 +24,7 @@ def get_latest_report(
     report = db.scalar(
         select(AIAnalysisReport)
         .where(AIAnalysisReport.merchant_id == current_user.id)
-        .order_by(AIAnalysisReport.created_at.desc())
+        .order_by(AIAnalysisReport.created_at.desc(), AIAnalysisReport.id.desc())
     )
     if report is None:
         raise HTTPException(
@@ -42,12 +42,12 @@ def export_latest_report_pdf(
     report = db.scalar(
         select(AIAnalysisReport)
         .where(AIAnalysisReport.merchant_id == current_user.id)
-        .order_by(AIAnalysisReport.created_at.desc())
+        .order_by(AIAnalysisReport.created_at.desc(), AIAnalysisReport.id.desc())
     )
     if report is None:
         raise HTTPException(status.HTTP_404_NOT_FOUND, "내보낼 리포트가 없습니다.")
     esg = db.scalar(
-        select(ESGScore).where(ESGScore.merchant_id == current_user.id).order_by(ESGScore.created_at.desc())
+        select(ESGScore).where(ESGScore.merchant_id == current_user.id).order_by(ESGScore.created_at.desc(), ESGScore.id.desc())
     )
 
     forecast = report.sales_forecast.get("next_3_months", [])

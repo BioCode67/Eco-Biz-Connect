@@ -121,7 +121,7 @@ def get_portfolio(
         last_dv = db.scalar(
             select(Dividend)
             .where(Dividend.sto_asset_id == asset_id)
-            .order_by(Dividend.distribution_date.desc())
+            .order_by(Dividend.distribution_date.desc(), Dividend.id.desc())
         )
         base_date = last_dv.distribution_date if last_dv else asset.created_at
         if base_date.tzinfo is None:
@@ -191,7 +191,7 @@ def list_my_dividends(
     dividends = db.scalars(
         select(Dividend)
         .where(Dividend.sto_asset_id.in_(holdings_map.keys()))
-        .order_by(Dividend.distribution_date.desc())
+        .order_by(Dividend.distribution_date.desc(), Dividend.id.desc())
     ).all()
 
     results: list[DividendOut] = []

@@ -25,7 +25,7 @@ def get_my_latest_esg(
     score = db.scalar(
         select(ESGScore)
         .where(ESGScore.merchant_id == current_user.id)
-        .order_by(ESGScore.created_at.desc())
+        .order_by(ESGScore.created_at.desc(), ESGScore.id.desc())
     )
     if score is None:
         raise HTTPException(status.HTTP_404_NOT_FOUND, "산출된 ESG 점수가 없습니다.")
@@ -41,6 +41,6 @@ def get_my_esg_history(
     rows = db.scalars(
         select(ESGScore)
         .where(ESGScore.merchant_id == current_user.id)
-        .order_by(ESGScore.created_at.desc())
+        .order_by(ESGScore.created_at.desc(), ESGScore.id.desc())
     ).all()
     return list(rows)

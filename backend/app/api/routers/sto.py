@@ -71,5 +71,5 @@ def list_all_sto(
     db: Session = Depends(get_db),
 ) -> list[STOAsset]:
     """발행된 전체 STO 자산 목록(관리자)."""
-    rows = db.scalars(select(STOAsset).order_by(STOAsset.created_at.desc())).all()
+    rows = db.scalars(select(STOAsset).order_by(STOAsset.created_at.desc(), STOAsset.id.desc())).all()
     return list(rows)
