@@ -6,9 +6,9 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 
 import DashboardShell from "@/components/DashboardShell";
 import { Modal } from "@/app/merchant/page";
-import { Badge, Button, EmptyState, Section, Skeleton } from "@/components/ui";
+import { Badge, Button, EmptyState, ErrorBanner, Section, Skeleton } from "@/components/ui";
 import { useToast } from "@/components/Toast";
-import { api, ApiError } from "@/lib/api";
+import { api, ApiError, safe } from "@/lib/api";
 import { useAuth } from "@/lib/auth";
 import { pct, won } from "@/lib/format";
 import type { STOAsset } from "@/lib/types";
@@ -46,11 +46,18 @@ function MarketplaceBody() {
   const [search, setSearch] = useState("");
   const [typeFilter, setTypeFilter] = useState<string>("ALL");
   const [sort, setSort] = useState<SortKey>("yield");
+  const [netError, setNetError] = useState(false);
   const kycVerified = user?.kyc_status === "VERIFIED";
 
   const load = useCallback(async () => {
-    setAssets(await api<STOAsset[]>("/marketplace").catch(() => []));
-    setLoading(false);
+    try {
+      setAssets(await safe(api<STOAsset[]>("/marketplace"), [] as STOAsset[]));
+      setNetError(false);
+    } catch {
+      setNetError(true);
+    } finally {
+      setLoading(false);
+    }
   }, []);
   useEffect(() => { load(); }, [load]);
 
@@ -77,6 +84,7 @@ function MarketplaceBody() {
 
   return (
     <div>
+      {netError && <ErrorBanner onRetry={() => { setLoading(true); load(); }} />}
       {!kycVerified && (
         <div className="card" style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "14px 18px", marginBottom: 18, background: "var(--gold-soft)", borderColor: "#ecdcc0" }}>
           <span style={{ fontSize: 13.5, color: "var(--gold)" }}>⚠ 토큰 투자를 위해 KYC 본인인증이 필요합니다.</span>

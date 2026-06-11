@@ -6,9 +6,9 @@ import { useCallback, useEffect, useRef, useState } from "react";
 
 import { AreaChart, BarRows, DonutGauge } from "@/components/charts";
 import DashboardShell from "@/components/DashboardShell";
-import { Badge, Button, EmptyState, Section, Skeleton, StatCard } from "@/components/ui";
+import { Badge, Button, EmptyState, ErrorBanner, Section, Skeleton, StatCard } from "@/components/ui";
 import { useToast } from "@/components/Toast";
-import { api, apiDownload, ApiError } from "@/lib/api";
+import { api, apiDownload, ApiError, safe } from "@/lib/api";
 import { useAuth } from "@/lib/auth";
 import { pct, won } from "@/lib/format";
 import type { AnalysisReport, BusinessData, ESGScore, LoanApplication, MatchedProduct } from "@/lib/types";
@@ -56,18 +56,25 @@ function MerchantBody() {
   const [loans, setLoans] = useState<LoanApplication[]>([]);
   const [uploading, setUploading] = useState(false);
   const [applyTarget, setApplyTarget] = useState<MatchedProduct | null>(null);
+  const [netError, setNetError] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
 
   const loadAll = useCallback(async () => {
-    const [d, r, e, l, p] = await Promise.all([
-      api<BusinessData[]>("/business-data").catch(() => []),
-      api<AnalysisReport>("/reports/latest").catch(() => null),
-      api<ESGScore>("/esg/me").catch(() => null),
-      api<LoanApplication[]>("/loans").catch(() => []),
-      api<MatchedProduct[]>("/products/match").catch(() => []),
-    ]);
-    setDatasets(d); setReport(r); setEsg(e); setLoans(l); setProducts(p);
-    setLoading(false);
+    try {
+      const [d, r, e, l, p] = await Promise.all([
+        safe(api<BusinessData[]>("/business-data"), [] as BusinessData[]),
+        safe(api<AnalysisReport | null>("/reports/latest"), null),
+        safe(api<ESGScore | null>("/esg/me"), null),
+        safe(api<LoanApplication[]>("/loans"), [] as LoanApplication[]),
+        safe(api<MatchedProduct[]>("/products/match"), [] as MatchedProduct[]),
+      ]);
+      setDatasets(d); setReport(r); setEsg(e); setLoans(l); setProducts(p);
+      setNetError(false);
+    } catch {
+      setNetError(true);
+    } finally {
+      setLoading(false);
+    }
   }, []);
 
   useEffect(() => { loadAll(); }, [loadAll]);
@@ -113,6 +120,7 @@ function MerchantBody() {
 
   return (
     <div id="top">
+      {netError && <ErrorBanner onRetry={() => { setLoading(true); loadAll(); }} />}
       <div className="grid-stats" style={{ marginBottom: 20 }}>
         <StatCard label="예상 월매출" value={forecast ? won(forecast.next_3_months[0] * 10000) : "—"} hint="AI 1개월 예측" icon="↗" />
         <StatCard label="EBC ESG 점수" value={esg ? `${Number(esg.composite_score).toFixed(0)}` : "—"} trend={esg ? { dir: "up", text: `등급 ${esg.score_grade}` } : undefined} hint={esg ? undefined : "데이터 필요"} accent />

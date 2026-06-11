@@ -113,6 +113,17 @@ export async function api<T>(path: string, options: RequestOptions = {}): Promis
   return data as T;
 }
 
+/** 예상된 오류(404 등)는 fallback 으로 흡수하되, 네트워크 오류(status 0)는 다시 던진다.
+ *  → 화면에서 "빈 데이터"와 "연결 실패"를 구분할 수 있게 한다. */
+export async function safe<T>(promise: Promise<T>, fallback: T): Promise<T> {
+  try {
+    return await promise;
+  } catch (e) {
+    if (e instanceof ApiError && e.status === 0) throw e; // 네트워크 오류는 전파
+    return fallback;
+  }
+}
+
 /** 인증 헤더와 함께 바이너리(예: PDF)를 받아 브라우저 다운로드를 트리거한다. */
 export async function apiDownload(path: string, filename: string): Promise<void> {
   const token = getToken();

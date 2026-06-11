@@ -7,9 +7,9 @@ import { useCallback, useEffect, useState } from "react";
 import { MiniBars } from "@/components/charts";
 import DashboardShell from "@/components/DashboardShell";
 import { Modal } from "@/app/merchant/page";
-import { Badge, Button, EmptyState, Section, Skeleton, StatCard } from "@/components/ui";
+import { Badge, Button, EmptyState, ErrorBanner, Section, Skeleton, StatCard } from "@/components/ui";
 import { useToast } from "@/components/Toast";
-import { api, ApiError } from "@/lib/api";
+import { api, ApiError, safe } from "@/lib/api";
 import { dateStr } from "@/lib/format";
 import type { AdminStats, AdminUser, AuditLog, STOAsset, SystemMetrics } from "@/lib/types";
 
@@ -38,15 +38,23 @@ function AdminBody() {
   const [logs, setLogs] = useState<AuditLog[]>([]);
   const [loading, setLoading] = useState(true);
   const [showIssue, setShowIssue] = useState(false);
+  const [netError, setNetError] = useState(false);
 
   const load = useCallback(async () => {
-    const [m, s, u, l] = await Promise.all([
-      api<SystemMetrics>("/admin/monitor").catch(() => null),
-      api<AdminStats>("/admin/stats").catch(() => null),
-      api<AdminUser[]>("/admin/users").catch(() => []),
-      api<AuditLog[]>("/admin/audit-log").catch(() => []),
-    ]);
-    setMetrics(m); setStats(s); setUsers(u); setLogs(l); setLoading(false);
+    try {
+      const [m, s, u, l] = await Promise.all([
+        safe(api<SystemMetrics | null>("/admin/monitor"), null),
+        safe(api<AdminStats | null>("/admin/stats"), null),
+        safe(api<AdminUser[]>("/admin/users"), [] as AdminUser[]),
+        safe(api<AuditLog[]>("/admin/audit-log"), [] as AuditLog[]),
+      ]);
+      setMetrics(m); setStats(s); setUsers(u); setLogs(l);
+      setNetError(false);
+    } catch {
+      setNetError(true);
+    } finally {
+      setLoading(false);
+    }
   }, []);
   useEffect(() => { load(); }, [load]);
 
@@ -65,6 +73,7 @@ function AdminBody() {
 
   return (
     <div>
+      {netError && <ErrorBanner onRetry={() => { setLoading(true); load(); }} />}
       {/* 서브시스템 모니터 */}
       <div id="monitor" className="grid-3" style={{ marginBottom: 20 }}>
         {Object.entries(subsystems).map(([key, val]) => {

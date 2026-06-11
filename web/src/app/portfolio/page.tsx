@@ -5,8 +5,8 @@
 import { useCallback, useEffect, useState } from "react";
 
 import DashboardShell from "@/components/DashboardShell";
-import { Badge, Button, EmptyState, Section, Skeleton, StatCard } from "@/components/ui";
-import { api, downloadCsv } from "@/lib/api";
+import { Badge, Button, EmptyState, ErrorBanner, Section, Skeleton, StatCard } from "@/components/ui";
+import { api, downloadCsv, safe } from "@/lib/api";
 import { dateStr, shortHash, won } from "@/lib/format";
 import type { Dividend, Portfolio, TransactionPage } from "@/lib/types";
 
@@ -33,23 +33,30 @@ function PortfolioBody() {
   const [tx, setTx] = useState<TransactionPage | null>(null);
   const [txType, setTxType] = useState("ALL");
   const [loading, setLoading] = useState(true);
+  const [netError, setNetError] = useState(false);
 
   const loadTx = useCallback(async (type: string) => {
     const q = type === "ALL" ? "" : `?type=${type}`;
-    setTx(await api<TransactionPage>(`/transactions${q}`).catch(() => null));
+    setTx(await safe(api<TransactionPage | null>(`/transactions${q}`), null));
   }, []);
 
-  useEffect(() => {
-    (async () => {
+  const loadAll = useCallback(async () => {
+    try {
       const [p, d] = await Promise.all([
-        api<Portfolio>("/portfolio").catch(() => null),
-        api<Dividend[]>("/dividends").catch(() => []),
+        safe(api<Portfolio | null>("/portfolio"), null),
+        safe(api<Dividend[]>("/dividends"), [] as Dividend[]),
       ]);
       setPortfolio(p); setDividends(d);
       await loadTx("ALL");
+      setNetError(false);
+    } catch {
+      setNetError(true);
+    } finally {
       setLoading(false);
-    })();
+    }
   }, [loadTx]);
+
+  useEffect(() => { loadAll(); }, [loadAll]);
 
   function exportCsv() {
     if (!tx) return;
@@ -64,6 +71,7 @@ function PortfolioBody() {
 
   return (
     <div>
+      {netError && <ErrorBanner onRetry={() => { setLoading(true); loadAll(); }} />}
       <div className="grid-stats" style={{ marginBottom: 20 }}>
         <StatCard label="총 투자금" value={won(portfolio?.total_invested)} icon="₩" />
         <StatCard label="현재 평가액" value={won(portfolio?.total_current_value)} accent icon="↗" />

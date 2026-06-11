@@ -96,9 +96,9 @@ export default function LoginPage() {
             </p>
 
             {/* 세그먼트 컨트롤 */}
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 4, background: "var(--paper-2)", borderRadius: 980, padding: 4, marginBottom: 22 }}>
+            <div role="group" aria-label="역할 선택" style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 4, background: "var(--paper-2)", borderRadius: 980, padding: 4, marginBottom: 22 }}>
               {roles.map((r) => (
-                <button key={r.v} type="button" onClick={() => setRole(r.v)}
+                <button key={r.v} type="button" onClick={() => setRole(r.v)} aria-pressed={role === r.v}
                   style={{ borderRadius: 980, padding: "8px 0", fontSize: 13, fontWeight: 500, cursor: "pointer", border: "none",
                     background: role === r.v ? "#fff" : "transparent", color: role === r.v ? "var(--ink)" : "var(--ink-soft)",
                     boxShadow: role === r.v ? "var(--shadow-sm)" : "none", transition: "all .2s" }}>

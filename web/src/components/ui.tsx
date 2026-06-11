@@ -101,6 +101,15 @@ export function Skeleton({ height = 16, width = "100%", radius = 12 }: { height?
   return <div className="skeleton" style={{ height, width, borderRadius: radius }} />;
 }
 
+export function ErrorBanner({ onRetry }: { onRetry: () => void }) {
+  return (
+    <div className="card" style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 16, padding: "16px 20px", marginBottom: 20, background: "var(--danger-soft)", borderColor: "#f3cfca" }}>
+      <span style={{ fontSize: 14.5, color: "var(--danger)" }}>⚠ 서버에 연결할 수 없습니다. 잠시 후 다시 시도해 주세요.</span>
+      <Button variant="ghost" onClick={onRetry}>다시 시도</Button>
+    </div>
+  );
+}
+
 export function EmptyState({ icon = "🌱", text }: { icon?: string; text: string }) {
   return (
     <div style={{ textAlign: "center", padding: "36px 16px", color: "var(--ink-soft)" }}>
