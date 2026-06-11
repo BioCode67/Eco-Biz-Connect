@@ -16,3 +16,8 @@
 | 10 | 디자인이 "템플릿 티" — 흰 배경 위 흰 카드라 깊이감 없음, 테두리 위주, 녹색 과용 | (c)+(d) 애플급 완성도 | 디자인 시스템 정제: 대시보드 회색 캔버스(#f5f5f7) + 떠 있는 흰 카드 + soft shadow, 정확한 애플 그레이(#86868b), tabular-nums, 라운드 22px, 절제된 녹색 | build 통과 · 1440px 스크린샷으로 깊이감·여백 확인 |
 | 11 | 스탯/섹션 여백·숫자 위계가 빡빡 — 프리미엄 "공기감" 부족 | (d) 디테일·여백 | StatCard 패딩 22/24, 값 32px+letter-spacing -0.025em, 아이콘 중성 그레이; Section 28/30, 그리드 갭 20~26px | build 통과 · merchant 대시보드 스크린샷 확인 |
 | 12 | 모바일(Expo) 테마 토큰이 구버전 — 웹 정제 후 그레이·라운드·그림자·액센트 불일치 | (c) 플랫폼 간 일관성 | app/theme.ts를 웹과 일치: muted #86868b, 라운드 22/14, soft shadow, forest-soft #f0f7f2, leaf/gold 정렬 | tsc --noEmit 통과(EXIT=0) |
+| 12b | 모바일 화면이 테마를 우회한 하드코딩 색 사용(ESG 바 #2b6f8f·#b8893b, placeholder #aab2ac) — 웹과 불일치 | (c) 플랫폼 간 일관성 | MerchantScreen ESG 바를 colors.sky/gold, placeholder를 colors.mutedFaint로 교체(웹 sky/gold와 정확 일치) | tsc --noEmit 통과(EXIT=0) |
+| 13 | 관리자 모니터가 서브시스템명을 일반 capitalize로 표기 → "Ai Engine"·"Bank Api"(약어 깨짐), 메트릭 키는 snake_case raw | (c) AI템플릿 티(미완성 디테일) | 약어 보존 라벨맵(AI Engine/Bank API/Blockchain Network) + 메트릭 키 underscore 제거 | build 통과 · 브라우저에서 "AI Engine"/"Bank API"·"queue depth" 확인 |
+| 14 | 공개 링크 공유/열람 시 링크 미리보기(OG) 메타·이미지 부재 — 완성도 저하 | (d) 배포 완성도 | next/og ImageResponse로 브랜드 OG 이미지(1200×630) + openGraph/twitter 메타 + metadataBase(NEXT_PUBLIC_SITE_URL), 문서화 | build 통과 · /opengraph-image 200 image/png 1200×630 확인, head 메타 출력 확인 |
+| 15 | 커스텀 404·에러 페이지 부재 → 잘못된 URL·런타임 오류 시 기본 Next 화면 노출 | (d) 완성도·UX | 브랜드 톤 not-found.tsx(404)·error.tsx(복구 버튼) 추가 | build 통과 · /존재안함 경로에서 404 카드·"처음으로" CTA 렌더 확인 |
+| 16 | 포트폴리오 거래상태(COMPLETED/PENDING)·관리자 역할(ADMIN/MERCHANT)이 영문 enum raw 노출 — 전부 한글 UI에서 튐 | (c) AI템플릿 티(불일치) | format.ts에 txStatusKo·roleKo 공유 헬퍼 추가, 포트폴리오·관리자에 적용 | build 통과 · 관리자 표 역할 "관리자/소상공인" 렌더 확인 |
