@@ -86,8 +86,8 @@ export default function MerchantScreen() {
           </View>
           <BarRows rows={[
             { label: "환경 (E)", value: Number(esg.env_score), color: colors.leaf },
-            { label: "사회 (S)", value: Number(esg.social_score), color: "#2b6f8f" },
-            { label: "지배구조 (G)", value: Number(esg.governance_score), color: "#b8893b" },
+            { label: "사회 (S)", value: Number(esg.social_score), color: colors.sky },
+            { label: "지배구조 (G)", value: Number(esg.governance_score), color: colors.gold },
           ]} />
         </Section>
       ) : null}

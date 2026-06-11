@@ -23,7 +23,7 @@ export function Field({ label, value, onChangeText, placeholder, keyboardType, s
         value={value}
         onChangeText={onChangeText}
         placeholder={placeholder}
-        placeholderTextColor="#aab2ac"
+        placeholderTextColor={colors.mutedFaint}
         keyboardType={keyboardType ?? "default"}
         secureTextEntry={secure}
         autoCapitalize="none"
