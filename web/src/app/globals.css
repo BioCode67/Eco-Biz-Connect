@@ -358,6 +358,16 @@ input:focus-visible,
   .login-form-pane { width: 100% !important; }
 }
 
+/* 작은 화면: 넓은 테이블은 카드 안에서 가로 스크롤(레이아웃 깨짐 방지) */
+@media (max-width: 600px) {
+  .card table {
+    display: block;
+    overflow-x: auto;
+    white-space: nowrap;
+    -webkit-overflow-scrolling: touch;
+  }
+}
+
 /* 얇은 스크롤바 */
 * {
   scrollbar-width: thin;
