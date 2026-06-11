@@ -44,6 +44,8 @@ function MarketplaceBody() {
   const [loading, setLoading] = useState(true);
   const [buyTarget, setBuyTarget] = useState<STOAsset | null>(null);
   const [detailTarget, setDetailTarget] = useState<STOAsset | null>(null);
+  const [compareList, setCompareList] = useState<STOAsset[]>([]);
+  const [showCompare, setShowCompare] = useState(false);
   const [search, setSearch] = useState("");
   const [typeFilter, setTypeFilter] = useState<string>("ALL");
   const [sort, setSort] = useState<SortKey>("yield");
@@ -70,6 +72,14 @@ function MarketplaceBody() {
     } catch (err) {
       toast.show(err instanceof ApiError ? err.message : "KYC 실패", "error");
     }
+  }
+
+  function toggleCompare(a: STOAsset) {
+    setCompareList((prev) => {
+      if (prev.some((x) => x.id === a.id)) return prev.filter((x) => x.id !== a.id);
+      if (prev.length >= 3) { toast.show("최대 3개까지 비교할 수 있습니다.", "info"); return prev; }
+      return [...prev, a];
+    });
   }
 
   const visible = useMemo(() => {
@@ -146,6 +156,9 @@ function MarketplaceBody() {
                   <div style={{ marginTop: 14, display: "flex", alignItems: "center", gap: 12 }} onClick={(e) => e.stopPropagation()}>
                     <Button onClick={() => setBuyTarget(a)} disabled={soldOut || !kycVerified}>{soldOut ? "판매 완료" : "토큰 구매"}</Button>
                     <button className="link" onClick={() => setDetailTarget(a)} style={{ fontSize: 13 }}>상세보기 →</button>
+                    <label style={{ marginLeft: "auto", display: "flex", alignItems: "center", gap: 5, fontSize: 12.5, color: "var(--ink-soft)", cursor: "pointer" }}>
+                      <input type="checkbox" checked={compareList.some((x) => x.id === a.id)} onChange={() => toggleCompare(a)} /> 비교
+                    </label>
                   </div>
                 </div>
               );
@@ -154,9 +167,72 @@ function MarketplaceBody() {
         )}
       </Section>
 
+      {/* 비교 플로팅 바 */}
+      {compareList.length > 0 && (
+        <div style={{ position: "fixed", left: "50%", transform: "translateX(-50%)", bottom: 24, zIndex: 45, display: "flex", alignItems: "center", gap: 14, padding: "10px 14px 10px 18px", borderRadius: 980, background: "var(--ink)", color: "#fff", boxShadow: "var(--shadow-lg)" }}>
+          <span style={{ fontSize: 13.5 }}>{compareList.length}개 상품 선택됨</span>
+          <button onClick={() => setShowCompare(true)} disabled={compareList.length < 2} className="btn btn-primary" style={{ padding: "7px 16px" }}>비교하기</button>
+          <button onClick={() => setCompareList([])} aria-label="비교 초기화" style={{ background: "none", border: "none", color: "rgba(255,255,255,0.7)", cursor: "pointer", fontSize: 18 }}>×</button>
+        </div>
+      )}
+
+      {showCompare && <CompareModal assets={compareList} onClose={() => setShowCompare(false)} />}
       {detailTarget && <DetailModal asset={detailTarget} kycVerified={kycVerified} onClose={() => setDetailTarget(null)} onBuy={() => { setBuyTarget(detailTarget); setDetailTarget(null); }} />}
       {buyTarget && <PurchaseModal asset={buyTarget} walletReady={kycVerified} onClose={() => setBuyTarget(null)} onDone={async () => { setBuyTarget(null); await load(); await refresh(); }} />}
     </div>
+  );
+}
+
+function CompareModal({ assets, onClose }: { assets: STOAsset[]; onClose: () => void }) {
+  const rows: { label: string; get: (a: STOAsset) => string; best?: "max" | "min" }[] = [
+    { label: "예상 연수익률", get: (a) => pct(a.expected_yield), best: "max" },
+    { label: "토큰 단가", get: (a) => won(a.token_price), best: "min" },
+    { label: "연 CO₂ 저감", get: (a) => `${a.co2_offset_per_year} ton`, best: "max" },
+    { label: "설비 용량", get: (a) => (a.installed_capacity_mw ? `${a.installed_capacity_mw} MW` : "—") },
+    { label: "배당 주기", get: (a) => `${a.dividend_period_months}개월`, best: "min" },
+    { label: "잔여 토큰", get: (a) => a.remaining_tokens.toLocaleString(), best: "max" },
+  ];
+  const numFor = (label: string, a: STOAsset) =>
+    label === "예상 연수익률" ? Number(a.expected_yield)
+      : label === "토큰 단가" ? Number(a.token_price)
+      : label === "연 CO₂ 저감" ? a.co2_offset_per_year
+      : label === "배당 주기" ? a.dividend_period_months
+      : label === "잔여 토큰" ? a.remaining_tokens : NaN;
+  return (
+    <Modal onClose={onClose} title="상품 비교">
+      <div style={{ overflowX: "auto" }}>
+        <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13.5 }}>
+          <thead>
+            <tr>
+              <th style={{ textAlign: "left", padding: "0 10px 10px 0", color: "var(--ink-soft)", fontWeight: 500, fontSize: 12 }}>항목</th>
+              {assets.map((a) => (
+                <th key={a.id} style={{ textAlign: "left", padding: "0 10px 10px 0", fontSize: 13 }}>{a.name}</th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {rows.map((r) => {
+              const nums = r.best ? assets.map((a) => numFor(r.label, a)) : [];
+              const bestVal = r.best === "max" ? Math.max(...nums) : r.best === "min" ? Math.min(...nums) : NaN;
+              return (
+                <tr key={r.label} style={{ borderTop: "1px solid var(--line)" }}>
+                  <td style={{ padding: "10px 10px 10px 0", color: "var(--ink-soft)" }}>{r.label}</td>
+                  {assets.map((a) => {
+                    const isBest = r.best && numFor(r.label, a) === bestVal;
+                    return (
+                      <td key={a.id} style={{ padding: "10px 10px 10px 0", fontWeight: isBest ? 700 : 400, color: isBest ? "var(--forest)" : "var(--ink)" }}>
+                        {r.get(a)}{isBest ? " ★" : ""}
+                      </td>
+                    );
+                  })}
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+      </div>
+      <p style={{ fontSize: 12, color: "var(--ink-soft)", marginTop: 12 }}>★ = 항목별 우위 (수익률·CO₂·잔여 ↑ / 단가·배당주기 ↓)</p>
+    </Modal>
   );
 }
 
