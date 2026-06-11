@@ -127,6 +127,48 @@ export function BarRows({ rows }: { rows: { label: string; value: number; max?: 
   );
 }
 
+/** 다중 세그먼트 도넛 + 범례 (역할 구성 등) */
+export function DonutBreakdown({ segments, centerLabel, centerSub }: { segments: { label: string; value: number; color: string }[]; centerLabel: string; centerSub?: string }) {
+  const size = 150;
+  const stroke = 18;
+  const r = (size - stroke) / 2;
+  const c = 2 * Math.PI * r;
+  const total = segments.reduce((s, x) => s + x.value, 0) || 1;
+  let offset = 0;
+  return (
+    <div style={{ display: "flex", alignItems: "center", gap: 22, flexWrap: "wrap" }}>
+      <div style={{ position: "relative", width: size, height: size }}>
+        <svg width={size} height={size} role="img" aria-label={`구성: ${segments.map((s) => `${s.label} ${s.value}`).join(", ")}`}>
+          <circle cx={size / 2} cy={size / 2} r={r} fill="none" stroke="var(--paper-2)" strokeWidth={stroke} />
+          {segments.map((s) => {
+            const frac = s.value / total;
+            const dash = `${c * frac} ${c}`;
+            const el = (
+              <circle key={s.label} cx={size / 2} cy={size / 2} r={r} fill="none" stroke={s.color} strokeWidth={stroke}
+                strokeDasharray={dash} strokeDashoffset={-offset * c} transform={`rotate(-90 ${size / 2} ${size / 2})`} />
+            );
+            offset += frac;
+            return el;
+          })}
+        </svg>
+        <div style={{ position: "absolute", inset: 0, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center" }}>
+          <span className="font-display" style={{ fontSize: 26, fontWeight: 600 }}>{centerLabel}</span>
+          {centerSub && <span style={{ fontSize: 11, color: "var(--ink-soft)" }}>{centerSub}</span>}
+        </div>
+      </div>
+      <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+        {segments.map((s) => (
+          <div key={s.label} style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 13 }}>
+            <span style={{ width: 10, height: 10, borderRadius: 3, background: s.color }} />
+            <span style={{ color: "var(--ink-soft)" }}>{s.label}</span>
+            <span style={{ fontWeight: 600, marginLeft: 2 }}>{s.value}</span>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 /** 미니 막대 차트 (관리자 거래량 등) */
 export function MiniBars({ values, labels, color = "var(--forest)", height = 120 }: { values: number[]; labels?: string[]; color?: string; height?: number }) {
   const max = Math.max(...values, 1);

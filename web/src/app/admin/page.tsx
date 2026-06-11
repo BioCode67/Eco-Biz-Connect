@@ -4,10 +4,10 @@
 
 import { useCallback, useEffect, useState } from "react";
 
-import { MiniBars } from "@/components/charts";
+import { DonutBreakdown, MiniBars } from "@/components/charts";
 import DashboardShell from "@/components/DashboardShell";
 import { Modal } from "@/app/merchant/page";
-import { Badge, Button, EmptyState, ErrorBanner, Section, Skeleton, StatCard } from "@/components/ui";
+import { Badge, Button, EmptyState, ErrorBanner, Section, Skeleton } from "@/components/ui";
 import { useToast } from "@/components/Toast";
 import { api, ApiError, safe } from "@/lib/api";
 import { dateStr } from "@/lib/format";
@@ -102,11 +102,19 @@ function AdminBody() {
           )}
         </Section>
         <Section title="플랫폼 사용자" description="역할별 구성">
-          <div className="grid-stats">
-            <StatCard label="소상공인" value={String(stats?.merchants ?? 0)} />
-            <StatCard label="투자자" value={String(stats?.investors ?? 0)} />
-            <StatCard label="STO 자산" value={String(stats?.total_sto ?? 0)} />
-            <StatCard label="온체인 기록" value={String(stats?.onchain_records ?? 0)} />
+          <DonutBreakdown
+            segments={[
+              { label: "소상공인", value: stats?.merchants ?? 0, color: "var(--forest)" },
+              { label: "투자자", value: stats?.investors ?? 0, color: "var(--sky)" },
+              { label: "관리자", value: stats?.admins ?? 0, color: "var(--gold)" },
+            ]}
+            centerLabel={String(stats?.total_users ?? 0)}
+            centerSub="총 사용자"
+          />
+          <div style={{ display: "flex", gap: 22, marginTop: 16, paddingTop: 16, borderTop: "1px solid var(--line)", fontSize: 13, color: "var(--ink-soft)" }}>
+            <span>STO 자산 <b style={{ color: "var(--ink)" }}>{stats?.total_sto ?? 0}</b></span>
+            <span>온체인 기록 <b style={{ color: "var(--ink)" }}>{stats?.onchain_records ?? 0}</b></span>
+            <span>총 거래 <b style={{ color: "var(--ink)" }}>{stats?.total_transactions ?? 0}</b></span>
           </div>
         </Section>
       </div>
