@@ -1,18 +1,13 @@
 import type { Metadata } from "next";
-import { Fraunces, Geist } from "next/font/google";
+import { Geist } from "next/font/google";
 
 import { AuthProvider } from "@/lib/auth";
 import { ToastProvider } from "@/components/Toast";
 import "./globals.css";
 
+// 시스템 폰트(SF Pro) 우선, 비-Apple 환경 폴백용으로 Geist 로드
 const geistSans = Geist({
   variable: "--font-sans",
-  subsets: ["latin"],
-});
-
-// 디스플레이용 세리프 — 기본 산세리프 일변도에서 벗어나 '디자인된' 인상을 준다.
-const fraunces = Fraunces({
-  variable: "--font-display",
   subsets: ["latin"],
 });
 
@@ -27,7 +22,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="ko" className={`${geistSans.variable} ${fraunces.variable} h-full antialiased`}>
+    <html lang="ko" className={`${geistSans.variable} h-full antialiased`}>
       <body className="min-h-full">
         <AuthProvider>
           <ToastProvider>{children}</ToastProvider>
