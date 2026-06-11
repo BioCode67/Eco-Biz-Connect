@@ -28,3 +28,4 @@
 | 21 | 모바일 앱 메타가 미브랜딩(name/slug "app"), app.json이 web 선언하나 deps 없어 export 혼란; native export 통과 여부 미검증 | (d) 완성도·(검증) | app.json name "Eco-Biz Connect"·slug·scheme 브랜딩, 미사용 web 타깃 제거 | `expo export --platform ios` 통과(710 modules)로 README "expo export 통과" 사실 확인 |
 | 22 | **모바일 버그:** 관리자 `name` 스타일의 `textTransform:"capitalize"`가 이메일에도 적용돼 "Merchant@ebc.com"으로 깨짐; 서브시스템 "Ai Engine"·역할 영문 raw | (c) 버그·일관성 | format.ts에 subsystemName·roleKo 추가, capitalize 제거, AdminScreen 적용(웹과 동일) | tsc 통과, expo export 통과 |
 | 23 | 모바일 매출예측 제목이 "30일"인데 데이터는 3개월(웹은 이미 90일로 수정됨) — 라벨-데이터 불일치 | (c) AI템플릿 티(불일치) | "90일 매출 예측 · AI 예측"으로 정합 | tsc 통과, expo export ios 통과(710 modules) |
+| 24 | 배포 startCommand가 끝까지 동작하는지 미검증(마이그레이션 체인·시드↔스키마 호환은 대표적 배포 실패 지점) | (검증) | 빈 DB에서 운영 순서 그대로 재현: `alembic upgrade head` → `seed --if-empty` → 데이터 확인 → 재실행 | 12개 마이그레이션 무결 적용, alembic 스키마 위 시드 성공(users 8·STO 5), 재실행 시 건너뜀. 배포 end-to-end de-risk |
