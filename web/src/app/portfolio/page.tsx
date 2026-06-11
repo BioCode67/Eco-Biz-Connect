@@ -137,18 +137,22 @@ function PortfolioBody() {
         </Section>
       </div>
 
-      <Section title="배당 내역" description="수령한 배당">
-        {dividends.length === 0 ? <EmptyState icon="◆" text="배당 내역이 없습니다." /> : (
-          <div style={{ display: "flex", flexDirection: "column" }}>
+      <Section title="배당 타임라인" description="수령한 배당 현금 흐름 (온체인 검증)">
+        {dividends.length === 0 ? <EmptyState icon="◆" text="아직 수령한 배당이 없습니다." /> : (
+          <div style={{ position: "relative", paddingLeft: 26 }}>
+            <div style={{ position: "absolute", left: 7, top: 6, bottom: 6, width: 2, background: "var(--line)" }} />
             {dividends.map((d) => (
-              <div key={d.id} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "12px 0", borderTop: "1px solid var(--line)" }}>
-                <div>
-                  <div style={{ fontWeight: 600, fontSize: 13.5 }}>{d.asset_name}</div>
-                  <div style={{ fontSize: 11.5, color: "var(--ink-soft)" }}>{dateStr(d.distribution_date)} · 토큰당 {won(d.per_token_amount)} · {d.my_quantity}토큰</div>
-                </div>
-                <div style={{ textAlign: "right" }}>
-                  <div style={{ fontWeight: 700, color: "var(--forest)" }}>{won(d.my_dividend)}</div>
-                  <div style={{ fontSize: 10.5, color: "var(--ink-soft)", fontFamily: "monospace" }}>⛓ {shortHash(d.on_chain_tx_hash)}</div>
+              <div key={d.id} style={{ position: "relative", padding: "0 0 20px" }}>
+                <div style={{ position: "absolute", left: -26, top: 2, width: 16, height: 16, borderRadius: 999, background: "var(--forest)", border: "3px solid var(--card)", boxShadow: "0 0 0 1px var(--line)" }} />
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", gap: 12, flexWrap: "wrap" }}>
+                  <div>
+                    <div style={{ fontWeight: 600, fontSize: 14 }}>{d.asset_name}</div>
+                    <div style={{ fontSize: 12, color: "var(--ink-soft)" }}>{dateStr(d.distribution_date)} · 토큰당 {won(d.per_token_amount)} × {d.my_quantity}토큰</div>
+                  </div>
+                  <div style={{ textAlign: "right" }}>
+                    <div style={{ fontWeight: 700, fontSize: 15, color: "var(--forest)" }}>+{won(d.my_dividend)}</div>
+                    <div style={{ fontSize: 10.5, color: "var(--ink-soft)", fontFamily: "monospace" }}>⛓ {shortHash(d.on_chain_tx_hash)}</div>
+                  </div>
                 </div>
               </div>
             ))}
