@@ -79,6 +79,9 @@ export interface STOAsset {
   expected_yield: string;
   co2_offset_per_year: number;
   location: string | null;
+  installed_capacity_mw: string | null;
+  dividend_period_months: number;
+  contract_address: string | null;
   status: string;
 }
 
