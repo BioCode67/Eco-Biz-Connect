@@ -251,7 +251,7 @@ function DetailModal({ asset, kycVerified, onClose, onBuy }: { asset: STOAsset; 
     { label: "판매율", value: `${soldPct.toFixed(0)}%` },
   ];
   return (
-    <Modal onClose={onClose} title="">
+    <Modal onClose={onClose} title="" ariaLabel={`${asset.name} 상세`}>
       <div style={{ marginTop: -8 }}>
         <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 8 }}>
           <span style={{ fontSize: 40 }}>{meta.icon}</span>
