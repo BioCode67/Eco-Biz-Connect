@@ -11,6 +11,7 @@ from app.api.routers import (
     admin,
     auth,
     business_data,
+    chain,
     dividends,
     esg,
     investor,
@@ -49,6 +50,7 @@ app.include_router(investor.router)
 app.include_router(dividends.router)
 app.include_router(transactions.router)
 app.include_router(admin.router)
+app.include_router(chain.router)
 
 
 @app.get("/health", tags=["system"])

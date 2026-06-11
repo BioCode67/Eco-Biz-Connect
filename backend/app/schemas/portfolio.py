@@ -23,13 +23,24 @@ class HoldingOut(BaseModel):
     dividends_received: Decimal
 
 
+class UpcomingDividendOut(BaseModel):
+    """예정 배당(다음 분배 일자/예상 금액)."""
+
+    sto_asset_id: int
+    asset_name: str
+    next_distribution_date: datetime
+    estimated_amount: Decimal
+
+
 class PortfolioOut(BaseModel):
     """투자자 포트폴리오 요약."""
 
     total_invested: Decimal
     total_current_value: Decimal
     total_dividends_received: Decimal
+    total_return_pct: float
     holdings: list[HoldingOut]
+    upcoming_dividends: list[UpcomingDividendOut]
 
 
 class DividendOut(BaseModel):

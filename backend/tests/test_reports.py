@@ -37,3 +37,12 @@ def test_investor_cannot_access_reports(client, investor_payload):
     headers = auth_headers(client, investor_payload)
     res = client.get("/reports/latest", headers=headers)
     assert res.status_code == 403
+
+
+def test_export_report_pdf(client, merchant_payload):
+    headers = auth_headers(client, merchant_payload)
+    _upload(client, headers)
+    res = client.get("/reports/latest/pdf", headers=headers)
+    assert res.status_code == 200
+    assert res.headers["content-type"] == "application/pdf"
+    assert res.content[:5] == b"%PDF-"

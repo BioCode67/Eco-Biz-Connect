@@ -4,6 +4,7 @@
 - 투자자: 포트폴리오 성과와 배당 내역을 조회한다.
 """
 
+from datetime import datetime, timedelta, timezone
 from decimal import Decimal
 
 from fastapi import APIRouter, Depends, HTTPException, status
@@ -21,6 +22,7 @@ from app.schemas.portfolio import (
     DividendOut,
     HoldingOut,
     PortfolioOut,
+    UpcomingDividendOut,
 )
 from app.services import audit
 from app.services.external import blockchain
@@ -102,9 +104,11 @@ def get_portfolio(
     holdings_map = _holdings_by_asset(db, current_user.id)
 
     holdings: list[HoldingOut] = []
+    upcoming: list[UpcomingDividendOut] = []
     total_invested = Decimal("0")
     total_current_value = Decimal("0")
     total_dividends = Decimal("0")
+    now = datetime.now(timezone.utc)
 
     for asset_id, agg in holdings_map.items():
         asset = db.get(STOAsset, asset_id)
@@ -112,6 +116,31 @@ def get_portfolio(
             continue
         quantity = agg["quantity"]
         current_value = asset.token_price * quantity
+
+        # 예정 배당: 마지막 분배(또는 상장일) + 배당주기, 예상액 = 연수익률 기반 분기 환산
+        last_dv = db.scalar(
+            select(Dividend)
+            .where(Dividend.sto_asset_id == asset_id)
+            .order_by(Dividend.distribution_date.desc())
+        )
+        base_date = last_dv.distribution_date if last_dv else asset.created_at
+        if base_date.tzinfo is None:
+            base_date = base_date.replace(tzinfo=timezone.utc)
+        period = asset.dividend_period_months or 3
+        next_date = base_date + timedelta(days=30 * period)
+        if last_dv is not None:
+            est = last_dv.per_token_amount * quantity
+        else:
+            annual = current_value * (asset.expected_yield / Decimal("100"))
+            est = (annual * Decimal(period) / Decimal("12")).quantize(Decimal("1"))
+        upcoming.append(
+            UpcomingDividendOut(
+                sto_asset_id=asset_id,
+                asset_name=asset.name,
+                next_distribution_date=next_date,
+                estimated_amount=est,
+            )
+        )
 
         # 해당 자산의 토큰당 배당 총합 × 보유 수량
         per_token_total = db.scalar(
@@ -136,11 +165,16 @@ def get_portfolio(
             )
         )
 
+    total_return_pct = (
+        float((total_current_value - total_invested) / total_invested * 100) if total_invested > 0 else 0.0
+    )
     return PortfolioOut(
         total_invested=total_invested,
         total_current_value=total_current_value,
         total_dividends_received=total_dividends,
+        total_return_pct=round(total_return_pct, 2),
         holdings=holdings,
+        upcoming_dividends=upcoming,
     )
 
 

@@ -25,6 +25,10 @@ def test_portfolio_reflects_holdings(client, admin_payload, investor_payload):
     assert float(body["total_invested"]) == 50000.0
     assert len(body["holdings"]) == 1
     assert body["holdings"][0]["quantity"] == 10
+    # 예정 배당 + 수익률 필드
+    assert "total_return_pct" in body
+    assert len(body["upcoming_dividends"]) == 1
+    assert body["upcoming_dividends"][0]["sto_asset_id"] == asset["id"]
 
 
 def test_dividend_distribution_and_entitlement(client, admin_payload, investor_payload):
