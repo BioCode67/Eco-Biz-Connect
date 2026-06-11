@@ -105,7 +105,7 @@ function MerchantBody() {
 
   if (loading) {
     return (
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(4,1fr)", gap: 16 }}>
+      <div className="grid-stats">
         {[0, 1, 2, 3].map((i) => <Skeleton key={i} height={96} radius={16} />)}
       </div>
     );
@@ -113,7 +113,7 @@ function MerchantBody() {
 
   return (
     <div id="top">
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 16, marginBottom: 20 }}>
+      <div className="grid-stats" style={{ marginBottom: 20 }}>
         <StatCard label="예상 월매출" value={forecast ? won(forecast.next_3_months[0] * 10000) : "—"} hint="AI 1개월 예측" icon="↗" />
         <StatCard label="EBC ESG 점수" value={esg ? `${Number(esg.composite_score).toFixed(0)}` : "—"} trend={esg ? { dir: "up", text: `등급 ${esg.score_grade}` } : undefined} hint={esg ? undefined : "데이터 필요"} accent />
         <StatCard label="데이터 업로드" value={`${datasets.length}건`} hint="누적" icon="▤" />
@@ -121,7 +121,7 @@ function MerchantBody() {
       </div>
 
       {/* 리포트: 매출 예측 + ESG */}
-      <div id="report" style={{ display: "grid", gridTemplateColumns: "1.6fr 1fr", gap: 20, marginBottom: 20 }}>
+      <div id="report" className="grid-2" style={{ marginBottom: 20 }}>
         <Section title="30일 매출 예측" description={forecast ? `신뢰수준 ${(forecast.confidence_level ?? 0.9) * 100}% · 단위 ${forecast.unit}` : "AI 시계열 예측"} action={report ? <Button variant="ghost" onClick={exportPdf}>PDF 내보내기</Button> : undefined}>
           {!forecast ? <EmptyState text="데이터를 업로드하면 매출 예측이 표시됩니다." /> : (
             <>
@@ -151,7 +151,7 @@ function MerchantBody() {
       {/* 비용 최적화 + 이상치 */}
       {report && (
         <Section title="AI 비용 최적화 제안" description="우선순위 권장 사항">
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: 12 }}>
+          <div className="grid-3">
             {report.cost_optimization_tips.map((t, i) => (
               <div key={i} className="card card-hover" style={{ padding: 14 }}>
                 <div style={{ fontWeight: 600, fontSize: 14 }}>{t.title}</div>
@@ -188,7 +188,7 @@ function MerchantBody() {
       {/* 우대 상품 */}
       <Section id="products" title="우대 금융 상품" description="ESG 점수 기반 매칭 · 실효금리 오름차순">
         {products.length === 0 ? <EmptyState icon="🏦" text="먼저 데이터를 업로드해 ESG 점수를 산출하세요." /> : (
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: 14 }}>
+          <div className="grid-3">
             {products.map((p, i) => (
               <div key={p.id} className="card card-hover" style={{ padding: 16, position: "relative" }}>
                 {i === 0 && <div style={{ position: "absolute", top: 12, right: 12 }}><Badge tone="gold">최저금리</Badge></div>}
@@ -276,10 +276,19 @@ function LoanModal({ product, onClose, onDone }: { product: MatchedProduct; onCl
 }
 
 export function Modal({ title, children, onClose }: { title: string; children: React.ReactNode; onClose: () => void }) {
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => { if (e.key === "Escape") onClose(); };
+    document.addEventListener("keydown", onKey);
+    document.body.style.overflow = "hidden";
+    return () => { document.removeEventListener("keydown", onKey); document.body.style.overflow = ""; };
+  }, [onClose]);
   return (
     <div onClick={onClose} style={{ position: "fixed", inset: 0, background: "rgba(20,36,32,0.4)", backdropFilter: "blur(2px)", zIndex: 50, display: "flex", alignItems: "center", justifyContent: "center", padding: 20 }}>
-      <div onClick={(e) => e.stopPropagation()} className="card" style={{ width: "100%", maxWidth: 440, padding: 24, boxShadow: "var(--shadow-lg)" }}>
-        <h3 className="font-display" style={{ fontSize: 18, fontWeight: 600, marginBottom: 16 }}>{title}</h3>
+      <div role="dialog" aria-modal="true" aria-label={title} onClick={(e) => e.stopPropagation()} className="card" style={{ width: "100%", maxWidth: 460, padding: 24, boxShadow: "var(--shadow-lg)", maxHeight: "90vh", overflowY: "auto" }}>
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 16 }}>
+          <h3 className="font-display" style={{ fontSize: 18, fontWeight: 600 }}>{title}</h3>
+          <button onClick={onClose} aria-label="닫기" style={{ background: "none", border: "none", cursor: "pointer", fontSize: 20, color: "var(--ink-soft)", lineHeight: 1 }}>×</button>
+        </div>
         {children}
       </div>
     </div>

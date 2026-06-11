@@ -68,7 +68,7 @@ export default function LoginPage() {
     <div style={{ display: "flex", minHeight: "100vh" }}>
       {/* 좌측 에디토리얼 히어로 */}
       <div
-        className="bg-grain"
+        className="bg-grain login-hero"
         style={{ width: "52%", padding: "48px 56px", color: "#fff", display: "flex", flexDirection: "column", justifyContent: "space-between", background: "linear-gradient(160deg, #15603a 0%, #0e482c 70%, #0a3a22 100%)", position: "relative", overflow: "hidden" }}
       >
         <div style={{ position: "absolute", right: -80, top: -60, width: 320, height: 320, borderRadius: 999, background: "radial-gradient(circle, rgba(58,155,99,0.45), transparent 65%)" }} />
@@ -96,7 +96,7 @@ export default function LoginPage() {
       </div>
 
       {/* 우측 인증 카드 */}
-      <div style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "center", padding: 28 }} className="bg-grain">
+      <div style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "center", padding: 28 }} className="bg-grain login-form-pane">
         <div className="card" style={{ width: "100%", maxWidth: 412, padding: 32, boxShadow: "var(--shadow-lg)" }}>
           <h2 className="font-display" style={{ fontSize: 25, fontWeight: 600 }}>{mode === "login" ? "다시 오신 걸 환영해요" : "계정 만들기"}</h2>
           <p style={{ fontSize: 13.5, color: "var(--ink-soft)", marginTop: 4, marginBottom: 22 }}>

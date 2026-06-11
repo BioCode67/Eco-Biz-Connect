@@ -58,20 +58,20 @@ function PortfolioBody() {
     downloadCsv("ebc_transactions.csv", rows);
   }
 
-  if (loading) return <div style={{ display: "grid", gridTemplateColumns: "repeat(4,1fr)", gap: 16 }}>{[0, 1, 2, 3].map((i) => <Skeleton key={i} height={96} radius={16} />)}</div>;
+  if (loading) return <div className="grid-stats">{[0, 1, 2, 3].map((i) => <Skeleton key={i} height={96} radius={16} />)}</div>;
 
   const ret = portfolio?.total_return_pct ?? 0;
 
   return (
     <div>
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(4,1fr)", gap: 16, marginBottom: 20 }}>
+      <div className="grid-stats" style={{ marginBottom: 20 }}>
         <StatCard label="총 투자금" value={won(portfolio?.total_invested)} icon="₩" />
         <StatCard label="현재 평가액" value={won(portfolio?.total_current_value)} accent icon="↗" />
         <StatCard label="총 수익률" value={`${ret >= 0 ? "+" : ""}${ret.toFixed(2)}%`} trend={{ dir: ret >= 0 ? "up" : "down", text: ret >= 0 ? "수익" : "손실" }} />
         <StatCard label="누적 배당" value={won(portfolio?.total_dividends_received)} icon="◆" />
       </div>
 
-      <div style={{ display: "grid", gridTemplateColumns: "1.5fr 1fr", gap: 20 }}>
+      <div className="grid-2">
         <Section title="보유 자산" description="자산별 평가">
           {!portfolio || portfolio.holdings.length === 0 ? <EmptyState icon="🪙" text="보유 자산이 없습니다. 마켓플레이스에서 투자해보세요." /> : (
             <table style={{ width: "100%", fontSize: 13.5, borderCollapse: "collapse" }}>

@@ -58,7 +58,7 @@ function AdminBody() {
     } catch (err) { toast.show(err instanceof ApiError ? err.message : "작업 실패", "error"); }
   }
 
-  if (loading) return <div style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: 16 }}>{[0, 1, 2].map((i) => <Skeleton key={i} height={110} radius={16} />)}</div>;
+  if (loading) return <div className="grid-3">{[0, 1, 2].map((i) => <Skeleton key={i} height={110} radius={16} />)}</div>;
 
   const subsystems = metrics?.subsystems ?? {};
   const volume = stats?.tx_volume_7d ?? [];
@@ -66,7 +66,7 @@ function AdminBody() {
   return (
     <div>
       {/* 서브시스템 모니터 */}
-      <div id="monitor" style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: 16, marginBottom: 20 }}>
+      <div id="monitor" className="grid-3" style={{ marginBottom: 20 }}>
         {Object.entries(subsystems).map(([key, val]) => {
           const status = String((val as Record<string, unknown>).status ?? "—");
           return (
@@ -86,14 +86,14 @@ function AdminBody() {
       </div>
 
       {/* 통계 */}
-      <div style={{ display: "grid", gridTemplateColumns: "1.4fr 1fr", gap: 20, marginBottom: 20 }}>
+      <div className="grid-2" style={{ marginBottom: 20 }}>
         <Section title="거래량 (최근 7일)" description="플랫폼 STO 거래 금액">
           {volume.length === 0 ? <EmptyState text="거래 데이터가 없습니다." /> : (
             <MiniBars values={volume.map((v) => v.amount)} labels={volume.map((v) => v.label)} />
           )}
         </Section>
         <Section title="플랫폼 사용자" description="역할별 구성">
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
+          <div className="grid-stats">
             <StatCard label="소상공인" value={String(stats?.merchants ?? 0)} />
             <StatCard label="투자자" value={String(stats?.investors ?? 0)} />
             <StatCard label="STO 자산" value={String(stats?.total_sto ?? 0)} />

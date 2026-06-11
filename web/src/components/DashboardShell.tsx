@@ -1,10 +1,10 @@
 "use client";
 
-// 역할별 대시보드 공통 레이아웃 — 정교한 사이드바 + 상단바 + 클라이언트 역할 가드.
+// 역할별 대시보드 공통 레이아웃 — 반응형 사이드바(모바일 드로어) + 상단바 + 역할 가드.
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 import { useAuth } from "@/lib/auth";
 import type { Role } from "@/lib/types";
@@ -41,6 +41,7 @@ export default function DashboardShell({
 }) {
   const { user, loading, logout } = useAuth();
   const router = useRouter();
+  const [drawerOpen, setDrawerOpen] = useState(false);
 
   useEffect(() => {
     if (loading) return;
@@ -56,17 +57,17 @@ export default function DashboardShell({
     );
   }
 
-  const name = user.store_name || user.email.split("@")[0];
+  const name = user.store_name || user.name || user.email.split("@")[0];
 
   return (
-    <div style={{ display: "flex", minHeight: "100vh" }} className="bg-grain">
-      {/* 사이드바 */}
-      <aside style={{ width: 248, flexShrink: 0, background: "var(--card)", borderRight: "1px solid var(--line)", display: "flex", flexDirection: "column", position: "sticky", top: 0, height: "100vh" }}>
+    <div className="shell bg-grain">
+      <div className={`shell-overlay ${drawerOpen ? "open" : ""}`} onClick={() => setDrawerOpen(false)} aria-hidden />
+
+      <aside className={`shell-aside ${drawerOpen ? "open" : ""}`} aria-label="주 메뉴">
         <div style={{ display: "flex", alignItems: "center", gap: 11, padding: "22px 20px 18px" }}>
           <Wordmark />
         </div>
-
-        <nav style={{ flex: 1, padding: "6px 12px" }}>
+        <nav style={{ flex: 1, padding: "6px 12px" }} aria-label={`${ROLE_LABEL[role]} 메뉴`}>
           <div style={{ fontSize: 10.5, fontWeight: 700, letterSpacing: "0.08em", color: "var(--ink-soft)", textTransform: "uppercase", padding: "8px 12px 6px" }}>
             {ROLE_LABEL[role]} 메뉴
           </div>
@@ -74,26 +75,20 @@ export default function DashboardShell({
             <Link
               key={item.href}
               href={item.href}
+              onClick={() => setDrawerOpen(false)}
+              aria-current={item.active ? "page" : undefined}
               style={{
-                display: "flex",
-                alignItems: "center",
-                gap: 11,
-                borderRadius: 10,
-                padding: "9px 12px",
-                marginBottom: 2,
-                fontSize: 13.5,
-                fontWeight: item.active ? 600 : 500,
+                display: "flex", alignItems: "center", gap: 11, borderRadius: 10, padding: "9px 12px", marginBottom: 2,
+                fontSize: 13.5, fontWeight: item.active ? 600 : 500,
                 color: item.active ? "var(--forest-deep)" : "var(--ink-soft)",
-                background: item.active ? "var(--forest-soft)" : "transparent",
-                textDecoration: "none",
+                background: item.active ? "var(--forest-soft)" : "transparent", textDecoration: "none",
               }}
             >
-              <span style={{ width: 18, textAlign: "center", opacity: item.active ? 1 : 0.7 }}>{item.icon}</span>
+              <span aria-hidden style={{ width: 18, textAlign: "center", opacity: item.active ? 1 : 0.7 }}>{item.icon}</span>
               {item.label}
             </Link>
           ))}
         </nav>
-
         <div style={{ borderTop: "1px solid var(--line)", padding: 12 }}>
           <div style={{ display: "flex", alignItems: "center", gap: 10, padding: "4px 8px 10px" }}>
             <div style={{ width: 34, height: 34, borderRadius: 999, background: "var(--forest-soft)", color: "var(--forest-deep)", display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 700, fontSize: 14, flexShrink: 0 }}>
@@ -105,21 +100,23 @@ export default function DashboardShell({
             </div>
           </div>
           <button onClick={logout} className="btn btn-ghost" style={{ width: "100%", justifyContent: "flex-start" }}>
-            <span style={{ opacity: 0.7 }}>⏻</span> 로그아웃
+            <span aria-hidden style={{ opacity: 0.7 }}>⏻</span> 로그아웃
           </button>
         </div>
       </aside>
 
-      {/* 메인 */}
-      <main style={{ flex: 1, minWidth: 0 }}>
-        <header style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "20px 32px", borderBottom: "1px solid var(--line)", background: "rgba(255,255,255,0.7)", backdropFilter: "blur(8px)", position: "sticky", top: 0, zIndex: 20 }}>
-          <div>
-            <h1 className="font-display" style={{ fontSize: 23, fontWeight: 600, color: "var(--ink)", lineHeight: 1.15 }}>{title}</h1>
-            {subtitle && <p style={{ fontSize: 13, color: "var(--ink-soft)", marginTop: 1 }}>{subtitle}</p>}
+      <main className="shell-main">
+        <header style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12, padding: "clamp(14px,2.5vw,20px) clamp(16px,3vw,32px)", borderBottom: "1px solid var(--line)", background: "rgba(255,255,255,0.7)", backdropFilter: "blur(8px)", position: "sticky", top: 0, zIndex: 20 }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 12, minWidth: 0 }}>
+            <button className="shell-hamburger" onClick={() => setDrawerOpen(true)} aria-label="메뉴 열기">☰</button>
+            <div style={{ minWidth: 0 }}>
+              <h1 className="font-display" style={{ fontSize: "clamp(18px,2.5vw,23px)", fontWeight: 600, color: "var(--ink)", lineHeight: 1.15, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{title}</h1>
+              {subtitle && <p style={{ fontSize: 13, color: "var(--ink-soft)", marginTop: 1, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{subtitle}</p>}
+            </div>
           </div>
           {badge}
         </header>
-        <div style={{ padding: 32, maxWidth: 1160 }}>{children}</div>
+        <div className="shell-content">{children}</div>
       </main>
     </div>
   );
@@ -141,7 +138,7 @@ export function Wordmark({ light = false }: { light?: boolean }) {
 
 function LeafMark() {
   return (
-    <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden focusable="false">
       <path d="M12 21c-5 0-8-3.5-8-8.5C4 7 8 3 13 3c3 0 6 1 7 2-1 8-4 16-8 16z" fill="#fff" fillOpacity="0.95" />
       <path d="M12 18c0-5 2-8 6-10" stroke="var(--forest-deep)" strokeWidth="1.4" strokeLinecap="round" />
     </svg>

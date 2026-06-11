@@ -45,7 +45,7 @@ export function AreaChart({
   const area = `${line} L ${pts[pts.length - 1].x} ${pad.t + innerH} L ${pts[0].x} ${pad.t + innerH} Z`;
 
   return (
-    <svg viewBox={`0 0 ${w} ${height}`} width="100%" height={height} preserveAspectRatio="none" role="img">
+    <svg viewBox={`0 0 ${w} ${height}`} width="100%" height={height} preserveAspectRatio="none" role="img" aria-label={`매출 예측 추이: ${values.join(", ")}${unit}`}>
       <defs>
         <linearGradient id="areaFill" x1="0" y1="0" x2="0" y2="1">
           <stop offset="0%" stopColor={color} stopOpacity="0.22" />
@@ -82,8 +82,8 @@ export function DonutGauge({ value, max = 100, label, sub, color = "var(--forest
   const c = 2 * Math.PI * r;
   const frac = Math.max(0, Math.min(1, value / max));
   return (
-    <div style={{ position: "relative", width: size, height: size }}>
-      <svg width={size} height={size}>
+    <div style={{ position: "relative", width: size, height: size }} role="img" aria-label={`${label} (${value}/${max})`}>
+      <svg width={size} height={size} aria-hidden>
         <circle cx={size / 2} cy={size / 2} r={r} fill="none" stroke="var(--paper-2)" strokeWidth={stroke} />
         <circle
           cx={size / 2}

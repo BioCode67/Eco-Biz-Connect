@@ -104,11 +104,11 @@ function MarketplaceBody() {
 
       <Section title="탄소중립 STO 상품" description={`${visible.length}개 상품`}>
         {loading ? (
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: 14 }}>{[0, 1, 2].map((i) => <Skeleton key={i} height={220} radius={16} />)}</div>
+          <div className="grid-3">{[0, 1, 2].map((i) => <Skeleton key={i} height={220} radius={16} />)}</div>
         ) : visible.length === 0 ? (
           <EmptyState icon="🪙" text="조건에 맞는 상품이 없습니다." />
         ) : (
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))", gap: 16 }}>
+          <div className="grid-cards">
             {visible.map((a) => {
               const meta = ASSET_META[a.asset_type] ?? { icon: "🌱", label: a.asset_type };
               const soldOut = a.status === "SOLD_OUT" || a.remaining_tokens <= 0;

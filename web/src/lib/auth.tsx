@@ -4,7 +4,7 @@
 
 import { createContext, useCallback, useContext, useEffect, useState } from "react";
 
-import { api, setToken } from "@/lib/api";
+import { api, setRefresh, setToken } from "@/lib/api";
 import type { Role, TokenResponse, User } from "@/lib/types";
 
 interface RegisterInput {
@@ -37,6 +37,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       setUser(me);
     } catch {
       setToken(null);
+      setRefresh(null);
       setUser(null);
     }
   }, []);
@@ -55,6 +56,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       body: { email, password },
     });
     setToken(tokens.access_token);
+    setRefresh(tokens.refresh_token);
     const me = await api<User>("/auth/me");
     setUser(me);
     return me;
@@ -66,6 +68,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const logout = useCallback(() => {
     setToken(null);
+    setRefresh(null);
     setUser(null);
   }, []);
 
