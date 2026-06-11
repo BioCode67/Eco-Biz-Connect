@@ -10,7 +10,7 @@ import { DonutBreakdown } from "@/components/charts";
 import DashboardShell from "@/components/DashboardShell";
 import { Badge, Button, EmptyState, ErrorBanner, Section, Skeleton, StatCard } from "@/components/ui";
 import { api, downloadCsv, safe } from "@/lib/api";
-import { dateStr, shortHash, won } from "@/lib/format";
+import { dateStr, shortHash, txStatusKo, won } from "@/lib/format";
 import type { Dividend, Portfolio, TransactionPage } from "@/lib/types";
 
 const NAV = [
@@ -178,7 +178,7 @@ function PortfolioBody() {
                   <div style={{ fontSize: 11.5, color: "var(--ink-soft)" }}>{TYPE_KO[t.type] ?? t.type} · {dateStr(t.timestamp)}</div>
                 </div>
                 <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-                  {t.status && <Badge tone={t.status === "COMPLETED" ? "green" : "amber"}>{t.status}</Badge>}
+                  {t.status && <Badge tone={t.status === "COMPLETED" ? "green" : "amber"}>{txStatusKo(t.status)}</Badge>}
                   <span style={{ fontWeight: 700 }}>{won(t.amount)}</span>
                 </div>
               </div>

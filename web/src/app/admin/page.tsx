@@ -10,7 +10,7 @@ import { Modal } from "@/app/merchant/page";
 import { Badge, Button, EmptyState, ErrorBanner, Section, Skeleton } from "@/components/ui";
 import { useToast } from "@/components/Toast";
 import { api, ApiError, safe } from "@/lib/api";
-import { dateStr } from "@/lib/format";
+import { dateStr, roleKo } from "@/lib/format";
 import type { AdminStats, AdminUser, AuditLog, STOAsset, SystemMetrics } from "@/lib/types";
 
 const NAV = [
@@ -181,7 +181,7 @@ function AdminBody() {
             {users.map((u) => (
               <tr key={u.id} style={{ borderTop: "1px solid var(--line)" }}>
                 <td style={{ padding: "10px 0" }}>{u.email}</td>
-                <td><Badge tone="gray">{u.role}</Badge></td>
+                <td><Badge tone="gray">{roleKo(u.role)}</Badge></td>
                 <td><Badge tone={u.is_active ? "green" : "red"}>{u.is_active ? "활성" : "정지"}</Badge></td>
                 <td style={{ textAlign: "right" }}>
                   <button onClick={() => userAction(u, u.is_active ? "suspend" : "restore")} style={{ background: "none", border: "none", cursor: "pointer", fontWeight: 600, fontSize: 12.5, color: u.is_active ? "var(--danger)" : "var(--forest)" }}>
