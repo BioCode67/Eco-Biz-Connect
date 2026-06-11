@@ -4,6 +4,8 @@
 
 import { useCallback, useEffect, useState } from "react";
 
+import Link from "next/link";
+
 import { DonutBreakdown } from "@/components/charts";
 import DashboardShell from "@/components/DashboardShell";
 import { Badge, Button, EmptyState, ErrorBanner, Section, Skeleton, StatCard } from "@/components/ui";
@@ -84,7 +86,7 @@ function PortfolioBody() {
 
       <div className="grid-2">
         <Section title="보유 자산" description="자산별 평가">
-          {!portfolio || portfolio.holdings.length === 0 ? <EmptyState icon="🪙" text="보유 자산이 없습니다. 마켓플레이스에서 투자해보세요." /> : (
+          {!portfolio || portfolio.holdings.length === 0 ? <EmptyState icon="🪙" text="아직 보유 자산이 없습니다. 탄소중립 STO에 투자해보세요." action={<Link href="/marketplace" className="btn btn-primary">마켓플레이스 둘러보기</Link>} /> : (
             <>
             {portfolio.holdings.length > 1 && (
               <div style={{ paddingBottom: 18, marginBottom: 6, borderBottom: "1px solid var(--line)" }}>

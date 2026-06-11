@@ -131,7 +131,7 @@ function MerchantBody() {
       {/* 리포트: 매출 예측 + ESG */}
       <div id="report" className="grid-2" style={{ marginBottom: 20 }}>
         <Section title="90일 매출 예측" description={forecast ? `LSTM 앙상블 · 신뢰수준 ${(forecast.confidence_level ?? 0.9) * 100}% (음영) · 단위 ${forecast.unit}` : "AI 시계열 예측"} action={report ? <Button variant="ghost" onClick={exportPdf}>PDF 내보내기</Button> : undefined}>
-          {!forecast ? <EmptyState text="데이터를 업로드하면 매출 예측이 표시됩니다." /> : (
+          {!forecast ? <EmptyState text="경영 데이터를 업로드하면 AI 매출 예측이 표시됩니다." action={<Button onClick={() => fileRef.current?.click()}>경영 데이터 업로드</Button>} /> : (
             <>
               <AreaChart values={forecast.next_3_months} labels={forecast.labels} lower={forecast.confidence_lower} upper={forecast.confidence_upper} unit="" />
               {report?.summary && <p style={{ fontSize: 13, color: "var(--ink-soft)", marginTop: 12, lineHeight: 1.6 }}>{report.summary}</p>}
@@ -140,7 +140,7 @@ function MerchantBody() {
         </Section>
 
         <Section title="ESG 상생지수" description="환경·사회·지배구조 분해">
-          {!esg ? <EmptyState icon="🌱" text="ESG 점수가 아직 없습니다." /> : (
+          {!esg ? <EmptyState icon="🌱" text="데이터 업로드 시 ESG 상생지수가 산출됩니다." action={<Button onClick={() => fileRef.current?.click()}>경영 데이터 업로드</Button>} /> : (
             <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 18 }}>
               <DonutGauge value={Number(esg.composite_score)} label={Number(esg.composite_score).toFixed(0)} sub={`등급 ${esg.score_grade}`} />
               <div style={{ width: "100%" }}>
@@ -201,7 +201,7 @@ function MerchantBody() {
       {/* 업로드 */}
       <Section id="data" title="경영 데이터" description="CSV·Excel 업로드 → 분석 파이프라인 자동 실행"
         action={<><input ref={fileRef} type="file" accept=".csv,.xlsx,.xls" hidden onChange={onUpload} /><Button onClick={() => fileRef.current?.click()} disabled={uploading}>{uploading ? "업로드 중…" : "파일 업로드"}</Button></>}>
-        {datasets.length === 0 ? <EmptyState icon="📄" text="아직 업로드한 데이터가 없습니다." /> : (
+        {datasets.length === 0 ? <EmptyState icon="📄" text="아직 업로드한 데이터가 없습니다. CSV·Excel로 시작하세요." action={<Button onClick={() => fileRef.current?.click()}>경영 데이터 업로드</Button>} /> : (
           <table style={{ width: "100%", fontSize: 13.5, borderCollapse: "collapse" }}>
             <tbody>
               {datasets.map((d) => (
@@ -217,7 +217,7 @@ function MerchantBody() {
 
       {/* 우대 상품 */}
       <Section id="products" title="우대 금융 상품" description="ESG 점수 기반 매칭 · 실효금리 오름차순">
-        {products.length === 0 ? <EmptyState icon="🏦" text="먼저 데이터를 업로드해 ESG 점수를 산출하세요." /> : (
+        {products.length === 0 ? <EmptyState icon="🏦" text="ESG 점수가 산출되면 우대 대출 상품이 매칭됩니다." action={<Button onClick={() => fileRef.current?.click()}>경영 데이터 업로드</Button>} /> : (
           <div className="grid-3">
             {products.map((p, i) => (
               <div key={p.id} className="card card-hover" style={{ padding: 16, position: "relative" }}>
