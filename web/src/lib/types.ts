@@ -7,6 +7,8 @@ export interface User {
   email: string;
   role: Role;
   verification_status: string;
+  name?: string | null;
+  phone?: string | null;
   business_reg_no?: string | null;
   store_name?: string | null;
   store_address?: string | null;
@@ -32,14 +34,41 @@ export interface BusinessData {
   created_at: string;
 }
 
+export interface CostTip {
+  title: string;
+  detail: string;
+  impact: string;
+}
+
+export interface Anomaly {
+  category: string;
+  month: string;
+  severity: string;
+  note: string;
+}
+
 export interface AnalysisReport {
   id: number;
   business_data_id: number;
   merchant_id: number;
   summary: string;
-  sales_forecast: { unit: string; next_3_months: number[] };
-  cost_optimization_tips: string[];
-  district_comparison: { your_percentile: number; district_avg_sales: number; note: string };
+  sales_forecast: {
+    unit: string;
+    labels?: string[];
+    next_3_months: number[];
+    confidence_lower?: number[];
+    confidence_upper?: number[];
+    confidence_level?: number;
+  };
+  cost_optimization_tips: CostTip[];
+  anomalies?: Anomaly[];
+  district_comparison: {
+    your_percentile: number;
+    district_avg_sales: number;
+    your_sales?: number;
+    metrics?: Record<string, number>;
+    note: string;
+  };
   created_at: string;
 }
 
@@ -75,8 +104,11 @@ export interface LoanApplication {
   amount: number;
   applied_rate: string;
   term_months: number;
+  loan_purpose: string | null;
+  bank_reference_id: string | null;
   status: string;
   decision_reason: string | null;
+  decision_received_at: string | null;
   created_at: string;
   updated_at: string;
 }
@@ -90,6 +122,11 @@ export interface STOAsset {
   total_token_supply: number;
   remaining_tokens: number;
   token_price: string;
+  expected_yield: string;
+  co2_offset_per_year: number;
+  location: string | null;
+  installed_capacity_mw: string | null;
+  dividend_period_months: number;
   contract_address: string | null;
   status: string;
   created_at: string;
@@ -104,11 +141,20 @@ export interface Holding {
   dividends_received: string;
 }
 
+export interface UpcomingDividend {
+  sto_asset_id: number;
+  asset_name: string;
+  next_distribution_date: string;
+  estimated_amount: string;
+}
+
 export interface Portfolio {
   total_invested: string;
   total_current_value: string;
   total_dividends_received: string;
+  total_return_pct: number;
   holdings: Holding[];
+  upcoming_dividends: UpcomingDividend[];
 }
 
 export interface Dividend {
@@ -128,6 +174,7 @@ export interface TransactionItem {
   description: string;
   amount: string;
   status: string | null;
+  on_chain_tx_hash?: string | null;
   timestamp: string;
 }
 
@@ -141,6 +188,18 @@ export interface TransactionPage {
 export interface SystemMetrics {
   subsystems: Record<string, Record<string, unknown>>;
   totals: Record<string, number>;
+}
+
+export interface AdminStats {
+  merchants: number;
+  investors: number;
+  admins: number;
+  total_users: number;
+  total_sto: number;
+  total_transactions: number;
+  total_loans: number;
+  onchain_records: number;
+  tx_volume_7d: { label: string; amount: number }[];
 }
 
 export interface AdminUser {

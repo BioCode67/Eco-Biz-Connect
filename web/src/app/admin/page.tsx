@@ -1,199 +1,128 @@
 "use client";
 
-// 관리자 콘솔 (proto_05_admin_console). UC13 모니터링/사용자관리/감사로그 · UC8 STO 발행.
+// 관리자 콘솔 (proto_05). UC13 모니터·통계·사용자관리·감사로그 · UC8 STO 발행.
 
 import { useCallback, useEffect, useState } from "react";
 
+import { MiniBars } from "@/components/charts";
 import DashboardShell from "@/components/DashboardShell";
-import { Badge, Button, Section, StatCard } from "@/components/ui";
+import { Modal } from "@/app/merchant/page";
+import { Badge, Button, EmptyState, Section, Skeleton, StatCard } from "@/components/ui";
+import { useToast } from "@/components/Toast";
 import { api, ApiError } from "@/lib/api";
-import { dateStr, won } from "@/lib/format";
-import type { AdminUser, AuditLog, STOAsset, SystemMetrics } from "@/lib/types";
+import { dateStr } from "@/lib/format";
+import type { AdminStats, AdminUser, AuditLog, STOAsset, SystemMetrics } from "@/lib/types";
 
 const NAV = [
-  { label: "System Monitor", href: "#monitor", active: true },
-  { label: "Issue New STO", href: "#issue" },
-  { label: "User Management", href: "#users" },
-  { label: "Audit Log", href: "#audit" },
+  { label: "시스템 모니터", href: "#monitor", icon: "◉", active: true },
+  { label: "STO 발행", href: "#issue", icon: "✦" },
+  { label: "사용자 관리", href: "#users", icon: "◑" },
+  { label: "감사 로그", href: "#audit", icon: "▤" },
 ];
 
-const STATUS_TONE: Record<string, "green" | "amber" | "red"> = {
-  UP: "green",
-  HEALTHY: "green",
-  SYNCED: "green",
-  DEGRADED: "amber",
-  DOWN: "red",
-};
+const STATUS_TONE: Record<string, "green" | "amber" | "red"> = { UP: "green", HEALTHY: "green", SYNCED: "green", DEGRADED: "amber", DOWN: "red" };
 
 export default function AdminPage() {
   return (
-    <DashboardShell role="ADMIN" nav={NAV} title="Admin Console" subtitle="System Monitoring Dashboard">
+    <DashboardShell role="ADMIN" nav={NAV} title="관리자 콘솔" subtitle="실시간 시스템 모니터링" badge={<Badge tone="green">● LIVE</Badge>}>
       <AdminBody />
     </DashboardShell>
   );
 }
 
 function AdminBody() {
+  const toast = useToast();
   const [metrics, setMetrics] = useState<SystemMetrics | null>(null);
+  const [stats, setStats] = useState<AdminStats | null>(null);
   const [users, setUsers] = useState<AdminUser[]>([]);
   const [logs, setLogs] = useState<AuditLog[]>([]);
-  const [msg, setMsg] = useState<string | null>(null);
-
-  // STO 발행 폼
-  const [assetType, setAssetType] = useState("SOLAR");
-  const [name, setName] = useState("");
-  const [supply, setSupply] = useState(5000);
-  const [price, setPrice] = useState(10000);
+  const [loading, setLoading] = useState(true);
+  const [showIssue, setShowIssue] = useState(false);
 
   const load = useCallback(async () => {
-    setMetrics(await api<SystemMetrics>("/admin/monitor").catch(() => null));
-    setUsers(await api<AdminUser[]>("/admin/users").catch(() => []));
-    setLogs(await api<AuditLog[]>("/admin/audit-log").catch(() => []));
+    const [m, s, u, l] = await Promise.all([
+      api<SystemMetrics>("/admin/monitor").catch(() => null),
+      api<AdminStats>("/admin/stats").catch(() => null),
+      api<AdminUser[]>("/admin/users").catch(() => []),
+      api<AuditLog[]>("/admin/audit-log").catch(() => []),
+    ]);
+    setMetrics(m); setStats(s); setUsers(u); setLogs(l); setLoading(false);
   }, []);
-
-  useEffect(() => {
-    load();
-  }, [load]);
-
-  async function issueSto(e: React.FormEvent) {
-    e.preventDefault();
-    setMsg(null);
-    try {
-      await api<STOAsset>("/sto", {
-        method: "POST",
-        body: { asset_type: assetType, name, total_token_supply: supply, token_price: String(price) },
-      });
-      setMsg(`STO "${name}" 발행 완료 (컨트랙트 배포).`);
-      setName("");
-      await load();
-    } catch (err) {
-      setMsg(err instanceof ApiError ? err.message : "STO 발행 실패");
-    }
-  }
+  useEffect(() => { load(); }, [load]);
 
   async function userAction(u: AdminUser, action: "suspend" | "restore") {
-    setMsg(null);
     try {
       await api(`/admin/users/${u.id}/${action}`, { method: "POST" });
+      toast.show(`${u.email} 계정을 ${action === "suspend" ? "정지" : "복원"}했습니다.`, "success");
       await load();
-    } catch (err) {
-      setMsg(err instanceof ApiError ? err.message : "작업 실패");
-    }
+    } catch (err) { toast.show(err instanceof ApiError ? err.message : "작업 실패", "error"); }
   }
 
+  if (loading) return <div style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: 16 }}>{[0, 1, 2].map((i) => <Skeleton key={i} height={110} radius={16} />)}</div>;
+
   const subsystems = metrics?.subsystems ?? {};
+  const volume = stats?.tx_volume_7d ?? [];
 
   return (
     <div>
-      {msg && <div className="mb-4 rounded-lg bg-brand-light px-4 py-2 text-sm text-brand-dark">{msg}</div>}
-
-      {/* 시스템 모니터 */}
-      <Section id="monitor" title="System Monitor" description="서브시스템 실시간 상태(mock 폴링)">
-        <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
-          {Object.entries(subsystems).map(([key, val]) => {
-            const status = String((val as Record<string, unknown>).status ?? "—");
-            return (
-              <div key={key} className="ebc-card p-4">
-                <div className="flex items-center justify-between">
-                  <span className="text-sm font-semibold capitalize">{key.replace(/_/g, " ")}</span>
-                  <Badge tone={STATUS_TONE[status] ?? "gray"}>{status}</Badge>
-                </div>
-                <ul className="mt-2 space-y-0.5 text-xs text-muted">
-                  {Object.entries(val as Record<string, unknown>)
-                    .filter(([k]) => k !== "status")
-                    .map(([k, v]) => (
-                      <li key={k}>
-                        {k}: <span className="font-medium">{String(v)}</span>
-                      </li>
-                    ))}
-                </ul>
+      {/* 서브시스템 모니터 */}
+      <div id="monitor" style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: 16, marginBottom: 20 }}>
+        {Object.entries(subsystems).map(([key, val]) => {
+          const status = String((val as Record<string, unknown>).status ?? "—");
+          return (
+            <div key={key} className="card card-hover" style={{ padding: 18 }}>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
+                <span style={{ fontWeight: 600, fontSize: 14, textTransform: "capitalize" }}>{key.replace(/_/g, " ")}</span>
+                <Badge tone={STATUS_TONE[status] ?? "gray"}>{status}</Badge>
               </div>
-            );
-          })}
-        </div>
-        {metrics && (
-          <div className="mt-4 grid grid-cols-2 gap-4 md:grid-cols-4">
-            <StatCard label="Platform Users" value={String(metrics.totals.users ?? 0)} />
-            <StatCard label="On-chain Records" value={String(metrics.totals.onchain_records ?? 0)} />
+              {Object.entries(val as Record<string, unknown>).filter(([k]) => k !== "status").map(([k, v]) => (
+                <div key={k} style={{ display: "flex", justifyContent: "space-between", fontSize: 12, color: "var(--ink-soft)", padding: "1px 0" }}>
+                  <span>{k}</span><span style={{ fontWeight: 600, color: "var(--ink)" }}>{String(v)}</span>
+                </div>
+              ))}
+            </div>
+          );
+        })}
+      </div>
+
+      {/* 통계 */}
+      <div style={{ display: "grid", gridTemplateColumns: "1.4fr 1fr", gap: 20, marginBottom: 20 }}>
+        <Section title="거래량 (최근 7일)" description="플랫폼 STO 거래 금액">
+          {volume.length === 0 ? <EmptyState text="거래 데이터가 없습니다." /> : (
+            <MiniBars values={volume.map((v) => v.amount)} labels={volume.map((v) => v.label)} />
+          )}
+        </Section>
+        <Section title="플랫폼 사용자" description="역할별 구성">
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
+            <StatCard label="소상공인" value={String(stats?.merchants ?? 0)} />
+            <StatCard label="투자자" value={String(stats?.investors ?? 0)} />
+            <StatCard label="STO 자산" value={String(stats?.total_sto ?? 0)} />
+            <StatCard label="온체인 기록" value={String(stats?.onchain_records ?? 0)} />
           </div>
-        )}
-      </Section>
+        </Section>
+      </div>
 
       {/* STO 발행 */}
-      <Section id="issue" title="Issue New STO" description="탄소 환경 자산을 토큰증권으로 발행 (ERC-1400 컨트랙트 배포 mock)">
-        <form onSubmit={issueSto} className="grid grid-cols-1 gap-3 md:grid-cols-4">
-          <select value={assetType} onChange={(e) => setAssetType(e.target.value)} className="ebc-input">
-            <option value="SOLAR">Solar Power</option>
-            <option value="WIND">Wind Power</option>
-            <option value="FOREST">Carbon Forest</option>
-            <option value="HYDRO">Hydro Power</option>
-          </select>
-          <input
-            required
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            placeholder="자산명 (예: 경주 태양광 3호)"
-            className="ebc-input md:col-span-1"
-          />
-          <input
-            type="number"
-            min={1}
-            value={supply}
-            onChange={(e) => setSupply(Number(e.target.value))}
-            placeholder="총 발행량"
-            className="ebc-input"
-          />
-          <div className="flex gap-2">
-            <input
-              type="number"
-              min={1}
-              value={price}
-              onChange={(e) => setPrice(Number(e.target.value))}
-              placeholder="토큰가격"
-              className="ebc-input"
-            />
-            <Button type="submit">발행</Button>
-          </div>
-        </form>
+      <Section id="issue" title="STO 발행" description="탄소 환경 자산을 토큰증권으로 발행 (ERC-1400)" action={<Button onClick={() => setShowIssue(true)}>+ 새 STO 발행</Button>}>
+        <p style={{ fontSize: 13, color: "var(--ink-soft)" }}>총 {stats?.total_sto ?? 0}개 자산이 발행되었습니다. 발행 시 스마트 컨트랙트가 배포되고 마켓플레이스에 공개됩니다.</p>
       </Section>
 
       {/* 사용자 관리 */}
-      <Section id="users" title="User Management" description="계정 정지/복원 (감사 로그 기록)">
-        <table className="w-full text-sm">
-          <thead>
-            <tr className="text-left text-xs uppercase text-muted">
-              <th className="py-2">이메일</th>
-              <th>역할</th>
-              <th>상태</th>
-              <th className="text-right">작업</th>
-            </tr>
-          </thead>
+      <Section id="users" title="사용자 관리" description="계정 정지 / 복원 (감사 로그 기록)">
+        <table style={{ width: "100%", fontSize: 13.5, borderCollapse: "collapse" }}>
+          <thead><tr style={{ textAlign: "left", color: "var(--ink-soft)", fontSize: 11.5 }}>
+            <th style={{ padding: "0 0 8px" }}>이메일</th><th>역할</th><th>상태</th><th style={{ textAlign: "right" }}>작업</th>
+          </tr></thead>
           <tbody>
             {users.map((u) => (
-              <tr key={u.id} className="border-t border-border">
-                <td className="py-2">{u.email}</td>
-                <td>
-                  <Badge tone="gray">{u.role}</Badge>
-                </td>
-                <td>
-                  <Badge tone={u.is_active ? "green" : "red"}>{u.is_active ? "ACTIVE" : "SUSPENDED"}</Badge>
-                </td>
-                <td className="text-right">
-                  {u.is_active ? (
-                    <button
-                      onClick={() => userAction(u, "suspend")}
-                      className="text-xs font-semibold text-danger hover:underline"
-                    >
-                      정지
-                    </button>
-                  ) : (
-                    <button
-                      onClick={() => userAction(u, "restore")}
-                      className="text-xs font-semibold text-brand hover:underline"
-                    >
-                      복원
-                    </button>
-                  )}
+              <tr key={u.id} style={{ borderTop: "1px solid var(--line)" }}>
+                <td style={{ padding: "10px 0" }}>{u.email}</td>
+                <td><Badge tone="gray">{u.role}</Badge></td>
+                <td><Badge tone={u.is_active ? "green" : "red"}>{u.is_active ? "활성" : "정지"}</Badge></td>
+                <td style={{ textAlign: "right" }}>
+                  <button onClick={() => userAction(u, u.is_active ? "suspend" : "restore")} style={{ background: "none", border: "none", cursor: "pointer", fontWeight: 600, fontSize: 12.5, color: u.is_active ? "var(--danger)" : "var(--forest)" }}>
+                    {u.is_active ? "정지" : "복원"}
+                  </button>
                 </td>
               </tr>
             ))}
@@ -202,28 +131,69 @@ function AdminBody() {
       </Section>
 
       {/* 감사 로그 */}
-      <Section id="audit" title="Audit Log" description="관리자 작업 감사 로그(불변)">
-        {logs.length === 0 ? (
-          <p className="text-sm text-muted">감사 로그가 없습니다.</p>
-        ) : (
-          <ul className="divide-y divide-border text-sm">
+      <Section id="audit" title="감사 로그" description="불변 관리 작업 기록">
+        {logs.length === 0 ? <EmptyState icon="🗂" text="감사 로그가 없습니다." /> : (
+          <div style={{ display: "flex", flexDirection: "column" }}>
             {logs.map((log) => (
-              <li key={log.id} className="flex items-center justify-between py-2">
-                <div>
-                  <span className="font-semibold">{log.action}</span>
-                  {log.target_type && (
-                    <span className="text-muted">
-                      {" "}
-                      → {log.target_type}#{log.target_id}
-                    </span>
-                  )}
-                </div>
-                <span className="text-xs text-muted">{dateStr(log.created_at)}</span>
-              </li>
+              <div key={log.id} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "10px 0", borderTop: "1px solid var(--line)", fontSize: 13 }}>
+                <div><span style={{ fontWeight: 600 }}>{log.action}</span>{log.target_type && <span style={{ color: "var(--ink-soft)" }}> → {log.target_type}#{log.target_id}</span>}</div>
+                <span style={{ fontSize: 11.5, color: "var(--ink-soft)" }}>{dateStr(log.created_at)}</span>
+              </div>
             ))}
-          </ul>
+          </div>
         )}
       </Section>
+
+      {showIssue && <IssueModal onClose={() => setShowIssue(false)} onDone={async () => { setShowIssue(false); await load(); }} />}
     </div>
+  );
+}
+
+function IssueModal({ onClose, onDone }: { onClose: () => void; onDone: () => void }) {
+  const toast = useToast();
+  const [f, setF] = useState({ asset_type: "SOLAR", name: "", location: "", total_token_supply: 5000, token_price: 10000, expected_yield: 6.0, co2_offset_per_year: 40, installed_capacity_mw: 2.5, dividend_period_months: 3 });
+  const [busy, setBusy] = useState(false);
+  const set = (k: string, v: string | number) => setF((p) => ({ ...p, [k]: v }));
+
+  async function submit() {
+    if (!f.name.trim()) { toast.show("자산명을 입력하세요.", "error"); return; }
+    setBusy(true);
+    try {
+      await api<STOAsset>("/sto", { method: "POST", body: { ...f, token_price: String(f.token_price), expected_yield: String(f.expected_yield), installed_capacity_mw: String(f.installed_capacity_mw) } });
+      toast.show(`STO "${f.name}" 발행 완료.`, "success");
+      onDone();
+    } catch (err) { toast.show(err instanceof ApiError ? err.message : "발행 실패", "error"); }
+    finally { setBusy(false); }
+  }
+
+  const field = (label: string, k: string, type = "text", opts?: string[]) => (
+    <label style={{ display: "block" }}>
+      <span style={{ fontSize: 11.5, color: "var(--ink-soft)" }}>{label}</span>
+      {opts ? (
+        <select className="field" value={f[k as keyof typeof f]} onChange={(e) => set(k, e.target.value)}>{opts.map((o) => <option key={o} value={o}>{o}</option>)}</select>
+      ) : (
+        <input className="field" type={type} value={f[k as keyof typeof f]} onChange={(e) => set(k, type === "number" ? Number(e.target.value) : e.target.value)} />
+      )}
+    </label>
+  );
+
+  return (
+    <Modal onClose={onClose} title="새 STO 발행">
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10, marginBottom: 16 }}>
+        {field("자산 유형", "asset_type", "text", ["SOLAR", "WIND", "FOREST", "HYDRO"])}
+        {field("자산명", "name")}
+        {field("위치", "location")}
+        {field("설비용량 (MW)", "installed_capacity_mw", "number")}
+        {field("총 발행량", "total_token_supply", "number")}
+        {field("토큰 단가 (원)", "token_price", "number")}
+        {field("예상 수익률 (%)", "expected_yield", "number")}
+        {field("연 CO₂ 저감 (t)", "co2_offset_per_year", "number")}
+        {field("배당 주기 (월)", "dividend_period_months", "number")}
+      </div>
+      <div style={{ display: "flex", gap: 10, justifyContent: "flex-end" }}>
+        <Button variant="ghost" onClick={onClose}>취소</Button>
+        <Button onClick={submit} disabled={busy}>{busy ? "배포 중…" : "배포 및 발행"}</Button>
+      </div>
+    </Modal>
   );
 }

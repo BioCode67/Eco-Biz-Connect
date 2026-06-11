@@ -1,58 +1,181 @@
 @import "tailwindcss";
 
 :root {
-  --background: #f4f7f5;
-  --foreground: #14241c;
-  --brand: #1f8a52;
-  --brand-dark: #14633a;
-  --brand-light: #e6f4ec;
-  --accent: #0ea5a4;
-  --muted: #6b7c74;
+  /* 종이 같은 따뜻한 배경 + 깊은 포레스트 그린 + ESG 강조 골드 */
+  --paper: #f7f6f1;
+  --paper-2: #efeee7;
+  --ink: #1a2420;
+  --ink-soft: #5c6660;
+  --line: #e4e2d8;
+
+  --forest: #15603a;
+  --forest-deep: #0e482c;
+  --forest-soft: #e7f0ea;
+  --leaf: #3a9b63;
+  --gold: #b8893b;
+  --gold-soft: #f5ecdc;
+  --sky: #2b6f8f;
+
+  --danger: #c0492f;
+  --danger-soft: #f7e3dd;
+  --warn: #b9842a;
+  --warn-soft: #f6ecd6;
+
   --card: #ffffff;
-  --border: #e3eae5;
-  --danger: #d14343;
-  --warning: #d9952b;
+  --shadow-sm: 0 1px 2px rgba(26, 36, 32, 0.05), 0 1px 1px rgba(26, 36, 32, 0.04);
+  --shadow-md: 0 6px 20px -8px rgba(20, 60, 40, 0.18), 0 2px 6px -2px rgba(26, 36, 32, 0.06);
+  --shadow-lg: 0 24px 48px -16px rgba(14, 72, 44, 0.28);
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --color-brand: var(--brand);
-  --color-brand-dark: var(--brand-dark);
-  --color-brand-light: var(--brand-light);
-  --color-accent: var(--accent);
-  --color-muted: var(--muted);
-  --color-card: var(--card);
-  --color-border: var(--border);
+  --color-paper: var(--paper);
+  --color-paper-2: var(--paper-2);
+  --color-ink: var(--ink);
+  --color-ink-soft: var(--ink-soft);
+  --color-line: var(--line);
+  --color-forest: var(--forest);
+  --color-forest-deep: var(--forest-deep);
+  --color-forest-soft: var(--forest-soft);
+  --color-leaf: var(--leaf);
+  --color-gold: var(--gold);
+  --color-gold-soft: var(--gold-soft);
+  --color-sky: var(--sky);
   --color-danger: var(--danger);
-  --color-warning: var(--warning);
-  --font-sans: var(--font-geist-sans);
+  --color-warn: var(--warn);
+  --color-card: var(--card);
+  --font-sans: var(--font-sans);
+  --font-display: var(--font-display);
 }
 
+html,
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: var(--font-sans), system-ui, -apple-system, Arial, sans-serif;
+  background-color: var(--paper);
+  color: var(--ink);
+  font-family: var(--font-sans), system-ui, -apple-system, sans-serif;
+  font-feature-settings: "cv05", "ss01";
 }
 
-/* 공용 유틸 */
-.ebc-card {
+/* 미세한 종이 질감(노이즈) — 평평한 단색 배경의 'AI 기본값' 느낌을 없앤다 */
+.bg-grain {
+  background-image: radial-gradient(rgba(26, 36, 32, 0.025) 1px, transparent 1px);
+  background-size: 4px 4px;
+}
+
+.font-display {
+  font-family: var(--font-display), Georgia, serif;
+  letter-spacing: -0.01em;
+}
+
+/* ---- 카드 ---- */
+.card {
   background: var(--card);
-  border: 1px solid var(--border);
-  border-radius: 0.875rem;
-  box-shadow: 0 1px 2px rgba(20, 36, 28, 0.04);
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  box-shadow: var(--shadow-sm);
+}
+.card-hover {
+  transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
+}
+.card-hover:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+  border-color: #d6e3da;
 }
 
-.ebc-input {
+/* ---- 입력 ---- */
+.field {
   width: 100%;
-  border-radius: 0.5rem;
-  border: 1px solid var(--border);
-  background: var(--background);
-  padding: 0.55rem 0.75rem;
-  font-size: 0.875rem;
+  border-radius: 10px;
+  border: 1px solid var(--line);
+  background: var(--paper);
+  padding: 0.6rem 0.8rem;
+  font-size: 0.9rem;
+  color: var(--ink);
   outline: none;
+  transition: border-color 0.15s, box-shadow 0.15s, background 0.15s;
 }
-.ebc-input:focus {
-  border-color: var(--brand);
-  box-shadow: 0 0 0 3px var(--brand-light);
+.field:focus {
+  border-color: var(--leaf);
+  background: #fff;
+  box-shadow: 0 0 0 3px var(--forest-soft);
+}
+.field::placeholder {
+  color: #aab2ac;
+}
+
+/* ---- 버튼 ---- */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.45rem;
+  border-radius: 10px;
+  padding: 0.6rem 1.05rem;
+  font-size: 0.88rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.12s, box-shadow 0.18s, background 0.18s, opacity 0.18s;
+  white-space: nowrap;
+}
+.btn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+.btn-primary {
+  background: linear-gradient(180deg, var(--forest) 0%, var(--forest-deep) 100%);
+  color: #fff;
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.12) inset, var(--shadow-sm);
+}
+.btn-primary:not(:disabled):hover {
+  box-shadow: 0 8px 18px -8px rgba(14, 72, 44, 0.6);
+  transform: translateY(-1px);
+}
+.btn-ghost {
+  background: transparent;
+  color: var(--ink-soft);
+  border: 1px solid var(--line);
+}
+.btn-ghost:not(:disabled):hover {
+  background: var(--forest-soft);
+  color: var(--forest-deep);
+  border-color: #d6e3da;
+}
+
+/* ---- 칩/배지 ---- */
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  border-radius: 999px;
+  padding: 0.18rem 0.6rem;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+}
+
+/* ---- 스켈레톤 ---- */
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+.skeleton {
+  background: linear-gradient(90deg, var(--paper-2) 25%, #f4f3ee 50%, var(--paper-2) 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.4s infinite;
+  border-radius: 8px;
+}
+
+/* ---- 토스트 ---- */
+@keyframes toastIn {
+  from { opacity: 0; transform: translateY(8px) scale(0.98); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+.toast-in {
+  animation: toastIn 0.22s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+/* 얇은 스크롤바 */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #cdd6cf transparent;
 }
