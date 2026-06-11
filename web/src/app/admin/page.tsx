@@ -22,6 +22,16 @@ const NAV = [
 
 const STATUS_TONE: Record<string, "green" | "amber" | "red"> = { UP: "green", HEALTHY: "green", SYNCED: "green", DEGRADED: "amber", DOWN: "red" };
 
+// 서브시스템 표시명 — 약어 보존(AI/API). 미정의 키는 단어별 첫 글자만 대문자.
+const SUBSYSTEM_LABEL: Record<string, string> = {
+  ai_engine: "AI Engine",
+  blockchain_network: "Blockchain Network",
+  bank_api: "Bank API",
+};
+function subsystemName(key: string): string {
+  return SUBSYSTEM_LABEL[key] ?? key.replace(/_/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
+}
+
 export default function AdminPage() {
   return (
     <DashboardShell role="ADMIN" nav={NAV} title="관리자 콘솔" subtitle="실시간 시스템 모니터링" badge={<Badge tone="green">● LIVE</Badge>}>
@@ -79,7 +89,7 @@ function AdminBody() {
     if (status === "DEGRADED" || status === "DOWN") {
       alerts.push({
         level: status === "DOWN" ? "danger" : "warn",
-        title: `${key.replace(/_/g, " ")} · ${status}`,
+        title: `${subsystemName(key)} · ${status}`,
         detail: String((val as Record<string, unknown>).note ?? "응답 지연 감지"),
         time: "실시간",
       });
@@ -100,12 +110,12 @@ function AdminBody() {
           return (
             <div key={key} className="card card-hover" style={{ padding: 18 }}>
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
-                <span style={{ fontWeight: 600, fontSize: 14, textTransform: "capitalize" }}>{key.replace(/_/g, " ")}</span>
+                <span style={{ fontWeight: 600, fontSize: 14 }}>{subsystemName(key)}</span>
                 <Badge tone={STATUS_TONE[status] ?? "gray"}>{status}</Badge>
               </div>
               {Object.entries(val as Record<string, unknown>).filter(([k]) => k !== "status").map(([k, v]) => (
                 <div key={k} style={{ display: "flex", justifyContent: "space-between", fontSize: 12, color: "var(--ink-soft)", padding: "1px 0" }}>
-                  <span>{k}</span><span style={{ fontWeight: 600, color: "var(--ink)" }}>{String(v)}</span>
+                  <span>{k.replace(/_/g, " ")}</span><span style={{ fontWeight: 600, color: "var(--ink)" }}>{String(v)}</span>
                 </div>
               ))}
             </div>
