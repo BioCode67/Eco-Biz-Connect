@@ -6,7 +6,7 @@ import { ScrollView, StyleSheet, Text, TextInput, View } from "react-native";
 import { Badge, Button, Section } from "../components/ui";
 import { api, ApiError } from "../lib/api";
 import { useAuth } from "../lib/auth";
-import { num, won } from "../lib/format";
+import { num, pct, won } from "../lib/format";
 import type { STOAsset } from "../lib/types";
 import { colors } from "../theme";
 
@@ -74,7 +74,13 @@ export default function MarketplaceScreen() {
                   <Badge tone="green">{a.asset_type}</Badge>
                 </View>
                 <Text style={styles.productName}>{a.name}</Text>
-                <Text style={styles.muted}>가격 {won(a.token_price)} · 잔여 {num(a.remaining_tokens)}/{num(a.total_token_supply)}</Text>
+                {a.location ? <Text style={styles.muted}>📍 {a.location}</Text> : null}
+                <View style={{ flexDirection: "row", alignItems: "baseline", gap: 6, marginTop: 4 }}>
+                  <Text style={styles.yield}>{pct(a.expected_yield)}</Text>
+                  <Text style={styles.muted}>예상 연수익률</Text>
+                </View>
+                <Text style={styles.muted}>가격 {won(a.token_price)} · CO₂ {a.co2_offset_per_year}t/년</Text>
+                <Text style={styles.muted}>잔여 {num(a.remaining_tokens)}/{num(a.total_token_supply)}</Text>
                 <View style={styles.buyRow}>
                   <TextInput
                     style={styles.qty}
@@ -103,6 +109,7 @@ const styles = StyleSheet.create({
   product: { paddingVertical: 12, borderTopColor: colors.border, borderTopWidth: 1 },
   productHead: { flexDirection: "row", justifyContent: "space-between", alignItems: "center" },
   productName: { fontSize: 15, fontWeight: "700", color: colors.text, marginTop: 4 },
+  yield: { fontSize: 20, fontWeight: "800", color: colors.brand },
   buyRow: { flexDirection: "row", alignItems: "center", gap: 8, marginTop: 8 },
   qty: { width: 64, borderColor: colors.border, borderWidth: 1, borderRadius: 8, paddingHorizontal: 10, paddingVertical: 8, color: colors.text },
 });

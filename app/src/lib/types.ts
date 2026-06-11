@@ -58,7 +58,17 @@ export interface STOAsset {
   total_token_supply: number;
   remaining_tokens: number;
   token_price: string;
+  expected_yield: string;
+  co2_offset_per_year: number;
+  location: string | null;
   status: string;
+}
+
+export interface UpcomingDividend {
+  sto_asset_id: number;
+  asset_name: string;
+  next_distribution_date: string;
+  estimated_amount: string;
 }
 
 export interface Holding {
@@ -74,7 +84,9 @@ export interface Portfolio {
   total_invested: string;
   total_current_value: string;
   total_dividends_received: string;
+  total_return_pct: number;
   holdings: Holding[];
+  upcoming_dividends: UpcomingDividend[];
 }
 
 export interface SystemMetrics {

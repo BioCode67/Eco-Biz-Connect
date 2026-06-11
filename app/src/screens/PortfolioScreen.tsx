@@ -33,6 +33,17 @@ export default function PortfolioScreen() {
         <StatCard label="Dividends" value={won(portfolio?.total_dividends_received)} />
       </View>
 
+      {portfolio && portfolio.upcoming_dividends.length > 0 ? (
+        <Section title="예정 배당" subtitle="다음 분배 일정">
+          {portfolio.upcoming_dividends.map((u) => (
+            <View key={u.sto_asset_id} style={styles.row}>
+              <Text style={[styles.name, { flex: 1 }]}>{u.asset_name}</Text>
+              <Text style={styles.value}>{won(u.estimated_amount)}</Text>
+            </View>
+          ))}
+        </Section>
+      ) : null}
+
       <Section title="Holdings" subtitle="보유 자산">
         {!portfolio || portfolio.holdings.length === 0 ? (
           <Text style={styles.muted}>보유 자산이 없습니다.</Text>
