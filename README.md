@@ -114,7 +114,7 @@ Eco-Biz-Connect/
 
 - **검증:** 백엔드 `pytest` 64개 통과 · 웹 `next build` 통과 · 앱 `tsc`+`expo export` 통과 · 3개 역할 브라우저 클릭 점검 완료([`ISSUES.md`](./ISSUES.md))
 - **품질 기록:** 설계 대비 갭([`GAP_ANALYSIS.md`](./GAP_ANALYSIS.md)) · 출시 자가진단([`QA_REVIEW.md`](./QA_REVIEW.md))
-- **UI:** Analysis 단계 프로토타입(`proto_01~05.svg`)을 시각 기준으로 삼아 실제 제품 수준 화면으로 구현 — Apple 스타일 디자인 시스템(반응형·명확한 대비·접근성(ARIA·키보드)·마이크로 인터랙션), 웹↔앱 디자인 토큰 일치
+- **UI:** Analysis 단계 프로토타입(`proto_01~05.svg`)을 시각 기준으로 삼아 실제 제품 수준 화면으로 구현 — Apple 스타일 디자인 시스템(반응형·**라이트/다크 모드 토글**·접근성(ARIA·키보드)·마이크로 인터랙션), 웹↔앱 디자인 토큰 일치
 
 ### 빠른 실행
 ```bash
