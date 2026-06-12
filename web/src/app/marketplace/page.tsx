@@ -169,10 +169,10 @@ function MarketplaceBody() {
 
       {/* 비교 플로팅 바 */}
       {compareList.length > 0 && (
-        <div style={{ position: "fixed", left: "50%", transform: "translateX(-50%)", bottom: 24, zIndex: 45, display: "flex", alignItems: "center", gap: 14, padding: "10px 14px 10px 18px", borderRadius: 980, background: "var(--ink)", color: "#fff", boxShadow: "var(--shadow-lg)" }}>
+        <div style={{ position: "fixed", left: "50%", transform: "translateX(-50%)", bottom: 24, zIndex: 45, display: "flex", alignItems: "center", gap: 14, padding: "10px 14px 10px 18px", borderRadius: 980, background: "var(--ink)", color: "var(--paper)", boxShadow: "var(--shadow-lg)" }}>
           <span style={{ fontSize: 13.5 }}>{compareList.length}개 상품 선택됨</span>
           <button onClick={() => setShowCompare(true)} disabled={compareList.length < 2} className="btn btn-primary" style={{ padding: "7px 16px" }}>비교하기</button>
-          <button onClick={() => setCompareList([])} aria-label="비교 초기화" style={{ background: "none", border: "none", color: "rgba(255,255,255,0.7)", cursor: "pointer", fontSize: 18 }}>×</button>
+          <button onClick={() => setCompareList([])} aria-label="비교 초기화" style={{ background: "none", border: "none", color: "var(--paper)", opacity: 0.7, cursor: "pointer", fontSize: 18 }}>×</button>
         </div>
       )}
 

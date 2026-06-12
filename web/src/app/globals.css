@@ -6,10 +6,17 @@
    ============================================================ */
 
 :root {
+  color-scheme: light;
   /* 배경/표면 */
   --paper: #ffffff;
   --paper-2: #f5f5f7;
   --card: #ffffff;
+
+  /* 시맨틱 표면(다크 모드 대응) */
+  --glass: rgba(255, 255, 255, 0.7); /* 프로스티드 헤더·사이드바 */
+  --fill: #f0f0f3;                    /* 고스트 버튼·칩 채움 */
+  --fill-strong: #e4e4e9;            /* 고스트 hover */
+  --seg-active: #ffffff;             /* 세그먼트 컨트롤 활성 pill */
 
   /* 텍스트 — Apple 정확 그레이 */
   --ink: #1d1d1f;
@@ -40,6 +47,42 @@
 
   --radius: 22px;
   --radius-sm: 14px;
+}
+
+/* ===== 다크 모드 — 토큰만 재정의(컴포넌트는 var() 사용이라 자동 적용) ===== */
+[data-theme="dark"] {
+  color-scheme: dark;
+  --paper: #2c2c2e;
+  --paper-2: #000000;
+  --card: #1c1c1e;
+
+  --glass: rgba(28, 28, 30, 0.72);
+  --fill: #2c2c2e;
+  --fill-strong: #3a3a3c;
+  --seg-active: #48484a;
+
+  --ink: #f5f5f7;
+  --ink-soft: #98989d;
+  --ink-faint: #636366;
+  --line: #38383a;
+  --hairline: rgba(255, 255, 255, 0.1);
+
+  --forest: #34c759;       /* 다크 배경에서 가독성 위해 밝게 */
+  --forest-deep: #30d158;
+  --forest-soft: rgba(48, 209, 88, 0.16);
+  --leaf: #30d158;
+  --gold: #d9a441;
+  --gold-soft: rgba(217, 164, 65, 0.18);
+  --sky: #0a84ff;          /* Apple 다크 블루 */
+
+  --danger: #ff453a;
+  --danger-soft: rgba(255, 69, 58, 0.18);
+  --warn: #d9a441;
+  --warn-soft: rgba(217, 164, 65, 0.18);
+
+  --shadow-sm: 0 0.5px 1px rgba(0, 0, 0, 0.5), 0 1px 2px rgba(0, 0, 0, 0.4);
+  --shadow-md: 0 2px 8px rgba(0, 0, 0, 0.5), 0 12px 32px -12px rgba(0, 0, 0, 0.7);
+  --shadow-lg: 0 8px 28px rgba(0, 0, 0, 0.55), 0 40px 90px -24px rgba(0, 0, 0, 0.8);
 }
 
 @theme inline {
@@ -194,11 +237,11 @@ table,
   transform: scale(1.02);
 }
 .btn-ghost {
-  background: var(--paper-2);
+  background: var(--fill);
   color: var(--ink);
 }
 .btn-ghost:not(:disabled):hover {
-  background: #e8e8ed;
+  background: var(--fill-strong);
 }
 .btn-lg {
   padding: 0.85rem 1.7rem;
@@ -235,7 +278,7 @@ table,
   100% { background-position: 200% 0; }
 }
 .skeleton {
-  background: linear-gradient(90deg, var(--paper-2) 25%, #ebebef 50%, var(--paper-2) 75%);
+  background: linear-gradient(90deg, var(--fill) 25%, var(--fill-strong) 50%, var(--fill) 75%);
   background-size: 200% 100%;
   animation: shimmer 1.4s infinite;
   border-radius: var(--radius-sm);
@@ -317,7 +360,7 @@ input:focus-visible,
 .shell-aside {
   width: 240px;
   flex-shrink: 0;
-  background: rgba(250, 250, 252, 0.72);
+  background: var(--glass);
   backdrop-filter: saturate(180%) blur(20px);
   border-right: 1px solid var(--hairline);
   display: flex;

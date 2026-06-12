@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 import { Reveal } from "@/components/Reveal";
+import { ThemeToggle } from "@/components/ThemeToggle";
 import { useToast } from "@/components/Toast";
 import { ApiError } from "@/lib/api";
 import { useAuth } from "@/lib/auth";
@@ -66,10 +67,11 @@ export default function LoginPage() {
   return (
     <div style={{ minHeight: "100vh", background: "var(--paper)" }}>
       {/* 상단 미니 내비 */}
-      <header style={{ position: "sticky", top: 0, zIndex: 30, background: "rgba(255,255,255,0.8)", backdropFilter: "saturate(180%) blur(20px)", borderBottom: "1px solid var(--line)" }}>
+      <header style={{ position: "sticky", top: 0, zIndex: 30, background: "var(--glass)", backdropFilter: "saturate(180%) blur(20px)", borderBottom: "1px solid var(--line)" }}>
         <div className="container" style={{ height: 52, display: "flex", alignItems: "center", gap: 9 }}>
           <LeafLogo />
           <span style={{ fontWeight: 600, fontSize: 15, letterSpacing: "-0.01em" }}>Eco-Biz Connect</span>
+          <div style={{ marginLeft: "auto" }}><ThemeToggle /></div>
         </div>
       </header>
 
@@ -100,7 +102,7 @@ export default function LoginPage() {
               {roles.map((r) => (
                 <button key={r.v} type="button" onClick={() => setRole(r.v)} aria-pressed={role === r.v}
                   style={{ borderRadius: 980, padding: "8px 0", fontSize: 13, fontWeight: 500, cursor: "pointer", border: "none",
-                    background: role === r.v ? "#fff" : "transparent", color: role === r.v ? "var(--ink)" : "var(--ink-soft)",
+                    background: role === r.v ? "var(--seg-active)" : "transparent", color: role === r.v ? "var(--ink)" : "var(--ink-soft)",
                     boxShadow: role === r.v ? "var(--shadow-sm)" : "none", transition: "all .2s" }}>
                   {r.label}
                 </button>

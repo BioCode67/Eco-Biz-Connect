@@ -7,6 +7,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
 import { Icon } from "@/components/Icon";
+import { ThemeToggle } from "@/components/ThemeToggle";
 import { useAuth } from "@/lib/auth";
 import type { Role } from "@/lib/types";
 
@@ -107,7 +108,7 @@ export default function DashboardShell({
       </aside>
 
       <main className="shell-main">
-        <header style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12, padding: "clamp(14px,2.5vw,20px) clamp(16px,3vw,32px)", borderBottom: "1px solid var(--line)", background: "rgba(255,255,255,0.7)", backdropFilter: "blur(8px)", position: "sticky", top: 0, zIndex: 20 }}>
+        <header style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12, padding: "clamp(14px,2.5vw,20px) clamp(16px,3vw,32px)", borderBottom: "1px solid var(--line)", background: "var(--glass)", backdropFilter: "saturate(180%) blur(12px)", position: "sticky", top: 0, zIndex: 20 }}>
           <div style={{ display: "flex", alignItems: "center", gap: 12, minWidth: 0 }}>
             <button className="shell-hamburger" onClick={() => setDrawerOpen(true)} aria-label="메뉴 열기">☰</button>
             <div style={{ minWidth: 0 }}>
@@ -115,7 +116,10 @@ export default function DashboardShell({
               {subtitle && <p style={{ fontSize: 13, color: "var(--ink-soft)", marginTop: 1, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{subtitle}</p>}
             </div>
           </div>
-          {badge}
+          <div style={{ display: "flex", alignItems: "center", gap: 10, flexShrink: 0 }}>
+            {badge}
+            <ThemeToggle />
+          </div>
         </header>
         <div className="shell-content">{children}</div>
       </main>

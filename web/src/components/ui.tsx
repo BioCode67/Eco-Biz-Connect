@@ -63,7 +63,7 @@ const TONES: Record<string, { bg: string; fg: string }> = {
   amber: { bg: "var(--warn-soft)", fg: "var(--warn)" },
   red: { bg: "var(--danger-soft)", fg: "var(--danger)" },
   blue: { bg: "#e8f1fd", fg: "var(--sky)" },
-  gray: { bg: "var(--paper-2)", fg: "var(--ink-soft)" },
+  gray: { bg: "var(--fill)", fg: "var(--ink-soft)" },
 };
 
 export function Badge({ children, tone = "gray" }: { children: React.ReactNode; tone?: keyof typeof TONES }) {
