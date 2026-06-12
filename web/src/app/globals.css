@@ -33,6 +33,7 @@
   --gold: #bf8a30;
   --gold-soft: #f7f0e2;
   --sky: #0071e3; /* Apple 블루 — 링크/보조 액센트 */
+  --sky-soft: #e8f1fd;
 
   /* 상태 */
   --danger: #d6342a;
@@ -74,6 +75,7 @@
   --gold: #d9a441;
   --gold-soft: rgba(217, 164, 65, 0.18);
   --sky: #0a84ff;          /* Apple 다크 블루 */
+  --sky-soft: rgba(10, 132, 255, 0.18);
 
   --danger: #ff453a;
   --danger-soft: rgba(255, 69, 58, 0.18);

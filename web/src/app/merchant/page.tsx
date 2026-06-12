@@ -344,7 +344,7 @@ function LoanStepper({ status, reason }: { status: string; reason: string | null
         {steps.map((st, i) => (
           <Fragment key={i}>
             <div style={{ display: "flex", flexDirection: "column", alignItems: "center", flex: "0 0 auto" }}>
-              <div style={{ width: 22, height: 22, borderRadius: 999, background: st.state === "pending" ? "var(--paper-2)" : color(st.state), color: st.state === "pending" ? "var(--ink-soft)" : "#fff", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 12, fontWeight: 700 }}>
+              <div style={{ width: 22, height: 22, borderRadius: 999, background: st.state === "pending" ? "var(--fill)" : color(st.state), color: st.state === "pending" ? "var(--ink-soft)" : "#fff", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 12, fontWeight: 700 }}>
                 {st.state === "done" ? "✓" : st.state === "rejected" ? "✕" : i + 1}
               </div>
               <span style={{ fontSize: 11.5, marginTop: 5, color: st.state === "pending" ? "var(--ink-soft)" : "var(--ink)", whiteSpace: "nowrap" }}>{st.label}</span>

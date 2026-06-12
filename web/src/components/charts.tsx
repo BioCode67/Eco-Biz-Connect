@@ -96,7 +96,7 @@ export function DonutGauge({ value, max = 100, label, sub, color = "var(--forest
   return (
     <div style={{ position: "relative", width: size, height: size }} role="img" aria-label={`${label} (${value}/${max})`}>
       <svg width={size} height={size} aria-hidden>
-        <circle cx={size / 2} cy={size / 2} r={r} fill="none" stroke="var(--paper-2)" strokeWidth={stroke} />
+        <circle cx={size / 2} cy={size / 2} r={r} fill="none" stroke="var(--fill)" strokeWidth={stroke} />
         <circle
           cx={size / 2}
           cy={size / 2}
@@ -129,7 +129,7 @@ export function BarRows({ rows }: { rows: { label: string; value: number; max?: 
               <span style={{ color: "var(--ink-soft)" }}>{r.label}</span>
               <span style={{ fontWeight: 700, color: "var(--ink)" }}>{r.value.toFixed(0)}</span>
             </div>
-            <div style={{ height: 8, borderRadius: 999, background: "var(--paper-2)", overflow: "hidden" }}>
+            <div style={{ height: 8, borderRadius: 999, background: "var(--fill)", overflow: "hidden" }}>
               <div style={{ height: "100%", width: `${pctVal}%`, borderRadius: 999, background: r.color ?? "var(--leaf)", transition: "width 0.5s ease" }} />
             </div>
           </div>
@@ -192,7 +192,7 @@ export function DonutBreakdown({ segments, centerLabel, centerSub, formatValue }
     <div style={{ display: "flex", alignItems: "center", gap: 22, flexWrap: "wrap" }}>
       <div style={{ position: "relative", width: size, height: size }}>
         <svg width={size} height={size} role="img" aria-label={`구성: ${segments.map((s) => `${s.label} ${s.value}`).join(", ")}`}>
-          <circle cx={size / 2} cy={size / 2} r={r} fill="none" stroke="var(--paper-2)" strokeWidth={stroke} />
+          <circle cx={size / 2} cy={size / 2} r={r} fill="none" stroke="var(--fill)" strokeWidth={stroke} />
           {segments.map((s) => {
             const frac = s.value / total;
             const dash = `${c * frac} ${c}`;

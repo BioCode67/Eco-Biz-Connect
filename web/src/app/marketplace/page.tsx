@@ -149,7 +149,7 @@ function MarketplaceBody() {
                     <div style={{ display: "flex", justifyContent: "space-between", fontSize: 11, color: "var(--ink-soft)", marginBottom: 4 }}>
                       <span>잔여 {a.remaining_tokens.toLocaleString()}</span><span>{soldPct.toFixed(0)}% 판매</span>
                     </div>
-                    <div style={{ height: 7, borderRadius: 999, background: "var(--paper-2)", overflow: "hidden" }}>
+                    <div style={{ height: 7, borderRadius: 999, background: "var(--fill)", overflow: "hidden" }}>
                       <div style={{ height: "100%", width: `${100 - soldPct}%`, background: "linear-gradient(90deg, var(--leaf), var(--forest))", borderRadius: 999 }} />
                     </div>
                   </div>
@@ -271,7 +271,7 @@ function DetailModal({ asset, kycVerified, onClose, onBuy }: { asset: STOAsset; 
           ))}
         </div>
 
-        <div style={{ height: 8, borderRadius: 999, background: "var(--paper-2)", overflow: "hidden", marginBottom: 8 }}>
+        <div style={{ height: 8, borderRadius: 999, background: "var(--fill)", overflow: "hidden", marginBottom: 8 }}>
           <div style={{ height: "100%", width: `${100 - soldPct}%`, background: "linear-gradient(90deg, var(--leaf), var(--forest))", borderRadius: 999 }} />
         </div>
 
