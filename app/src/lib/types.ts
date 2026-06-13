@@ -32,8 +32,15 @@ export interface ESGScore {
 export interface AnalysisReport {
   id: number;
   summary: string;
-  sales_forecast: { unit: string; labels?: string[]; next_3_months: number[] };
+  sales_forecast: { unit: string; labels?: string[]; next_3_months: number[]; confidence_lower?: number[]; confidence_upper?: number[]; confidence_level?: number };
   cost_optimization_tips: { title: string; detail: string; impact: string }[];
+  district_comparison?: {
+    your_percentile: number;
+    district_avg_sales?: number;
+    your_sales?: number;
+    metrics?: Record<string, number>;
+    note?: string;
+  };
 }
 
 export interface AdminStats {
@@ -66,6 +73,7 @@ export interface LoanApplication {
   applied_rate: string;
   term_months: number;
   status: string;
+  decision_reason?: string | null;
 }
 
 export interface STOAsset {

@@ -2,7 +2,7 @@
 
 import React from "react";
 import { Text, View } from "react-native";
-import Svg, { Circle, Defs, LinearGradient, Path, Stop } from "react-native-svg";
+import Svg, { Circle, Defs, Line, LinearGradient, Path, Polygon, Stop, Text as SvgText } from "react-native-svg";
 
 import { colors } from "../theme";
 
@@ -53,6 +53,48 @@ export function BarRows({ rows }: { rows: { label: string; value: number; max?: 
           </View>
         );
       })}
+    </View>
+  );
+}
+
+/** 레이더 차트 — 내 매장 KPI 백분위 vs 상권 평균 (UC4 상권 비교) */
+export function RadarChart({ axes, reference = 50 }: { axes: { label: string; value: number }[]; reference?: number }) {
+  const size = 240;
+  const cx = size / 2;
+  const cy = size / 2 + 6;
+  const r = 78;
+  const n = axes.length;
+  const angle = (i: number) => (Math.PI * 2 * i) / n - Math.PI / 2;
+  const point = (i: number, v: number): [number, number] => {
+    const rad = (Math.max(0, Math.min(100, v)) / 100) * r;
+    return [cx + rad * Math.cos(angle(i)), cy + rad * Math.sin(angle(i))];
+  };
+  const poly = (vals: number[]) => vals.map((v, i) => point(i, v).join(",")).join(" ");
+  return (
+    <View style={{ alignItems: "center" }}>
+      <Svg width={size} height={size}>
+        {[25, 50, 75, 100].map((g) => (
+          <Polygon key={g} points={poly(axes.map(() => g))} fill="none" stroke={colors.border} strokeWidth={1} />
+        ))}
+        {axes.map((a, i) => {
+          const [x, y] = point(i, 100);
+          return <Line key={i} x1={cx} y1={cy} x2={x} y2={y} stroke={colors.border} strokeWidth={1} />;
+        })}
+        <Polygon points={poly(axes.map(() => reference))} fill="none" stroke={colors.muted} strokeWidth={1.5} strokeDasharray="4 4" />
+        <Polygon points={poly(axes.map((a) => a.value))} fill={colors.brand} fillOpacity={0.16} stroke={colors.brand} strokeWidth={2} />
+        {axes.map((a, i) => {
+          const [x, y] = point(i, 100);
+          const lx = cx + (x - cx) * 1.16;
+          const ly = cy + (y - cy) * 1.16;
+          return (
+            <SvgText key={i} x={lx} y={ly} fontSize={11} fill={colors.muted} textAnchor="middle">{a.label}</SvgText>
+          );
+        })}
+        {axes.map((a, i) => {
+          const [x, y] = point(i, a.value);
+          return <Circle key={i} cx={x} cy={y} r={3.2} fill={colors.card} stroke={colors.brand} strokeWidth={2} />;
+        })}
+      </Svg>
     </View>
   );
 }

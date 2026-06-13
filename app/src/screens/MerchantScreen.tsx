@@ -4,7 +4,7 @@ import * as DocumentPicker from "expo-document-picker";
 import React, { useCallback, useEffect, useState } from "react";
 import { ScrollView, StyleSheet, Text, View } from "react-native";
 
-import { BarRows, DonutGauge, LineChart } from "../components/charts";
+import { BarRows, DonutGauge, LineChart, RadarChart } from "../components/charts";
 import { Skeleton } from "../components/Skeleton";
 import { AppModal } from "../components/AppModal";
 import { useToast } from "../components/Toast";
@@ -92,6 +92,15 @@ export default function MerchantScreen() {
         </Section>
       ) : null}
 
+      {report?.district_comparison?.metrics ? (
+        <Section title="상권 비교 분석" subtitle="동일 상권 동종 업종 대비 백분위 (점선 = 상권 평균)">
+          <RadarChart axes={Object.entries(report.district_comparison.metrics).map(([label, value]) => ({ label, value: Number(value) }))} />
+          <View style={{ alignItems: "center", marginTop: 6 }}>
+            <Text style={styles.muted}>종합 상권 순위 · 상위 {100 - (report.district_comparison.your_percentile ?? 50)}%</Text>
+          </View>
+        </Section>
+      ) : null}
+
       <Section title="경영 데이터" subtitle="CSV·Excel 업로드 → 분석 실행">
         <Button title="파일 업로드" onPress={upload} />
         {datasets.length === 0 ? <EmptyState icon="📄" text="업로드한 데이터가 없습니다." /> : datasets.map((d) => (
@@ -120,9 +129,12 @@ export default function MerchantScreen() {
 
       <Section title="대출 신청 현황">
         {loans.length === 0 ? <EmptyState icon="📋" text="신청 내역이 없습니다." /> : loans.map((l) => (
-          <View key={l.id} style={styles.row}>
-            <Text style={styles.rowText}>{won(l.amount)} · {pct(l.applied_rate)}</Text>
-            <Badge tone={l.status === "APPROVED" ? "green" : l.status === "REJECTED" ? "red" : "amber"}>{statusKo[l.status] ?? l.status}</Badge>
+          <View key={l.id} style={{ paddingVertical: 12, borderTopColor: colors.border, borderTopWidth: 1 }}>
+            <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center", marginBottom: 12 }}>
+              <Text style={styles.rowText}>{won(l.amount)} · {pct(l.applied_rate)} · {l.term_months}개월</Text>
+              <Badge tone={l.status === "APPROVED" ? "green" : l.status === "REJECTED" ? "red" : "amber"}>{statusKo[l.status] ?? l.status}</Badge>
+            </View>
+            <LoanStepper status={l.status} reason={l.decision_reason} />
           </View>
         ))}
       </Section>
@@ -159,6 +171,35 @@ function LoanModal({ product, onClose, onDone }: { product: MatchedProduct | nul
       <Field label="대출 목적" value={purpose} onChangeText={setPurpose} />
       <Button title={busy ? "신청 중…" : "신청 제출 (약관 동의)"} onPress={submit} disabled={busy} />
     </AppModal>
+  );
+}
+
+function LoanStepper({ status, reason }: { status: string; reason?: string | null }) {
+  const decided = status === "APPROVED" || status === "REJECTED";
+  const approved = status === "APPROVED";
+  const steps = [
+    { label: "신청", state: "done" as const },
+    { label: "심사", state: (decided ? "done" : "active") as "done" | "active" },
+    { label: approved ? "승인" : status === "REJECTED" ? "거절" : "결과", state: (decided ? (approved ? "done" : "rejected") : "pending") as "done" | "rejected" | "pending" },
+  ];
+  const col = (s: string) => (s === "done" ? colors.brand : s === "active" ? colors.warning : s === "rejected" ? colors.danger : colors.border);
+  return (
+    <View>
+      <View style={{ flexDirection: "row", alignItems: "center" }}>
+        {steps.map((st, i) => (
+          <React.Fragment key={st.label}>
+            <View style={{ alignItems: "center", width: 64 }}>
+              <View style={{ width: 22, height: 22, borderRadius: 999, backgroundColor: st.state === "pending" ? colors.border : col(st.state), alignItems: "center", justifyContent: "center" }}>
+                <Text style={{ color: st.state === "pending" ? colors.muted : colors.white, fontSize: 11, fontWeight: "700" }}>{st.state === "rejected" ? "✕" : i + 1}</Text>
+              </View>
+              <Text style={{ fontSize: 11, color: colors.muted, marginTop: 4 }}>{st.label}</Text>
+            </View>
+            {i < steps.length - 1 ? <View style={{ flex: 1, height: 2, backgroundColor: steps[i + 1].state === "pending" ? colors.border : col(steps[i + 1].state), marginBottom: 16 }} /> : null}
+          </React.Fragment>
+        ))}
+      </View>
+      {decided && reason ? <Text style={[styles.muted, { marginTop: 8 }]}>심사 의견: {reason}</Text> : null}
+    </View>
   );
 }
 
