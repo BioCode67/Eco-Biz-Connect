@@ -158,3 +158,13 @@ export interface AdminUser {
   role: Role;
   is_active: boolean;
 }
+
+export interface AuditLog {
+  id: number;
+  actor_id: number | null;
+  action: string;
+  target_type: string | null;
+  target_id: number | null;
+  detail: Record<string, unknown> | null;
+  created_at: string;
+}

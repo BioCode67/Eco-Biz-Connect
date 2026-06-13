@@ -9,8 +9,8 @@ import { Skeleton } from "../components/Skeleton";
 import { useToast } from "../components/Toast";
 import { Badge, Button, EmptyState, Field, Section, StatCard } from "../components/ui";
 import { api, ApiError } from "../lib/api";
-import { roleKo, subsystemName } from "../lib/format";
-import type { AdminStats, AdminUser, STOAsset, SystemMetrics } from "../lib/types";
+import { dateStr, roleKo, subsystemName } from "../lib/format";
+import type { AdminStats, AdminUser, AuditLog, STOAsset, SystemMetrics } from "../lib/types";
 import { colors } from "../theme";
 
 const STATUS_TONE: Record<string, "green" | "amber" | "red"> = { UP: "green", HEALTHY: "green", SYNCED: "green", DEGRADED: "amber", DOWN: "red" };
@@ -20,16 +20,18 @@ export default function AdminScreen() {
   const [metrics, setMetrics] = useState<SystemMetrics | null>(null);
   const [stats, setStats] = useState<AdminStats | null>(null);
   const [users, setUsers] = useState<AdminUser[]>([]);
+  const [logs, setLogs] = useState<AuditLog[]>([]);
   const [loading, setLoading] = useState(true);
   const [showIssue, setShowIssue] = useState(false);
 
   const load = useCallback(async () => {
-    const [m, s, u] = await Promise.all([
+    const [m, s, u, l] = await Promise.all([
       api<SystemMetrics>("/admin/monitor").catch(() => null),
       api<AdminStats>("/admin/stats").catch(() => null),
       api<AdminUser[]>("/admin/users").catch(() => []),
+      api<AuditLog[]>("/admin/audit-log").catch(() => [] as AuditLog[]),
     ]);
-    setMetrics(m); setStats(s); setUsers(u); setLoading(false);
+    setMetrics(m); setStats(s); setUsers(u); setLogs(l); setLoading(false);
   }, []);
   useEffect(() => { load(); }, [load]);
 
@@ -46,6 +48,17 @@ export default function AdminScreen() {
   const subsystems = metrics?.subsystems ?? {};
   const volume = stats?.tx_volume_7d ?? [];
 
+  type Alert = { level: "danger" | "warn" | "info"; title: string; detail: string; time: string };
+  const alerts: Alert[] = [];
+  Object.entries(subsystems).forEach(([key, val]) => {
+    const status = String((val as Record<string, unknown>).status ?? "");
+    if (status === "DEGRADED" || status === "DOWN") {
+      alerts.push({ level: status === "DOWN" ? "danger" : "warn", title: `${subsystemName(key)} · ${status}`, detail: String((val as Record<string, unknown>).note ?? "응답 지연 감지"), time: "실시간" });
+    }
+  });
+  logs.slice(0, 5).forEach((l) => alerts.push({ level: "info", title: l.action.replace(/_/g, " "), detail: l.target_type ? `${l.target_type}#${l.target_id}` : "관리 작업", time: dateStr(l.created_at) }));
+  const dotColor = (lv: string) => (lv === "danger" ? colors.danger : lv === "warn" ? colors.warning : colors.sky);
+
   return (
     <ScrollView contentContainerStyle={styles.container}>
       <Section title="시스템 모니터" subtitle="서브시스템 상태(mock)">
@@ -59,6 +72,21 @@ export default function AdminScreen() {
           );
         })}
       </Section>
+
+      {alerts.length > 0 ? (
+        <Section title="시스템 알림" subtitle="실시간 경고 및 최근 이벤트">
+          {alerts.map((a, i) => (
+            <View key={i} style={[styles.row, { alignItems: "flex-start" }]}>
+              <View style={{ width: 8, height: 8, borderRadius: 999, backgroundColor: dotColor(a.level), marginTop: 5, marginRight: 10 }} />
+              <View style={{ flex: 1 }}>
+                <Text style={styles.name}>{a.title}</Text>
+                <Text style={styles.muted}>{a.detail}</Text>
+              </View>
+              <Text style={[styles.muted, { marginTop: 0 }]}>{a.time}</Text>
+            </View>
+          ))}
+        </Section>
+      ) : null}
 
       <Section title="거래량 (최근 7일)" subtitle="플랫폼 STO 거래 금액">
         {volume.length === 0 ? <EmptyState text="거래 데이터가 없습니다." /> : <MiniBars values={volume.map((v) => v.amount)} labels={volume.map((v) => v.label)} />}
