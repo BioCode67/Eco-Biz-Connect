@@ -18,6 +18,7 @@ from app.models.audit import AuditLog
 from app.models.blockchain import RecordType
 from app.models.business import BusinessData, ProcessingStatus
 from app.models.dividend import Dividend
+from app.models.esg import ESGScore
 from app.models.finance import FinancialProduct
 from app.models.loan import LoanApplication, LoanStatus
 from app.models.sto import AssetType, STOAsset, STOStatus
@@ -53,6 +54,25 @@ def upload_and_process(db, merchant: User, file_name: str, size_seed: int) -> Bu
     db.flush()
     pipeline.run_pipeline(db, bd)  # 리포트·ESG·블록체인 생성 + Merchant.esg_score 갱신
     return bd
+
+
+def backfill_esg_history(db, merchant: User, business_data_id: int, composites: list[float], months_ago_start: int) -> None:
+    """데모용 ESG 과거 추이(mock) — 상승 흐름이 보이도록 백데이트 점수 기록을 삽입한다."""
+    now = datetime.now(timezone.utc)
+    for idx, comp in enumerate(composites):
+        ts = now - timedelta(days=30 * (months_ago_start - idx))
+        db.add(ESGScore(
+            merchant_id=merchant.id,
+            business_data_id=business_data_id,
+            env_score=Decimal(str(round(comp - 2, 2))),
+            social_score=Decimal(str(round(comp + 3, 2))),
+            governance_score=Decimal(str(round(comp - 1, 2))),
+            composite_score=Decimal(str(comp)),
+            score_grade=esg_engine._grade(comp),
+            on_chain_tx_hash=f"0x{(idx + 1) * 11111111:064x}",
+            created_at=ts,
+        ))
+    db.flush()
 
 
 def issue_sto(db, admin: User, **kw) -> STOAsset:
@@ -126,8 +146,10 @@ def main(if_empty: bool = False) -> None:
                        phone="010-4444-5555", business_reg_no="333-44-55566", store_name="우리동네 빵집",
                        store_address="대구 중구 동성로 8", business_category="베이커리",
                        verification_status=VerificationStatus.VERIFIED)
-        upload_and_process(db, m1, "2026Q1_매출.csv", 4820)
+        m1_bd = upload_and_process(db, m1, "2026Q1_매출.csv", 4820)
         upload_and_process(db, m1, "2026_04_매출지출.csv", 7310)
+        # 데모용 ESG 상승 추이(과거 4개월 mock) — 추이 차트가 풍부해지도록 백필
+        backfill_esg_history(db, m1, m1_bd.id, [70.0, 72.5, 74.5, 76.0], months_ago_start=5)
         upload_and_process(db, m2, "카페_매출데이터.csv", 5550)
         upload_and_process(db, m3, "빵집_월매출.csv", 3120)
 
