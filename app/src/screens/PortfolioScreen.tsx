@@ -8,7 +8,7 @@ import { Skeleton } from "../components/Skeleton";
 import { Badge, EmptyState, Section, StatCard } from "../components/ui";
 import { api } from "../lib/api";
 import { dateStr, shortHash, txStatusKo, txTypeKo, won } from "../lib/format";
-import type { Dividend, Portfolio, TransactionItem, TransactionPage } from "../lib/types";
+import type { Dividend, Portfolio, STOAsset, TransactionItem, TransactionPage } from "../lib/types";
 import { colors } from "../theme";
 
 const ALLOC_COLORS = [colors.brand, colors.sky, colors.gold, colors.leaf, "#8e8e93", "#5856d6"];
@@ -16,19 +16,22 @@ const ALLOC_COLORS = [colors.brand, colors.sky, colors.gold, colors.leaf, "#8e8e
 export default function PortfolioScreen() {
   const [portfolio, setPortfolio] = useState<Portfolio | null>(null);
   const [dividends, setDividends] = useState<Dividend[]>([]);
+  const [assets, setAssets] = useState<STOAsset[]>([]);
   const [tx, setTx] = useState<TransactionItem[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     (async () => {
-      const [p, d, t] = await Promise.all([
+      const [p, d, t, a] = await Promise.all([
         api<Portfolio>("/portfolio").catch(() => null),
         api<Dividend[]>("/dividends").catch(() => [] as Dividend[]),
         api<TransactionPage>("/transactions").catch(() => null),
+        api<STOAsset[]>("/marketplace").catch(() => [] as STOAsset[]),
       ]);
       setPortfolio(p);
       setDividends(d);
       setTx(t?.items ?? []);
+      setAssets(a);
       setLoading(false);
     })();
   }, []);
@@ -47,6 +50,14 @@ export default function PortfolioScreen() {
   const ret = invested > 0 ? ((current - invested) / invested) * 100 : 0;
   const holdings = portfolio?.holdings ?? [];
 
+  const assetCo2 = new Map(assets.map((a) => [a.id, { co2: Number(a.co2_offset_per_year), supply: a.total_token_supply }]));
+  const totalCo2 = holdings.reduce((sum, h) => {
+    const a = assetCo2.get(h.sto_asset_id);
+    if (!a || !a.supply) return sum;
+    return sum + (h.quantity / a.supply) * a.co2;
+  }, 0);
+  const trees = Math.round(totalCo2 * 45);
+
   return (
     <ScrollView contentContainerStyle={styles.container}>
       <View style={styles.statRow}>
@@ -57,6 +68,17 @@ export default function PortfolioScreen() {
         <StatCard label="수익률" value={`${ret >= 0 ? "+" : ""}${ret.toFixed(2)}%`} />
         <StatCard label="누적 배당" value={won(portfolio?.total_dividends_received)} />
       </View>
+
+      {totalCo2 > 0 ? (
+        <View style={styles.impact}>
+          <View style={styles.impactIcon}><Text style={{ fontSize: 24 }}>🌍</Text></View>
+          <View style={{ flex: 1 }}>
+            <Text style={styles.impactLabel}>내 ESG 임팩트 · 연간 탄소 상쇄</Text>
+            <Text style={styles.impactValue}>{totalCo2.toFixed(2)} <Text style={{ fontSize: 15 }}>tCO₂e / 년</Text></Text>
+            <Text style={styles.impactSub}>🌳 나무 약 {trees.toLocaleString()}그루의 연간 흡수량</Text>
+          </View>
+        </View>
+      ) : null}
 
       <Section title="보유 자산" subtitle="자산별 평가">
         {holdings.length === 0 ? (
@@ -148,6 +170,11 @@ export default function PortfolioScreen() {
 const styles = StyleSheet.create({
   container: { padding: 16 },
   statRow: { flexDirection: "row" },
+  impact: { flexDirection: "row", alignItems: "center", gap: 14, backgroundColor: colors.brandLight, borderRadius: 18, padding: 16, marginTop: 8, marginBottom: 4 },
+  impactIcon: { width: 48, height: 48, borderRadius: 14, backgroundColor: colors.brand, alignItems: "center", justifyContent: "center" },
+  impactLabel: { fontSize: 12, fontWeight: "600", color: colors.brandDark },
+  impactValue: { fontSize: 24, fontWeight: "800", color: colors.brandDark, marginTop: 2 },
+  impactSub: { fontSize: 12, color: colors.brandDark, marginTop: 4 },
   row: { flexDirection: "row", alignItems: "center", paddingVertical: 11, borderTopColor: colors.border, borderTopWidth: 1 },
   name: { fontSize: 14, fontWeight: "600", color: colors.text },
   value: { fontSize: 14, fontWeight: "700", color: colors.brand },
