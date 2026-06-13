@@ -11,7 +11,7 @@ import { api, ApiError } from "../lib/api";
 import { useAuth } from "../lib/auth";
 import { num, pct, won } from "../lib/format";
 import type { STOAsset } from "../lib/types";
-import { colors } from "../theme";
+import { colors, shadow } from "../theme";
 
 const ICON: Record<string, string> = { SOLAR: "☀", WIND: "💨", FOREST: "🌲", HYDRO: "💧" };
 const LABEL: Record<string, string> = { SOLAR: "태양광", WIND: "풍력", FOREST: "탄소숲", HYDRO: "수력" };
@@ -42,7 +42,17 @@ export default function MarketplaceScreen() {
   const [search, setSearch] = useState("");
   const [typeFilter, setTypeFilter] = useState("ALL");
   const [sort, setSort] = useState<SortKey>("yield");
+  const [compareList, setCompareList] = useState<STOAsset[]>([]);
+  const [showCompare, setShowCompare] = useState(false);
   const kycVerified = user?.kyc_status === "VERIFIED";
+
+  function toggleCompare(a: STOAsset) {
+    setCompareList((prev) => {
+      if (prev.some((x) => x.id === a.id)) return prev.filter((x) => x.id !== a.id);
+      if (prev.length >= 3) { toast.show("최대 3개까지 비교할 수 있습니다.", "info"); return prev; }
+      return [...prev, a];
+    });
+  }
 
   const load = useCallback(async () => {
     setAssets(await api<STOAsset[]>("/marketplace").catch(() => []));
@@ -127,6 +137,12 @@ export default function MarketplaceScreen() {
                 <View style={{ flexDirection: "row", alignItems: "center", gap: 12, marginTop: 10 }}>
                   <Button title={soldOut ? "판매 완료" : "토큰 구매"} onPress={() => setBuyTarget(a)} disabled={soldOut || !kycVerified} />
                   <Text style={styles.detailLink}>상세보기 ›</Text>
+                  <Pressable onPress={() => toggleCompare(a)} hitSlop={8} style={{ marginLeft: "auto", flexDirection: "row", alignItems: "center", gap: 5 }}>
+                    <View style={[styles.checkbox, compareList.some((x) => x.id === a.id) && styles.checkboxOn]}>
+                      {compareList.some((x) => x.id === a.id) ? <Text style={{ color: colors.white, fontSize: 11, fontWeight: "800" }}>✓</Text> : null}
+                    </View>
+                    <Text style={styles.muted}>비교</Text>
+                  </Pressable>
                 </View>
               </Pressable>
             );
@@ -136,6 +152,17 @@ export default function MarketplaceScreen() {
 
       <DetailSheet asset={detailTarget} kycVerified={kycVerified} onClose={() => setDetailTarget(null)} onBuy={() => { setBuyTarget(detailTarget); setDetailTarget(null); }} />
       <PurchaseModal asset={buyTarget} onClose={() => setBuyTarget(null)} onDone={async () => { setBuyTarget(null); await load(); await refresh(); }} />
+      <CompareSheet assets={compareList} visible={showCompare} onClose={() => setShowCompare(false)} />
+
+      {compareList.length > 0 ? (
+        <View style={styles.compareBar}>
+          <Text style={{ color: colors.white, fontSize: 13.5, flex: 1 }}>{compareList.length}개 선택됨</Text>
+          <Pressable onPress={() => setShowCompare(true)} disabled={compareList.length < 2} style={[styles.compareBtn, compareList.length < 2 && { opacity: 0.5 }]}>
+            <Text style={{ color: colors.brand, fontWeight: "700", fontSize: 13 }}>비교하기</Text>
+          </Pressable>
+          <Pressable onPress={() => setCompareList([])} hitSlop={8}><Text style={{ color: colors.white, fontSize: 18, opacity: 0.7 }}>✕</Text></Pressable>
+        </View>
+      ) : null}
     </ScrollView>
   );
 }
@@ -207,6 +234,43 @@ function PurchaseModal({ asset, onClose, onDone }: { asset: STOAsset | null; onC
   );
 }
 
+function CompareSheet({ assets, visible, onClose }: { assets: STOAsset[]; visible: boolean; onClose: () => void }) {
+  if (!visible || assets.length === 0) return null;
+  const rows: { label: string; get: (a: STOAsset) => string; n: (a: STOAsset) => number; best?: "max" | "min" }[] = [
+    { label: "예상 연수익률", get: (a) => pct(a.expected_yield), n: (a) => Number(a.expected_yield), best: "max" },
+    { label: "토큰 단가", get: (a) => won(a.token_price), n: (a) => Number(a.token_price), best: "min" },
+    { label: "연 CO₂ 저감", get: (a) => `${a.co2_offset_per_year}t`, n: (a) => a.co2_offset_per_year, best: "max" },
+    { label: "배당 주기", get: (a) => `${a.dividend_period_months}개월`, n: (a) => a.dividend_period_months, best: "min" },
+    { label: "잔여 토큰", get: (a) => num(a.remaining_tokens), n: (a) => a.remaining_tokens, best: "max" },
+  ];
+  const cellW = 110;
+  return (
+    <AppModal visible={visible} title="상품 비교" onClose={onClose}>
+      <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+        <View>
+          <View style={[styles.cmpRow, { borderBottomWidth: 1, borderBottomColor: colors.border }]}>
+            <Text style={[styles.cmpLabel, { width: 88 }]}>항목</Text>
+            {assets.map((a) => <Text key={a.id} style={[styles.cmpHead, { width: cellW }]} numberOfLines={2}>{a.name}</Text>)}
+          </View>
+          {rows.map((r) => {
+            const nums = assets.map(r.n);
+            const best = r.best === "max" ? Math.max(...nums) : r.best === "min" ? Math.min(...nums) : NaN;
+            return (
+              <View key={r.label} style={styles.cmpRow}>
+                <Text style={[styles.cmpLabel, { width: 88 }]}>{r.label}</Text>
+                {assets.map((a, i) => {
+                  const isBest = r.best != null && nums[i] === best && assets.length > 1;
+                  return <Text key={a.id} style={[styles.cmpCell, { width: cellW }, isBest && styles.cmpBest]}>{r.get(a)}{isBest ? " ★" : ""}</Text>;
+                })}
+              </View>
+            );
+          })}
+        </View>
+      </ScrollView>
+    </AppModal>
+  );
+}
+
 function Row({ label, value, strong }: { label: string; value: string; strong?: boolean }) {
   return (
     <View style={{ flexDirection: "row", justifyContent: "space-between", paddingVertical: 3 }}>
@@ -232,4 +296,13 @@ const styles = StyleSheet.create({
   barInner: { height: "100%", borderRadius: 999, backgroundColor: colors.brand },
   calc: { backgroundColor: colors.bg, borderRadius: 12, padding: 14, marginVertical: 12 },
   warn: { fontSize: 12, color: colors.muted, marginBottom: 12, lineHeight: 17 },
+  checkbox: { width: 18, height: 18, borderRadius: 5, borderWidth: 1.5, borderColor: colors.border, alignItems: "center", justifyContent: "center" },
+  checkboxOn: { backgroundColor: colors.brand, borderColor: colors.brand },
+  compareBar: { position: "absolute", left: 16, right: 16, bottom: 20, flexDirection: "row", alignItems: "center", gap: 12, backgroundColor: colors.text, borderRadius: 999, paddingVertical: 10, paddingHorizontal: 18, ...shadow },
+  compareBtn: { backgroundColor: colors.white, borderRadius: 999, paddingVertical: 7, paddingHorizontal: 16 },
+  cmpRow: { flexDirection: "row", alignItems: "center", paddingVertical: 9 },
+  cmpLabel: { fontSize: 12, color: colors.muted },
+  cmpHead: { fontSize: 12.5, fontWeight: "700", color: colors.text, paddingHorizontal: 4 },
+  cmpCell: { fontSize: 13, color: colors.text, paddingHorizontal: 4 },
+  cmpBest: { color: colors.brandDark, fontWeight: "700" },
 });
