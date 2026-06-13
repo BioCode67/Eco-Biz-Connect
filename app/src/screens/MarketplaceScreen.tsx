@@ -1,7 +1,7 @@
 // 투자 마켓플레이스 (proto_03 모바일). UC9 탐색 · UC10 구매(동적계산·위험고지·KYC).
 
-import React, { useCallback, useEffect, useState } from "react";
-import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
+import { Pressable, ScrollView, StyleSheet, Text, TextInput, View } from "react-native";
 
 import { AppModal } from "../components/AppModal";
 import { Skeleton } from "../components/Skeleton";
@@ -16,6 +16,22 @@ import { colors } from "../theme";
 const ICON: Record<string, string> = { SOLAR: "☀", WIND: "💨", FOREST: "🌲", HYDRO: "💧" };
 const LABEL: Record<string, string> = { SOLAR: "태양광", WIND: "풍력", FOREST: "탄소숲", HYDRO: "수력" };
 
+type SortKey = "yield" | "price" | "recent" | "remaining";
+const TYPE_OPTS: { v: string; label: string }[] = [
+  { v: "ALL", label: "전체" }, { v: "SOLAR", label: "태양광" }, { v: "WIND", label: "풍력" }, { v: "FOREST", label: "탄소숲" }, { v: "HYDRO", label: "수력" },
+];
+const SORT_OPTS: { v: SortKey; label: string }[] = [
+  { v: "yield", label: "수익률순" }, { v: "price", label: "최저가순" }, { v: "remaining", label: "잔여량순" }, { v: "recent", label: "최신순" },
+];
+
+function Chip({ label, active, onPress }: { label: string; active: boolean; onPress: () => void }) {
+  return (
+    <Pressable onPress={onPress} style={{ paddingHorizontal: 13, paddingVertical: 7, borderRadius: 999, borderWidth: 1, borderColor: active ? colors.brand : colors.border, backgroundColor: active ? colors.brand : "transparent" }}>
+      <Text style={{ fontSize: 12.5, fontWeight: "600", color: active ? colors.white : colors.muted }}>{label}</Text>
+    </Pressable>
+  );
+}
+
 export default function MarketplaceScreen() {
   const { user, refresh } = useAuth();
   const toast = useToast();
@@ -23,6 +39,9 @@ export default function MarketplaceScreen() {
   const [loading, setLoading] = useState(true);
   const [buyTarget, setBuyTarget] = useState<STOAsset | null>(null);
   const [detailTarget, setDetailTarget] = useState<STOAsset | null>(null);
+  const [search, setSearch] = useState("");
+  const [typeFilter, setTypeFilter] = useState("ALL");
+  const [sort, setSort] = useState<SortKey>("yield");
   const kycVerified = user?.kyc_status === "VERIFIED";
 
   const load = useCallback(async () => {
@@ -30,6 +49,20 @@ export default function MarketplaceScreen() {
     setLoading(false);
   }, []);
   useEffect(() => { load(); }, [load]);
+
+  const visible = useMemo(() => {
+    let list = assets.filter((a) => typeFilter === "ALL" || a.asset_type === typeFilter);
+    if (search.trim()) {
+      const q = search.toLowerCase();
+      list = list.filter((a) => a.name.toLowerCase().includes(q) || (a.location ?? "").toLowerCase().includes(q));
+    }
+    const s = [...list];
+    if (sort === "yield") s.sort((a, b) => Number(b.expected_yield) - Number(a.expected_yield));
+    else if (sort === "price") s.sort((a, b) => Number(a.token_price) - Number(b.token_price));
+    else if (sort === "remaining") s.sort((a, b) => b.remaining_tokens - a.remaining_tokens);
+    else s.sort((a, b) => b.id - a.id);
+    return s;
+  }, [assets, typeFilter, search, sort]);
 
   async function verifyKyc() {
     try {
@@ -50,13 +83,30 @@ export default function MarketplaceScreen() {
         </View>
       ) : null}
 
-      <Section title="탄소중립 STO 상품" subtitle={`${assets.length}개 상품`}>
+      <View style={styles.filterBar}>
+        <TextInput
+          style={styles.search}
+          value={search}
+          onChangeText={setSearch}
+          placeholder="🔍 상품·지역 검색"
+          placeholderTextColor={colors.mutedFaint}
+          autoCapitalize="none"
+        />
+        <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: 6, paddingVertical: 2 }}>
+          {TYPE_OPTS.map((t) => <Chip key={t.v} label={t.label} active={typeFilter === t.v} onPress={() => setTypeFilter(t.v)} />)}
+        </ScrollView>
+        <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: 6, paddingVertical: 2 }}>
+          {SORT_OPTS.map((o) => <Chip key={o.v} label={o.label} active={sort === o.v} onPress={() => setSort(o.v)} />)}
+        </ScrollView>
+      </View>
+
+      <Section title="탄소중립 STO 상품" subtitle={`${visible.length}개 상품`}>
         {loading ? (
           <View style={{ gap: 10 }}><Skeleton height={120} radius={12} /><Skeleton height={120} radius={12} /></View>
-        ) : assets.length === 0 ? (
-          <EmptyState icon="🪙" text="공개된 상품이 없습니다." />
+        ) : visible.length === 0 ? (
+          <EmptyState icon="🪙" text="조건에 맞는 상품이 없습니다." />
         ) : (
-          assets.map((a) => {
+          visible.map((a) => {
             const soldOut = a.status === "SOLD_OUT" || a.remaining_tokens <= 0;
             const soldPct = (1 - a.remaining_tokens / a.total_token_supply) * 100;
             return (
@@ -168,6 +218,8 @@ function Row({ label, value, strong }: { label: string; value: string; strong?: 
 
 const styles = StyleSheet.create({
   container: { padding: 16, paddingBottom: 40 },
+  filterBar: { gap: 8, marginBottom: 12 },
+  search: { backgroundColor: colors.card, borderColor: colors.border, borderWidth: 1, borderRadius: 12, paddingHorizontal: 14, paddingVertical: 10, fontSize: 14, color: colors.text },
   kyc: { backgroundColor: "#fbedd4", borderRadius: 12, padding: 14, marginBottom: 12, gap: 8 },
   kycText: { color: colors.warning, fontSize: 13 },
   muted: { color: colors.muted, fontSize: 12, marginTop: 3 },
