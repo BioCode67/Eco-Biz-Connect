@@ -57,6 +57,66 @@ export function BarRows({ rows }: { rows: { label: string; value: number; max?: 
   );
 }
 
+/** 다중 세그먼트 도넛 + 범례 (자산 배분 등) */
+export function DonutBreakdown({
+  segments,
+  centerLabel,
+  centerSub,
+  formatValue,
+}: {
+  segments: { label: string; value: number; color: string }[];
+  centerLabel: string;
+  centerSub?: string;
+  formatValue?: (n: number) => string;
+}) {
+  const fmt = formatValue ?? ((n: number) => String(n));
+  const size = 148;
+  const stroke = 18;
+  const r = (size - stroke) / 2;
+  const c = 2 * Math.PI * r;
+  const total = segments.reduce((s, x) => s + x.value, 0) || 1;
+  let offset = 0;
+  return (
+    <View style={{ flexDirection: "row", alignItems: "center", flexWrap: "wrap", gap: 18 }}>
+      <View style={{ width: size, height: size, alignItems: "center", justifyContent: "center" }}>
+        <Svg width={size} height={size} style={{ position: "absolute" }}>
+          <Circle cx={size / 2} cy={size / 2} r={r} stroke={colors.border} strokeWidth={stroke} fill="none" />
+          {segments.map((s) => {
+            const frac = s.value / total;
+            const el = (
+              <Circle
+                key={s.label}
+                cx={size / 2}
+                cy={size / 2}
+                r={r}
+                stroke={s.color}
+                strokeWidth={stroke}
+                fill="none"
+                strokeDasharray={`${c * frac} ${c}`}
+                strokeDashoffset={-offset * c}
+                transform={`rotate(-90 ${size / 2} ${size / 2})`}
+              />
+            );
+            offset += frac;
+            return el;
+          })}
+        </Svg>
+        <Text style={{ fontSize: 26, fontWeight: "700", color: colors.text }}>{centerLabel}</Text>
+        {centerSub ? <Text style={{ fontSize: 11, color: colors.muted, marginTop: 2 }}>{centerSub}</Text> : null}
+      </View>
+      <View style={{ flex: 1, minWidth: 130, gap: 8 }}>
+        {segments.map((s) => (
+          <View key={s.label} style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
+            <View style={{ width: 10, height: 10, borderRadius: 3, backgroundColor: s.color }} />
+            <Text style={{ flex: 1, fontSize: 13, color: colors.muted }} numberOfLines={1}>{s.label}</Text>
+            <Text style={{ fontSize: 13, fontWeight: "600", color: colors.text }}>{fmt(s.value)}</Text>
+          </View>
+        ))}
+      </View>
+    </View>
+  );
+}
+
 /** 라인 차트 (매출 예측) */
 export function LineChart({ values, labels, height = 120 }: { values: number[]; labels?: string[]; height?: number }) {
   const w = 300;

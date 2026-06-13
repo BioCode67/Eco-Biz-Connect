@@ -110,6 +110,34 @@ export interface Portfolio {
   upcoming_dividends: UpcomingDividend[];
 }
 
+export interface Dividend {
+  id: number;
+  sto_asset_id: number;
+  asset_name: string;
+  per_token_amount: string;
+  my_quantity: number;
+  my_dividend: string;
+  distribution_date: string;
+  on_chain_tx_hash: string | null;
+}
+
+export interface TransactionItem {
+  type: string;
+  ref_id: number;
+  description: string;
+  amount: string;
+  status: string | null;
+  on_chain_tx_hash?: string | null;
+  timestamp: string;
+}
+
+export interface TransactionPage {
+  items: TransactionItem[];
+  page: number;
+  page_size: number;
+  total: number;
+}
+
 export interface SystemMetrics {
   subsystems: Record<string, Record<string, unknown>>;
   totals: Record<string, number>;
