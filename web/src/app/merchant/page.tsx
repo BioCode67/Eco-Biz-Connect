@@ -52,6 +52,7 @@ function MerchantBody() {
   const [datasets, setDatasets] = useState<BusinessData[]>([]);
   const [report, setReport] = useState<AnalysisReport | null>(null);
   const [esg, setEsg] = useState<ESGScore | null>(null);
+  const [esgHistory, setEsgHistory] = useState<ESGScore[]>([]);
   const [products, setProducts] = useState<MatchedProduct[]>([]);
   const [loans, setLoans] = useState<LoanApplication[]>([]);
   const [uploading, setUploading] = useState(false);
@@ -61,14 +62,15 @@ function MerchantBody() {
 
   const loadAll = useCallback(async () => {
     try {
-      const [d, r, e, l, p] = await Promise.all([
+      const [d, r, e, l, p, h] = await Promise.all([
         safe(api<BusinessData[]>("/business-data"), [] as BusinessData[]),
         safe(api<AnalysisReport | null>("/reports/latest"), null),
         safe(api<ESGScore | null>("/esg/me"), null),
         safe(api<LoanApplication[]>("/loans"), [] as LoanApplication[]),
         safe(api<MatchedProduct[]>("/products/match"), [] as MatchedProduct[]),
+        safe(api<ESGScore[]>("/esg/history"), [] as ESGScore[]),
       ]);
-      setDatasets(d); setReport(r); setEsg(e); setLoans(l); setProducts(p);
+      setDatasets(d); setReport(r); setEsg(e); setLoans(l); setProducts(p); setEsgHistory(h);
       setNetError(false);
     } catch {
       setNetError(true);
@@ -150,6 +152,17 @@ function MerchantBody() {
                   { label: "지배구조 (G)", value: Number(esg.governance_score), color: "var(--gold)" },
                 ]} />
               </div>
+              {esgHistory.length >= 2 && (
+                <div style={{ width: "100%", paddingTop: 16, borderTop: "1px solid var(--line)" }}>
+                  <div style={{ fontSize: 13, color: "var(--ink-soft)", marginBottom: 6 }}>ESG 점수 추이 · 최근 {esgHistory.length}회</div>
+                  <AreaChart
+                    values={[...esgHistory].reverse().map((s) => Math.round(Number(s.composite_score)))}
+                    labels={[...esgHistory].reverse().map((s) => `${new Date(s.created_at).getMonth() + 1}월`)}
+                    color="var(--forest)"
+                    unit=""
+                  />
+                </div>
+              )}
               {esg.on_chain_tx_hash && <div style={{ fontSize: 11, color: "var(--ink-soft)", wordBreak: "break-all" }}>⛓ 온체인 앵커: {esg.on_chain_tx_hash.slice(0, 22)}…</div>}
             </div>
           )}

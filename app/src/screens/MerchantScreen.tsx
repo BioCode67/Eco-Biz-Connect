@@ -24,19 +24,21 @@ export default function MerchantScreen() {
   const [datasets, setDatasets] = useState<BusinessData[]>([]);
   const [report, setReport] = useState<AnalysisReport | null>(null);
   const [esg, setEsg] = useState<ESGScore | null>(null);
+  const [esgHistory, setEsgHistory] = useState<ESGScore[]>([]);
   const [products, setProducts] = useState<MatchedProduct[]>([]);
   const [loans, setLoans] = useState<LoanApplication[]>([]);
   const [applyTarget, setApplyTarget] = useState<MatchedProduct | null>(null);
 
   const loadAll = useCallback(async () => {
-    const [d, r, e, l, p] = await Promise.all([
+    const [d, r, e, l, p, h] = await Promise.all([
       api<BusinessData[]>("/business-data").catch(() => []),
       api<AnalysisReport>("/reports/latest").catch(() => null),
       api<ESGScore>("/esg/me").catch(() => null),
       api<LoanApplication[]>("/loans").catch(() => []),
       api<MatchedProduct[]>("/products/match").catch(() => []),
+      api<ESGScore[]>("/esg/history").catch(() => [] as ESGScore[]),
     ]);
-    setDatasets(d); setReport(r); setEsg(e); setLoans(l); setProducts(p);
+    setDatasets(d); setReport(r); setEsg(e); setLoans(l); setProducts(p); setEsgHistory(h);
     setLoading(false);
   }, []);
   useEffect(() => { loadAll(); }, [loadAll]);
@@ -89,6 +91,15 @@ export default function MerchantScreen() {
             { label: "사회 (S)", value: Number(esg.social_score), color: colors.sky },
             { label: "지배구조 (G)", value: Number(esg.governance_score), color: colors.gold },
           ]} />
+          {esgHistory.length >= 2 ? (
+            <View style={{ marginTop: 16, paddingTop: 14, borderTopWidth: 1, borderTopColor: colors.border }}>
+              <Text style={[styles.muted, { marginTop: 0, marginBottom: 6 }]}>ESG 점수 추이 · 최근 {esgHistory.length}회</Text>
+              <LineChart
+                values={[...esgHistory].reverse().map((s) => Math.round(Number(s.composite_score)))}
+                labels={[...esgHistory].reverse().map((s) => (s.created_at ? `${new Date(s.created_at).getMonth() + 1}월` : ""))}
+              />
+            </View>
+          ) : null}
         </Section>
       ) : null}
 

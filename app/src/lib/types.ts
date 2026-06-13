@@ -27,6 +27,7 @@ export interface ESGScore {
   composite_score: string;
   score_grade: string;
   on_chain_tx_hash: string | null;
+  created_at?: string;
 }
 
 export interface AnalysisReport {
