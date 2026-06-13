@@ -36,4 +36,8 @@
 | 29 | 앱↔웹 기능 불일치: 모바일 포트폴리오에 배분 도넛·배당 타임라인·거래내역 없음(웹엔 있음) | (c) 파리티 | 모바일 charts에 DonutBreakdown 추가, PortfolioScreen에 배분 도넛(2종목+)·배당 타임라인(온체인 해시)·거래내역(/transactions) 추가, format에 dateStr·txStatusKo·txTypeKo 추가 | tsc·expo export(710) 통과 |
 | 30 | 모바일 마켓에 검색·타입필터·정렬 없음(웹엔 있음) | (c) 파리티 | MarketplaceScreen에 검색바·타입 칩(전체/태양광/풍력/탄소숲/수력)·정렬 칩(수익률/최저가/잔여/최신) + useMemo 필터 | tsc·expo export(710) 통과 |
 | 31 | 모바일 소상공인에 상권비교 레이더·대출 스테퍼 없음(웹엔 있음) | (c) 파리티 | 모바일 charts에 RadarChart 추가, MerchantScreen에 상권 비교(UC4 레이더)·대출 상태머신 스테퍼(신청→심사→승인/거절+의견) 추가 | tsc·expo export(710) 통과 |
-| 32 | `/esg/history` 엔드포인트가 있으나 어디서도 미시각화 + 데모 이력 2점뿐(추이 빈약) | (업그레이드)+mock | 시드에 ESG 상승 추이 백필(70→81.75, 6점), 웹·앱 소상공인 ESG 섹션에 "ESG 점수 추이" 라인/영역 차트 추가 | 시드 재실행 후 /esg/history 6점 확인, web tsc·app expo export 통과 |
+| 32 | `/esg/history` 엔드포인트가 있으나 어디서도 미시각화 + 데모 이력 2점뿐(추이 빈약) | (업그레이드)+mock | 시드에 ESG 상승 추이 백필(70→81.75, 6점), 웹·앱 소상공인 ESG 섹션에 "ESG 점수 추이" 라인/영역 차트 추가 | 시드 재실행 후 /esg/history 6점 확인, web tsc·app expo export 통과, **웹 프리뷰 UI 로그인→/merchant에서 추이 차트(70→82 상승) 스크린샷 시각 검증** |
+| 33 | 앱 소상공인에 AI 비용 최적화 팁 미표시(웹엔 있음) | (c) 파리티 | MerchantScreen에 "AI 비용 최적화 제안" 섹션(제목·상세·임팩트 배지) 추가 | 리포트 3팁 데이터 확인, tsc·expo export(710) 통과 |
+| 34 | 앱 관리자에 시스템 알림 피드 미구현(웹 UC13엔 있음) | (c) 파리티 | AuditLog 타입 추가, /admin/audit-log 페치, "시스템 알림" 피드(서브시스템 경고+최근 감사 이벤트, 색상 점) 추가 | audit-log 8건 확인, tsc·expo export(710) 통과 |
+| 35 | 앱 web 타깃 활성화 후에도 README에 실행법 없음 | (d) 문서 | README 빠른 실행에 `npx expo start`(Expo Go QR)·`--web`(브라우저 미리보기) 추가 | — |
+| 36 | (QA) 다크용 토큰 대거 변경 후 라이트 회귀 미확인 | (검증) | 웹 프리뷰에서 소상공인(ESG 추이 차트 포함)·포트폴리오(배분 도넛) 라이트 렌더 점검 | 스크린샷 확인 — 차트 트랙(--fill)·도넛·배지·accent 카드 정상, 라이트 회귀 0. 전 화면 라이트/다크 모두 검증 완료 |
