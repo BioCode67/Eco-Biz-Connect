@@ -127,8 +127,14 @@ uvicorn app.main:app --port 8000
 
 # 2) 웹 (http://localhost:3000)
 cd web && npm install && npm run dev
+
+# 3) 모바일 앱
+cd app && npm install
+npx expo start                       # iOS/Android: Expo Go 앱으로 QR 스캔
+npx expo start --web                 # 또는 브라우저로 모바일 UI 미리보기(http://localhost:8081)
 ```
 > 운영 배포(무료 Render + Vercel)는 [`DEPLOYMENT.md`](./DEPLOYMENT.md) 참고. 클릭만으로 공개 링크가 생성된다.
+> 시뮬레이터가 없으면 `npx expo start --web` 으로 브라우저에서 앱 화면을 바로 확인할 수 있다.
 
 ### 데모 계정
 | 역할 | 이메일 | 비밀번호 |
