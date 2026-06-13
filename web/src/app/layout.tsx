@@ -49,7 +49,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="ko" className={`${geistSans.variable} h-full antialiased`} suppressHydrationWarning>
+    <html lang="ko" data-scroll-behavior="smooth" className={`${geistSans.variable} h-full antialiased`} suppressHydrationWarning>
       <head>
         {/* 페인트 전 테마 적용(플래시 방지) — 저장값 우선, 없으면 OS 설정 */}
         <script
