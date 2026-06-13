@@ -71,6 +71,9 @@ def admin_stats(
                 buckets[key] += float(amount)
     tx_volume = [{"label": k, "amount": round(v)} for k, v in buckets.items()]
 
+    # 플랫폼 전체 연 CO₂ 저감(발행된 모든 STO 자산의 합)
+    total_co2 = float(db.scalar(select(func.coalesce(func.sum(STOAsset.co2_offset_per_year), 0))) or 0)
+
     return AdminStatsOut(
         merchants=count(User, User.role == UserRole.MERCHANT),
         investors=count(User, User.role == UserRole.INVESTOR),
@@ -80,6 +83,7 @@ def admin_stats(
         total_transactions=count(TokenTransaction),
         total_loans=count(LoanApplication),
         onchain_records=count(BlockchainRecord),
+        total_co2_offset=total_co2,
         tx_volume_7d=tx_volume,
     )
 

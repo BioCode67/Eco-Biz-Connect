@@ -42,6 +42,7 @@ class AdminStatsOut(BaseModel):
     total_transactions: int
     total_loans: int
     onchain_records: int
+    total_co2_offset: float = 0.0  # 전체 발행 STO의 연 CO₂ 저감 합(tCO₂e/년)
     tx_volume_7d: list[dict]  # [{label, amount}]
 
 

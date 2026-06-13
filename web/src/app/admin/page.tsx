@@ -148,6 +148,21 @@ function AdminBody() {
         </Section>
       </div>
 
+      {stats && (stats.total_co2_offset ?? 0) > 0 && (
+        <div className="card" style={{ marginBottom: 20, padding: "20px 26px", background: "var(--forest-soft)", borderColor: "transparent", display: "flex", alignItems: "center", justifyContent: "space-between", gap: 20, flexWrap: "wrap" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
+            <div style={{ width: 48, height: 48, borderRadius: 14, background: "linear-gradient(145deg, var(--leaf), var(--forest-deep))", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 24 }} aria-hidden>🌍</div>
+            <div>
+              <div style={{ fontSize: 13, fontWeight: 500, color: "var(--forest-deep)" }}>플랫폼 누적 탄소 임팩트 · 발행 STO 연 저감 합</div>
+              <div className="font-display" style={{ fontSize: 28, fontWeight: 600, color: "var(--forest-deep)", letterSpacing: "-0.02em", marginTop: 2 }}>
+                {(stats.total_co2_offset ?? 0).toLocaleString()} <span style={{ fontSize: 16 }}>tCO₂e / 년</span>
+              </div>
+            </div>
+          </div>
+          <div style={{ fontSize: 13.5, color: "var(--forest-deep)", textAlign: "right" }}>🌳 나무 약 <b>{Math.round((stats.total_co2_offset ?? 0) * 45).toLocaleString()}그루</b>의 연간 흡수량</div>
+        </div>
+      )}
+
       {/* 시스템 알림 (UC13) */}
       <Section title="시스템 알림" description="실시간 경고 및 최근 이벤트">
         {alerts.length === 0 ? <EmptyState icon="🔔" text="알림이 없습니다." /> : (

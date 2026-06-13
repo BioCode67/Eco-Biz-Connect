@@ -199,6 +199,7 @@ export interface AdminStats {
   total_transactions: number;
   total_loans: number;
   onchain_records: number;
+  total_co2_offset?: number;
   tx_volume_7d: { label: string; amount: number }[];
 }
 

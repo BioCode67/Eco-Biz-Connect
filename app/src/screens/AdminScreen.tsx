@@ -101,6 +101,17 @@ export default function AdminScreen() {
         <StatCard label="온체인" value={String(stats?.onchain_records ?? 0)} />
       </View>
 
+      {(stats?.total_co2_offset ?? 0) > 0 ? (
+        <View style={styles.impact}>
+          <View style={styles.impactIcon}><Text style={{ fontSize: 22 }}>🌍</Text></View>
+          <View style={{ flex: 1 }}>
+            <Text style={styles.impactLabel}>플랫폼 누적 탄소 임팩트 · 발행 STO 연 저감 합</Text>
+            <Text style={styles.impactValue}>{(stats?.total_co2_offset ?? 0).toLocaleString()} <Text style={{ fontSize: 14 }}>tCO₂e / 년</Text></Text>
+            <Text style={styles.impactSub}>🌳 나무 약 {Math.round((stats?.total_co2_offset ?? 0) * 45).toLocaleString()}그루의 연간 흡수량</Text>
+          </View>
+        </View>
+      ) : null}
+
       <Section title="STO 발행" subtitle="ERC-1400 컨트랙트 배포">
         <Button title="+ 새 STO 발행" onPress={() => setShowIssue(true)} />
       </Section>
@@ -160,6 +171,11 @@ function IssueModal({ visible, onClose, onDone }: { visible: boolean; onClose: (
 const styles = StyleSheet.create({
   container: { padding: 16, paddingBottom: 40 },
   statRow: { flexDirection: "row", gap: 10 },
+  impact: { flexDirection: "row", alignItems: "center", gap: 14, backgroundColor: colors.brandLight, borderRadius: 18, padding: 16, marginTop: 12 },
+  impactIcon: { width: 44, height: 44, borderRadius: 13, backgroundColor: colors.brand, alignItems: "center", justifyContent: "center" },
+  impactLabel: { fontSize: 11.5, fontWeight: "600", color: colors.brandDark },
+  impactValue: { fontSize: 22, fontWeight: "800", color: colors.brandDark, marginTop: 2 },
+  impactSub: { fontSize: 11.5, color: colors.brandDark, marginTop: 4 },
   row: { flexDirection: "row", alignItems: "center", paddingVertical: 10, borderTopColor: colors.border, borderTopWidth: 1 },
   name: { fontSize: 14, fontWeight: "600", color: colors.text },
   muted: { color: colors.muted, fontSize: 12, marginTop: 3 },

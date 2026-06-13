@@ -49,6 +49,7 @@ export interface AdminStats {
   investors: number;
   total_sto: number;
   onchain_records: number;
+  total_co2_offset?: number;
   tx_volume_7d: { label: string; amount: number }[];
 }
 
