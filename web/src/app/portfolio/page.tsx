@@ -11,7 +11,7 @@ import DashboardShell from "@/components/DashboardShell";
 import { Badge, Button, EmptyState, ErrorBanner, Section, Skeleton, StatCard } from "@/components/ui";
 import { api, downloadCsv, safe } from "@/lib/api";
 import { dateStr, shortHash, txStatusKo, won } from "@/lib/format";
-import type { Dividend, Portfolio, TransactionPage } from "@/lib/types";
+import type { Dividend, Portfolio, STOAsset, TransactionPage } from "@/lib/types";
 
 const NAV = [
   { label: "마켓플레이스", href: "/marketplace", icon: "market" },
@@ -35,6 +35,7 @@ export default function PortfolioPage() {
 function PortfolioBody() {
   const [portfolio, setPortfolio] = useState<Portfolio | null>(null);
   const [dividends, setDividends] = useState<Dividend[]>([]);
+  const [assets, setAssets] = useState<STOAsset[]>([]);
   const [tx, setTx] = useState<TransactionPage | null>(null);
   const [txType, setTxType] = useState("ALL");
   const [loading, setLoading] = useState(true);
@@ -47,11 +48,12 @@ function PortfolioBody() {
 
   const loadAll = useCallback(async () => {
     try {
-      const [p, d] = await Promise.all([
+      const [p, d, a] = await Promise.all([
         safe(api<Portfolio | null>("/portfolio"), null),
         safe(api<Dividend[]>("/dividends"), [] as Dividend[]),
+        safe(api<STOAsset[]>("/marketplace"), [] as STOAsset[]),
       ]);
-      setPortfolio(p); setDividends(d);
+      setPortfolio(p); setDividends(d); setAssets(a);
       await loadTx("ALL");
       setNetError(false);
     } catch {
@@ -74,6 +76,14 @@ function PortfolioBody() {
 
   const ret = portfolio?.total_return_pct ?? 0;
 
+  const assetCo2 = new Map(assets.map((a) => [a.id, { co2: Number(a.co2_offset_per_year), supply: a.total_token_supply }]));
+  const totalCo2 = (portfolio?.holdings ?? []).reduce((sum, h) => {
+    const a = assetCo2.get(h.sto_asset_id);
+    if (!a || !a.supply) return sum;
+    return sum + (h.quantity / a.supply) * a.co2;
+  }, 0);
+  const trees = Math.round(totalCo2 * 45); // 연 1톤 CO₂ ≈ 나무 약 45그루 흡수량
+
   return (
     <div>
       {netError && <ErrorBanner onRetry={() => { setLoading(true); loadAll(); }} />}
@@ -83,6 +93,23 @@ function PortfolioBody() {
         <StatCard label="총 수익률" value={`${ret >= 0 ? "+" : ""}${ret.toFixed(2)}%`} trend={{ dir: ret >= 0 ? "up" : "down", text: ret >= 0 ? "수익" : "손실" }} />
         <StatCard label="누적 배당" value={won(portfolio?.total_dividends_received)} icon="◆" />
       </div>
+
+      {totalCo2 > 0 && (
+        <div className="card" style={{ marginBottom: 20, padding: "22px 26px", background: "var(--forest-soft)", borderColor: "transparent", display: "flex", alignItems: "center", justifyContent: "space-between", gap: 20, flexWrap: "wrap" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
+            <div style={{ width: 52, height: 52, borderRadius: 16, background: "linear-gradient(145deg, var(--leaf), var(--forest-deep))", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 26 }} aria-hidden>🌍</div>
+            <div>
+              <div style={{ fontSize: 13, fontWeight: 500, color: "var(--forest-deep)" }}>내 ESG 임팩트 · 연간 탄소 상쇄</div>
+              <div className="font-display" style={{ fontSize: 30, fontWeight: 600, color: "var(--forest-deep)", letterSpacing: "-0.02em", marginTop: 2 }}>
+                {totalCo2.toFixed(2)} <span style={{ fontSize: 17 }}>tCO₂e / 년</span>
+              </div>
+            </div>
+          </div>
+          <div style={{ fontSize: 13.5, color: "var(--forest-deep)", lineHeight: 1.5, textAlign: "right" }}>
+            보유 STO 지분 기준 환경 기여<br />🌳 나무 약 <b>{trees.toLocaleString()}그루</b>의 연간 흡수량
+          </div>
+        </div>
+      )}
 
       <div className="grid-2">
         <Section title="보유 자산" description="자산별 평가">
