@@ -81,6 +81,20 @@ export default function MerchantScreen() {
         </Section>
       ) : null}
 
+      {report && report.cost_optimization_tips.length > 0 ? (
+        <Section title="AI 비용 최적화 제안" subtitle="우선순위 권장 사항">
+          {report.cost_optimization_tips.map((t, i) => (
+            <View key={i} style={{ paddingVertical: 11, borderTopColor: colors.border, borderTopWidth: i === 0 ? 0 : 1 }}>
+              <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center", gap: 8 }}>
+                <Text style={[styles.rowText, { fontWeight: "600" }]}>{t.title}</Text>
+                <Badge tone="green">{t.impact}</Badge>
+              </View>
+              <Text style={[styles.muted, { marginTop: 4 }]}>{t.detail}</Text>
+            </View>
+          ))}
+        </Section>
+      ) : null}
+
       {esg ? (
         <Section title="ESG 상생지수" subtitle="환경·사회·지배구조 분해">
           <View style={{ alignItems: "center", marginBottom: 14 }}>
