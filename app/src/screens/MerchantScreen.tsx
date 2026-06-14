@@ -5,6 +5,7 @@ import React, { useCallback, useEffect, useState } from "react";
 import { ScrollView, StyleSheet, Text, View } from "react-native";
 
 import { BarRows, DonutGauge, LineChart, RadarChart } from "../components/charts";
+import { ChainHash } from "../components/ChainVerify";
 import { Skeleton } from "../components/Skeleton";
 import { AppModal } from "../components/AppModal";
 import { useToast } from "../components/Toast";
@@ -112,6 +113,12 @@ export default function MerchantScreen() {
                 values={[...esgHistory].reverse().map((s) => Math.round(Number(s.composite_score)))}
                 labels={[...esgHistory].reverse().map((s) => (s.created_at ? `${new Date(s.created_at).getMonth() + 1}월` : ""))}
               />
+            </View>
+          ) : null}
+          {esg.on_chain_tx_hash ? (
+            <View style={{ flexDirection: "row", alignItems: "center", gap: 6, marginTop: 12 }}>
+              <Text style={[styles.muted, { marginTop: 0 }]}>온체인 앵커</Text>
+              <ChainHash hash={esg.on_chain_tx_hash} />
             </View>
           ) : null}
         </Section>

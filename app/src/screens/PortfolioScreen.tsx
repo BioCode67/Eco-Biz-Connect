@@ -3,6 +3,7 @@
 import React, { useEffect, useState } from "react";
 import { ScrollView, StyleSheet, Text, View } from "react-native";
 
+import { ChainHash } from "../components/ChainVerify";
 import { DonutBreakdown } from "../components/charts";
 import { Skeleton } from "../components/Skeleton";
 import { Badge, EmptyState, Section, StatCard } from "../components/ui";
@@ -137,7 +138,7 @@ export default function PortfolioScreen() {
               <View style={{ flex: 1 }}>
                 <Text style={styles.name}>{d.asset_name}</Text>
                 <Text style={styles.muted}>{dateStr(d.distribution_date)} · 토큰당 {won(d.per_token_amount)} × {d.my_quantity}</Text>
-                <Text style={[styles.muted, { fontSize: 10.5 }]}>⛓ {shortHash(d.on_chain_tx_hash)}</Text>
+                <View style={{ marginTop: 2 }}><ChainHash hash={d.on_chain_tx_hash} /></View>
               </View>
               <Text style={[styles.value, { fontSize: 15 }]}>+{won(d.my_dividend)}</Text>
             </View>
