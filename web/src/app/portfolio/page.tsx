@@ -10,6 +10,7 @@ import { DonutBreakdown } from "@/components/charts";
 import DashboardShell from "@/components/DashboardShell";
 import { Badge, Button, EmptyState, ErrorBanner, Section, Skeleton, StatCard } from "@/components/ui";
 import { api, downloadCsv, safe } from "@/lib/api";
+import { ChainHash } from "@/components/ChainVerify";
 import { dateStr, shortHash, txStatusKo, won } from "@/lib/format";
 import type { Dividend, Portfolio, STOAsset, TransactionPage } from "@/lib/types";
 
@@ -179,7 +180,7 @@ function PortfolioBody() {
                   </div>
                   <div style={{ textAlign: "right" }}>
                     <div style={{ fontWeight: 700, fontSize: 15, color: "var(--forest)" }}>+{won(d.my_dividend)}</div>
-                    <div style={{ fontSize: 10.5, color: "var(--ink-soft)", fontFamily: "monospace" }}>⛓ {shortHash(d.on_chain_tx_hash)}</div>
+                    <div style={{ fontSize: 10.5 }}><ChainHash hash={d.on_chain_tx_hash} /></div>
                   </div>
                 </div>
               </div>

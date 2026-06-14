@@ -6,7 +6,7 @@ import { useCallback, useEffect, useState } from "react";
 
 import { DonutBreakdown, MiniBars } from "@/components/charts";
 import DashboardShell from "@/components/DashboardShell";
-import { Modal } from "@/app/merchant/page";
+import { Modal } from "@/components/Modal";
 import { Badge, Button, EmptyState, ErrorBanner, Section, Skeleton } from "@/components/ui";
 import { useToast } from "@/components/Toast";
 import { api, ApiError, safe } from "@/lib/api";
