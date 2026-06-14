@@ -191,6 +191,12 @@ def analyze(parsed: dict) -> dict:
     # 환경 제안은 항상 1개(ESG 연계)
     tips.append({"title": "에너지 효율 설비", "detail": "고효율 설비 전환 시 공과금 절감과 ESG 환경 점수 상승을 동시에 기대할 수 있습니다.", "impact": "ESG 환경 +"})
 
+    # 손익 분석(매출 - 총비용) — 소상공인 핵심 지표
+    total_expense = sum(exp.values()) if exp else 0.0
+    operating_profit = total_rev - total_expense
+    profit_margin = (operating_profit / total_rev * 100) if total_rev else 0.0
+    has_expense = total_expense > 0
+
     # 이상치 탐지(일별 z-score > 2)
     anomalies = []
     sd = math.sqrt(var)
@@ -211,6 +217,8 @@ def analyze(parsed: dict) -> dict:
         f"분석 기간 총매출 {round(total_rev*won_to_manwon):,}만원, 일평균 {round(avg_daily*won_to_manwon):,}만원입니다. "
         f"{base_label} 기준 향후 3개월 매출은 {direction}로 약 {forecast[-1]:,}만원 수준이 예상됩니다. "
     )
+    if has_expense:
+        summary += f"추정 영업이익은 {round(operating_profit*won_to_manwon):,}만원(이익률 {profit_margin:.1f}%)이며, "
     if tips and tips[0]["title"] != "비용 구조 양호":
         summary += f"{tips[0]['title']}을 통해 수익성 개선 여지가 있습니다."
     else:
@@ -246,11 +254,20 @@ def analyze(parsed: dict) -> dict:
             },
             "note": "동일 상권 동종 업종 대비 백분위(객단가·매출 실데이터 기반)",
         },
+        "profit": {
+            "total_revenue": round(total_rev),
+            "total_expense": round(total_expense),
+            "operating_profit": round(operating_profit),
+            "profit_margin": round(profit_margin, 1),
+            "has_expense": has_expense,
+        },
         "_metrics": {
             "total_revenue": round(total_rev),
             "avg_daily": round(avg_daily),
             "avg_ticket": avg_ticket,
             "days": len(revenues),
+            "operating_profit": round(operating_profit),
+            "profit_margin": round(profit_margin, 1),
             "expense_ratios": {k: round(v / total_rev, 3) for k, v in exp.items()} if total_rev else {},
         },
     }

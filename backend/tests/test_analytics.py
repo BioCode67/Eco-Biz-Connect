@@ -46,6 +46,18 @@ def test_analyze_metrics_accurate():
     assert m["expense_ratios"]["재료비"] == 0.4
 
 
+def test_operating_profit():
+    # CSV: 매출 600만, 비용 재료240+인건100+임대60+공과20 = 420만 → 이익 180만(30%)
+    p = analytics.parse_business_csv(CSV)
+    a = analytics.analyze(p)
+    pr = a["profit"]
+    assert pr["total_revenue"] == 6_000_000
+    assert pr["total_expense"] == 4_200_000
+    assert pr["operating_profit"] == 1_800_000
+    assert pr["profit_margin"] == 30.0
+    assert "영업이익" in a["summary"]
+
+
 def test_esg_from_real_data():
     p = analytics.parse_business_csv(CSV)
     scores = esg_engine._from_data(p)
