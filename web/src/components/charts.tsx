@@ -120,7 +120,7 @@ export function DonutGauge({ value, max = 100, label, sub, color = "var(--forest
 /** 가로 막대 그룹 (ESG 환경/사회/지배구조 분해) */
 export function BarRows({ rows }: { rows: { label: string; value: number; max?: number; color?: string }[] }) {
   return (
-    <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+    <div role="img" aria-label={rows.map((r) => `${r.label} ${r.value}`).join(", ")} style={{ display: "flex", flexDirection: "column", gap: 12 }}>
       {rows.map((r) => {
         const pctVal = Math.max(0, Math.min(100, (r.value / (r.max ?? 100)) * 100));
         return (
@@ -226,7 +226,7 @@ export function DonutBreakdown({ segments, centerLabel, centerSub, formatValue }
 export function MiniBars({ values, labels, color = "var(--forest)", height = 120, formatValue }: { values: number[]; labels?: string[]; color?: string; height?: number; formatValue?: (n: number) => string }) {
   const max = Math.max(...values, 1);
   return (
-    <div style={{ display: "flex", alignItems: "flex-end", gap: 8, height }}>
+    <div role="img" aria-label={`거래량 추이: ${values.map((v, i) => `${labels?.[i] ?? i + 1} ${v.toLocaleString()}`).join(", ")}`} style={{ display: "flex", alignItems: "flex-end", gap: 8, height }}>
       {values.map((v, i) => (
         <div key={i} style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "flex-end", height: "100%" }}>
           {formatValue && v > 0 && <span style={{ fontSize: 9.5, fontWeight: 600, color: "var(--ink-soft)", marginBottom: 4 }}>{formatValue(v)}</span>}
