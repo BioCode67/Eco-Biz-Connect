@@ -14,6 +14,15 @@ export function EmptyState({ icon = "🌱", text }: { icon?: string; text: strin
   );
 }
 
+export function ErrorBanner({ onRetry }: { onRetry: () => void }) {
+  return (
+    <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between", gap: 12, backgroundColor: "#f7dada", borderRadius: 12, padding: 14, marginBottom: 12 }}>
+      <Text style={{ flex: 1, fontSize: 13, color: colors.danger }}>서버에 연결할 수 없습니다. 잠시 후 다시 시도해 주세요.</Text>
+      <Button title="다시 시도" variant="ghost" onPress={onRetry} />
+    </View>
+  );
+}
+
 export function Field({ label, value, onChangeText, placeholder, keyboardType, secure }: { label: string; value: string; onChangeText: (v: string) => void; placeholder?: string; keyboardType?: "default" | "email-address" | "number-pad"; secure?: boolean }) {
   return (
     <View style={{ marginBottom: 12 }}>

@@ -11,7 +11,7 @@ import { ChainHash } from "../components/ChainVerify";
 import { Skeleton } from "../components/Skeleton";
 import { AppModal } from "../components/AppModal";
 import { useToast } from "../components/Toast";
-import { Badge, Button, EmptyState, Field, Section, StatCard } from "../components/ui";
+import { Badge, Button, EmptyState, ErrorBanner, Field, Section, StatCard } from "../components/ui";
 import { api, ApiError } from "../lib/api";
 import { useAuth } from "../lib/auth";
 import { pct, won } from "../lib/format";
@@ -32,18 +32,22 @@ export default function MerchantScreen() {
   const [products, setProducts] = useState<MatchedProduct[]>([]);
   const [loans, setLoans] = useState<LoanApplication[]>([]);
   const [applyTarget, setApplyTarget] = useState<MatchedProduct | null>(null);
+  const [netError, setNetError] = useState(false);
 
   const loadAll = useCallback(async () => {
-    const [d, r, e, l, p, h] = await Promise.all([
-      api<BusinessData[]>("/business-data").catch(() => []),
-      api<AnalysisReport>("/reports/latest").catch(() => null),
-      api<ESGScore>("/esg/me").catch(() => null),
-      api<LoanApplication[]>("/loans").catch(() => []),
-      api<MatchedProduct[]>("/products/match").catch(() => []),
-      api<ESGScore[]>("/esg/history").catch(() => [] as ESGScore[]),
+    const rs = await Promise.allSettled([
+      api<BusinessData[]>("/business-data"),
+      api<AnalysisReport>("/reports/latest"),
+      api<ESGScore>("/esg/me"),
+      api<LoanApplication[]>("/loans"),
+      api<MatchedProduct[]>("/products/match"),
+      api<ESGScore[]>("/esg/history"),
     ]);
-    setDatasets(d); setReport(r); setEsg(e); setLoans(l); setProducts(p); setEsgHistory(h);
-    setLoading(false);
+    if (rs.every((r) => r.status === "rejected")) { setNetError(true); setLoading(false); return; }
+    const v = <T,>(i: number, def: T): T => (rs[i].status === "fulfilled" ? (rs[i] as PromiseFulfilledResult<T>).value : def);
+    setDatasets(v(0, [] as BusinessData[])); setReport(v(1, null as AnalysisReport | null)); setEsg(v(2, null as ESGScore | null));
+    setLoans(v(3, [] as LoanApplication[])); setProducts(v(4, [] as MatchedProduct[])); setEsgHistory(v(5, [] as ESGScore[]));
+    setNetError(false); setLoading(false);
   }, []);
   useEffect(() => { loadAll(); }, [loadAll]);
   const { refreshing, onRefresh } = useRefresh(loadAll);
@@ -74,6 +78,7 @@ export default function MerchantScreen() {
 
   return (
     <ScrollView contentContainerStyle={styles.container} refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={colors.brand} colors={[colors.brand]} />}>
+      {netError ? <ErrorBanner onRetry={() => { setLoading(true); loadAll(); }} /> : null}
       <View style={styles.statRow}>
         <StatCard label="ESG 점수" value={esg ? `${Number(esg.composite_score).toFixed(0)}` : "—"} hint={esg ? `등급 ${esg.score_grade}` : "데이터 필요"} />
         <StatCard label="예상 월매출" value={report ? won(report.sales_forecast.next_3_months[0] * 10000) : "—"} hint="AI 예측" />

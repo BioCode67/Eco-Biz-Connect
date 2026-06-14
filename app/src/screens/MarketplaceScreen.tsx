@@ -8,7 +8,7 @@ import { useRefresh } from "../lib/useRefresh";
 import { AppModal } from "../components/AppModal";
 import { Skeleton } from "../components/Skeleton";
 import { useToast } from "../components/Toast";
-import { Badge, Button, EmptyState, Field, Section } from "../components/ui";
+import { Badge, Button, EmptyState, ErrorBanner, Field, Section } from "../components/ui";
 import { api, ApiError } from "../lib/api";
 import { useAuth } from "../lib/auth";
 import { num, pct, won } from "../lib/format";
@@ -46,6 +46,7 @@ export default function MarketplaceScreen() {
   const [sort, setSort] = useState<SortKey>("yield");
   const [compareList, setCompareList] = useState<STOAsset[]>([]);
   const [showCompare, setShowCompare] = useState(false);
+  const [netError, setNetError] = useState(false);
   const kycVerified = user?.kyc_status === "VERIFIED";
 
   function toggleCompare(a: STOAsset) {
@@ -57,8 +58,14 @@ export default function MarketplaceScreen() {
   }
 
   const load = useCallback(async () => {
-    setAssets(await api<STOAsset[]>("/marketplace").catch(() => []));
-    setLoading(false);
+    try {
+      setAssets(await api<STOAsset[]>("/marketplace"));
+      setNetError(false);
+    } catch {
+      setNetError(true);
+    } finally {
+      setLoading(false);
+    }
   }, []);
   useEffect(() => { load(); }, [load]);
   const { refreshing, onRefresh } = useRefresh(load);
@@ -90,6 +97,7 @@ export default function MarketplaceScreen() {
 
   return (
     <ScrollView contentContainerStyle={styles.container} refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={colors.brand} colors={[colors.brand]} />}>
+      {netError ? <ErrorBanner onRetry={() => { setLoading(true); load(); }} /> : null}
       {!kycVerified ? (
         <View style={styles.kyc}>
           <Text style={styles.kycText}>토큰 투자를 위해 KYC 인증이 필요합니다.</Text>
