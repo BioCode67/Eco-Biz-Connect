@@ -64,6 +64,26 @@ export default function LoginPage() {
     { v: "ADMIN", label: "관리자" },
   ];
 
+  // 평가용 데모 계정 — 클릭 한 번으로 즉시 로그인(타이핑 불필요)
+  const demoAccounts: { label: string; email: string; password: string }[] = [
+    { label: "소상공인", email: "merchant@ebc.com", password: "Merch123!" },
+    { label: "투자자", email: "investor@ebc.com", password: "Invest123!" },
+    { label: "관리자", email: "admin@ebc.com", password: "Admin123!" },
+  ];
+  async function quickLogin(acc: { email: string; password: string }) {
+    setEmail(acc.email);
+    setPassword(acc.password);
+    setBusy(true);
+    try {
+      const user = await login(acc.email, acc.password);
+      router.replace(ROLE_HOME[user.role]);
+    } catch (err) {
+      toast.show(err instanceof ApiError ? err.message : "오류가 발생했습니다.", "error");
+    } finally {
+      setBusy(false);
+    }
+  }
+
   return (
     <div style={{ minHeight: "100vh", background: "var(--paper)" }}>
       {/* 상단 미니 내비 */}
@@ -127,6 +147,19 @@ export default function LoginPage() {
                 {busy ? "처리 중…" : mode === "login" ? "로그인" : "가입하기"}
               </button>
             </form>
+
+            {mode === "login" && (
+              <div style={{ marginTop: 18, paddingTop: 16, borderTop: "1px solid var(--line)" }}>
+                <div style={{ fontSize: 12.5, color: "var(--ink-soft)", textAlign: "center", marginBottom: 10 }}>평가용 데모 계정 — 클릭하면 바로 체험</div>
+                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 8 }}>
+                  {demoAccounts.map((acc) => (
+                    <button key={acc.email} type="button" disabled={busy} onClick={() => quickLogin(acc)} className="btn btn-ghost" style={{ fontSize: 13, padding: "9px 0" }}>
+                      {acc.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
 
             <div style={{ textAlign: "center", fontSize: 14, color: "var(--ink-soft)", marginTop: 20 }}>
               {mode === "login" ? "계정이 없으신가요? " : "이미 계정이 있나요? "}
