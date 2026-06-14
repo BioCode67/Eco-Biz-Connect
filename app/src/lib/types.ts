@@ -48,6 +48,7 @@ export interface AnalysisReport {
     operating_profit: number;
     profit_margin: number;
     has_expense: boolean;
+    expense_breakdown?: { label: string; amount: number; ratio: number }[];
   } | null;
 }
 

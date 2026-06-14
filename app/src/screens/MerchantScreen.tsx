@@ -17,6 +17,7 @@ import type { AnalysisReport, BusinessData, ESGScore, LoanApplication, MatchedPr
 import { colors } from "../theme";
 
 const statusKo: Record<string, string> = { ESG_COMPLETED: "완료", AI_COMPLETED: "분석완료", UNDER_REVIEW: "심사중", APPROVED: "승인", REJECTED: "거절" };
+const COST_COLORS = [colors.brand, colors.sky, colors.gold, colors.leaf];
 
 export default function MerchantScreen() {
   const { refresh } = useAuth();
@@ -88,6 +89,12 @@ export default function MerchantScreen() {
                 <Text style={styles.kpiLabel}>영업이익률</Text>
                 <Text style={styles.kpiValue}>{report.profit.profit_margin.toFixed(1)}%</Text>
               </View>
+            </View>
+          ) : null}
+          {report.profit?.expense_breakdown && report.profit.expense_breakdown.length > 0 ? (
+            <View style={{ marginTop: 14, paddingTop: 12, borderTopWidth: 1, borderTopColor: colors.border }}>
+              <Text style={[styles.muted, { marginTop: 0, marginBottom: 6 }]}>비용 구조 (매출 대비)</Text>
+              <BarRows rows={report.profit.expense_breakdown.map((e, i) => ({ label: e.label, value: e.ratio, max: 60, color: COST_COLORS[i % COST_COLORS.length] }))} />
             </View>
           ) : null}
           <Text style={styles.muted}>{report.summary}</Text>
