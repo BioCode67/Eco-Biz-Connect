@@ -50,6 +50,7 @@ function AdminBody() {
   const [showIssue, setShowIssue] = useState(false);
   const [netError, setNetError] = useState(false);
   const [userSearch, setUserSearch] = useState("");
+  const [logSearch, setLogSearch] = useState("");
 
   const load = useCallback(async () => {
     try {
@@ -211,10 +212,10 @@ function AdminBody() {
       </Section>
 
       {/* 감사 로그 */}
-      <Section id="audit" title="감사 로그" description="불변 관리 작업 기록">
+      <Section id="audit" title="감사 로그" description="불변 관리 작업 기록" action={<input className="field" placeholder="🔍 작업·대상 검색" value={logSearch} onChange={(e) => setLogSearch(e.target.value)} style={{ width: 200 }} />}>
         {logs.length === 0 ? <EmptyState icon="🗂" text="감사 로그가 없습니다." /> : (
           <div style={{ display: "flex", flexDirection: "column" }}>
-            {logs.map((log) => (
+            {logs.filter((log) => { const q = logSearch.trim().toLowerCase(); return !q || log.action.toLowerCase().includes(q) || (log.target_type ?? "").toLowerCase().includes(q); }).map((log) => (
               <div key={log.id} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "10px 0", borderTop: "1px solid var(--line)", fontSize: 13 }}>
                 <div><span style={{ fontWeight: 600 }}>{log.action}</span>{log.target_type && <span style={{ color: "var(--ink-soft)" }}> → {log.target_type}#{log.target_id}</span>}</div>
                 <span style={{ fontSize: 11.5, color: "var(--ink-soft)" }}>{dateStr(log.created_at)}</span>
