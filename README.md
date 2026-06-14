@@ -101,18 +101,19 @@ Eco-Biz-Connect/
 | **백엔드** | FastAPI · SQLAlchemy 2 · Alembic · PostgreSQL(운영)/SQLite(개발) · JWT(python-jose) · bcrypt |
 | **웹** | Next.js 16 (App Router) · TypeScript · 자체 디자인 시스템(Apple 스타일) · 무의존 SVG 차트 |
 | **모바일** | Expo SDK 56 · React Native · TypeScript · react-native-svg |
-| **외부연동** | Bank API · AI 엔진(LSTM) · Blockchain(ERC-1400) · KYC — 설계서 입출력 형태를 따른 **mock**(Phase 5에서 실연동 예정) |
+| **경영 분석** | 업로드 CSV **실측 분석** — 매출 추세 회귀 예측(변동성 신뢰구간)·비용비율 절감 제안·z-score 이상치 탐지·데이터 기반 ESG (LSTM 앙상블은 Phase 5 고도화 목표) |
+| **외부연동** | Bank API · Blockchain(ERC-1400) · KYC — 설계서 입출력 형태를 따른 **mock**(실서비스 연동은 Phase 5, 실계정·키 필요) |
 
 ### 구현된 기능 (UC1~13)
 | UC | 기능 | 구현 |
 | :--- | :--- | :---: |
 | 1·2 | 회원가입(비밀번호 정책·사업자/대표자 검증)·로그인(JWT·계정잠금) | ✅ |
-| 3·4·5 | 경영 데이터 업로드 → AI 분석 리포트(차트·PDF) → ESG 6등급 산출(온체인 앵커) | ✅ |
+| 3·4·5 | 경영 데이터 업로드 → **실측 AI 분석**(실제 매출·비용 분석·예측·이상치, 차트·PDF) → 데이터 기반 ESG 6등급 산출(온체인 앵커) | ✅ |
 | 6·7 | ESG 기반 우대 대출 매칭 → 대출 신청(동의·30일 중복차단·웹훅) | ✅ |
 | 8·9·10 | STO 발행(컨트랙트 배포) → 마켓 탐색(필터·상세) → 토큰 구매(KYC·동적계산) | ✅ |
 | 11·12·13 | 포트폴리오·배당·예정배당 → 통합 거래내역(CSV) → 시스템 모니터·사용자관리·감사로그 | ✅ |
 
-- **검증:** 백엔드 `pytest` 64개 통과 · 웹 `next build` 통과 · 앱 `tsc`+`expo export` 통과 · 3개 역할 브라우저 클릭 점검 완료([`ISSUES.md`](./ISSUES.md))
+- **검증:** 백엔드 `pytest` 69개 통과 · 웹 `next build` 통과 · 앱 `tsc`+`expo export` 통과 · 3개 역할 브라우저 클릭 점검 완료([`ISSUES.md`](./ISSUES.md))
 - **품질 기록:** 설계 대비 갭([`GAP_ANALYSIS.md`](./GAP_ANALYSIS.md)) · 출시 자가진단([`QA_REVIEW.md`](./QA_REVIEW.md))
 - **UI:** Analysis 단계 프로토타입(`proto_01~05.svg`)을 시각 기준으로 삼아 실제 제품 수준 화면으로 구현 — Apple 스타일 디자인 시스템(반응형·**라이트/다크 모드 토글**·접근성(ARIA·키보드)·마이크로 인터랙션), 웹↔앱 디자인 토큰 일치
 
