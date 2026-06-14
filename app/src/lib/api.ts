@@ -18,14 +18,23 @@ export class ApiError extends Error {
 }
 
 export async function loadToken(): Promise<string | null> {
-  memToken = await SecureStore.getItemAsync(TOKEN_KEY);
+  try {
+    memToken = await SecureStore.getItemAsync(TOKEN_KEY);
+  } catch {
+    // 일부 환경(웹 등)에서 보안 저장소 접근 실패 시에도 앱이 멈추지 않도록 한다.
+    memToken = null;
+  }
   return memToken;
 }
 
 export async function setToken(token: string | null): Promise<void> {
-  memToken = token;
-  if (token) await SecureStore.setItemAsync(TOKEN_KEY, token);
-  else await SecureStore.deleteItemAsync(TOKEN_KEY);
+  memToken = token; // 메모리 토큰은 항상 갱신 — 보안 저장소 실패와 무관하게 세션은 유지된다.
+  try {
+    if (token) await SecureStore.setItemAsync(TOKEN_KEY, token);
+    else await SecureStore.deleteItemAsync(TOKEN_KEY);
+  } catch {
+    // 일부 환경(웹 등)에서 보안 저장소 쓰기 실패 시에도 로그인 흐름이 끊기지 않도록 한다.
+  }
 }
 
 interface RequestOptions {

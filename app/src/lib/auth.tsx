@@ -41,9 +41,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     (async () => {
-      await loadToken();
-      await loadMe();
-      setLoading(false);
+      try {
+        await loadToken();
+        await loadMe();
+      } finally {
+        setLoading(false); // 어떤 오류에도 스플래시에 멈추지 않도록 항상 로딩 해제
+      }
     })();
   }, [loadMe]);
 
