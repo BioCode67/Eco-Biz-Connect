@@ -127,6 +127,15 @@ function MerchantBody() {
   return (
     <div id="top">
       {netError && <ErrorBanner onRetry={() => { setLoading(true); loadAll(); }} />}
+      {!netError && datasets.length === 0 && (
+        <div className="card" style={{ marginBottom: 20, padding: "20px 24px", background: "var(--forest-soft)", borderColor: "transparent", display: "flex", alignItems: "center", justifyContent: "space-between", gap: 16, flexWrap: "wrap" }}>
+          <div>
+            <div style={{ fontSize: 15, fontWeight: 600, color: "var(--forest-deep)" }}>👋 시작하기 — 경영 데이터를 업로드하세요</div>
+            <div style={{ fontSize: 13.5, color: "var(--forest-deep)", marginTop: 4, lineHeight: 1.5 }}>매출·지출 CSV를 올리면 AI 매출 예측·영업이익·비용 구조·ESG 점수·우대 대출이 자동으로 분석됩니다. (저장소의 <b>sample_business_data.csv</b>로 바로 체험)</div>
+          </div>
+          <Button onClick={() => fileRef.current?.click()}>{uploading ? "분석 중…" : "경영 데이터 업로드"}</Button>
+        </div>
+      )}
       <div className="grid-stats" style={{ marginBottom: 20 }}>
         <StatCard label="예상 월매출" value={forecast ? won(forecast.next_3_months[0] * 10000) : "—"} hint="AI 1개월 예측" icon="↗" />
         <StatCard label="EBC ESG 점수" value={esg ? `${Number(esg.composite_score).toFixed(0)}` : "—"} trend={esg ? { dir: "up", text: `등급 ${esg.score_grade}` } : undefined} hint={esg ? undefined : "데이터 필요"} accent />
