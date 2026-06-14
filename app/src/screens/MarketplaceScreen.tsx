@@ -16,12 +16,12 @@ import { colors, shadow } from "../theme";
 const ICON: Record<string, string> = { SOLAR: "☀", WIND: "💨", FOREST: "🌲", HYDRO: "💧" };
 const LABEL: Record<string, string> = { SOLAR: "태양광", WIND: "풍력", FOREST: "탄소숲", HYDRO: "수력" };
 
-type SortKey = "yield" | "price" | "recent" | "remaining";
+type SortKey = "yield" | "price" | "recent" | "remaining" | "co2";
 const TYPE_OPTS: { v: string; label: string }[] = [
   { v: "ALL", label: "전체" }, { v: "SOLAR", label: "태양광" }, { v: "WIND", label: "풍력" }, { v: "FOREST", label: "탄소숲" }, { v: "HYDRO", label: "수력" },
 ];
 const SORT_OPTS: { v: SortKey; label: string }[] = [
-  { v: "yield", label: "수익률순" }, { v: "price", label: "최저가순" }, { v: "remaining", label: "잔여량순" }, { v: "recent", label: "최신순" },
+  { v: "yield", label: "수익률순" }, { v: "price", label: "최저가순" }, { v: "remaining", label: "잔여량순" }, { v: "co2", label: "CO₂순" }, { v: "recent", label: "최신순" },
 ];
 
 function Chip({ label, active, onPress }: { label: string; active: boolean; onPress: () => void }) {
@@ -70,6 +70,7 @@ export default function MarketplaceScreen() {
     if (sort === "yield") s.sort((a, b) => Number(b.expected_yield) - Number(a.expected_yield));
     else if (sort === "price") s.sort((a, b) => Number(a.token_price) - Number(b.token_price));
     else if (sort === "remaining") s.sort((a, b) => b.remaining_tokens - a.remaining_tokens);
+    else if (sort === "co2") s.sort((a, b) => b.co2_offset_per_year - a.co2_offset_per_year);
     else s.sort((a, b) => b.id - a.id);
     return s;
   }, [assets, typeFilter, search, sort]);

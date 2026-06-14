@@ -25,7 +25,7 @@ const ASSET_META: Record<string, { icon: string; label: string }> = {
   HYDRO: { icon: "💧", label: "수력" },
 };
 
-type SortKey = "yield" | "price" | "recent" | "remaining";
+type SortKey = "yield" | "price" | "recent" | "remaining" | "co2";
 
 export default function MarketplacePage() {
   const { user } = useAuth();
@@ -89,6 +89,7 @@ function MarketplaceBody() {
     if (sort === "yield") s.sort((a, b) => Number(b.expected_yield) - Number(a.expected_yield));
     else if (sort === "price") s.sort((a, b) => Number(a.token_price) - Number(b.token_price));
     else if (sort === "remaining") s.sort((a, b) => b.remaining_tokens - a.remaining_tokens);
+    else if (sort === "co2") s.sort((a, b) => b.co2_offset_per_year - a.co2_offset_per_year);
     else s.sort((a, b) => b.id - a.id);
     return s;
   }, [assets, typeFilter, search, sort]);
@@ -117,6 +118,7 @@ function MarketplaceBody() {
           <option value="yield">수익률순</option>
           <option value="price">최저가순</option>
           <option value="remaining">잔여량순</option>
+          <option value="co2">CO₂ 저감순</option>
           <option value="recent">최신순</option>
         </select>
       </div>
