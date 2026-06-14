@@ -159,20 +159,38 @@ export function DonutBreakdown({
   );
 }
 
-/** 라인 차트 (매출 예측) */
-export function LineChart({ values, labels, height = 120 }: { values: number[]; labels?: string[]; height?: number }) {
+/** 라인 차트 (매출 예측) — lower/upper 제공 시 신뢰구간 음영 표시 */
+export function LineChart({
+  values,
+  labels,
+  lower,
+  upper,
+  height = 120,
+}: {
+  values: number[];
+  labels?: string[];
+  lower?: number[];
+  upper?: number[];
+  height?: number;
+}) {
   const w = 300;
   const pad = { l: 10, r: 10, t: 16, b: 22 };
   const innerW = w - pad.l - pad.r;
   const innerH = height - pad.t - pad.b;
-  const max = Math.max(...values) * 1.12 || 1;
-  const min = Math.min(...values, 0);
-  const pts = values.map((v, i) => ({
-    x: pad.l + (values.length === 1 ? innerW / 2 : (i / (values.length - 1)) * innerW),
-    y: pad.t + innerH - ((v - min) / (max - min || 1)) * innerH,
-  }));
+  const hasBand = !!(lower && upper && lower.length === values.length && upper.length === values.length);
+  const max = (Math.max(...values, ...(hasBand ? upper! : [])) * 1.12) || 1;
+  const min = Math.min(...values, ...(hasBand ? lower! : []), 0);
+  const xAt = (i: number) => pad.l + (values.length === 1 ? innerW / 2 : (i / (values.length - 1)) * innerW);
+  const yAt = (v: number) => pad.t + innerH - ((v - min) / (max - min || 1)) * innerH;
+  const pts = values.map((v, i) => ({ x: xAt(i), y: yAt(v) }));
   const line = pts.map((p, i) => `${i === 0 ? "M" : "L"} ${p.x} ${p.y}`).join(" ");
   const area = `${line} L ${pts[pts.length - 1].x} ${pad.t + innerH} L ${pts[0].x} ${pad.t + innerH} Z`;
+  let band = "";
+  if (hasBand) {
+    const up = upper!.map((v, i) => `${i === 0 ? "M" : "L"} ${xAt(i)} ${yAt(v)}`).join(" ");
+    const lo = lower!.map((v, i) => `L ${xAt(values.length - 1 - i)} ${yAt(lower![values.length - 1 - i])}`).join(" ");
+    band = `${up} ${lo} Z`;
+  }
   return (
     <Svg width="100%" height={height} viewBox={`0 0 ${w} ${height}`}>
       <Defs>
@@ -181,6 +199,7 @@ export function LineChart({ values, labels, height = 120 }: { values: number[]; 
           <Stop offset="1" stopColor={colors.brand} stopOpacity={0} />
         </LinearGradient>
       </Defs>
+      {hasBand ? <Path d={band} fill={colors.brand} fillOpacity={0.1} /> : null}
       <Path d={area} fill="url(#g)" />
       <Path d={line} stroke={colors.brand} strokeWidth={2.5} fill="none" strokeLinecap="round" />
       {pts.map((p, i) => (

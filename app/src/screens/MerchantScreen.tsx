@@ -78,7 +78,7 @@ export default function MerchantScreen() {
 
       {report ? (
         <Section title="90일 매출 예측" subtitle={`${report.sales_forecast.method ?? "시계열 추세 분석"} · 단위 ${report.sales_forecast.unit}`}>
-          <LineChart values={report.sales_forecast.next_3_months} labels={report.sales_forecast.labels} />
+          <LineChart values={report.sales_forecast.next_3_months} labels={report.sales_forecast.labels} lower={report.sales_forecast.confidence_lower} upper={report.sales_forecast.confidence_upper} />
           {report.profit?.has_expense ? (
             <View style={{ flexDirection: "row", gap: 10, marginTop: 12 }}>
               <View style={styles.kpi}>
