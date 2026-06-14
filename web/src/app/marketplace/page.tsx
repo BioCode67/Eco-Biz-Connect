@@ -239,6 +239,7 @@ function CompareModal({ assets, onClose }: { assets: STOAsset[]; onClose: () => 
 }
 
 function DetailModal({ asset, kycVerified, onClose, onBuy }: { asset: STOAsset; kycVerified: boolean; onClose: () => void; onBuy: () => void }) {
+  const toast = useToast();
   const meta = ASSET_META[asset.asset_type] ?? { icon: "🌱", label: asset.asset_type };
   const soldPct = (1 - asset.remaining_tokens / asset.total_token_supply) * 100;
   const soldOut = asset.status === "SOLD_OUT" || asset.remaining_tokens <= 0;
@@ -278,9 +279,14 @@ function DetailModal({ asset, kycVerified, onClose, onBuy }: { asset: STOAsset; 
         </div>
 
         {asset.contract_address && (
-          <div style={{ fontSize: 11.5, color: "var(--ink-soft)", marginBottom: 16, wordBreak: "break-all" }}>
-            ⛓ ERC-1400 컨트랙트: <span style={{ fontFamily: "monospace" }}>{asset.contract_address}</span>
-          </div>
+          <button
+            type="button"
+            onClick={() => { navigator.clipboard?.writeText(asset.contract_address!).then(() => toast.show("컨트랙트 주소를 복사했습니다.", "success")).catch(() => {}); }}
+            title="클릭하여 복사"
+            style={{ display: "block", width: "100%", textAlign: "left", fontSize: 11.5, color: "var(--ink-soft)", marginBottom: 16, wordBreak: "break-all", background: "none", border: "none", cursor: "pointer", padding: 0 }}
+          >
+            ⛓ ERC-1400 컨트랙트: <span style={{ fontFamily: "monospace" }}>{asset.contract_address}</span> <span style={{ color: "var(--sky)" }}>⧉ 복사</span>
+          </button>
         )}
 
         <div style={{ display: "flex", gap: 10, justifyContent: "flex-end" }}>
