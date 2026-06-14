@@ -38,7 +38,7 @@ export function DonutGauge({ value, max = 100, label, sub }: { value: number; ma
 /** 가로 막대 그룹 (E/S/G 분해) */
 export function BarRows({ rows }: { rows: { label: string; value: number; max?: number; color?: string }[] }) {
   return (
-    <View style={{ gap: 12 }}>
+    <View accessible accessibilityLabel={rows.map((r) => `${r.label} ${r.value}`).join(", ")} style={{ gap: 12 }}>
       {rows.map((r) => {
         const pctVal = Math.max(0, Math.min(100, (r.value / (r.max ?? 100)) * 100));
         return (
@@ -71,7 +71,7 @@ export function RadarChart({ axes, reference = 50 }: { axes: { label: string; va
   };
   const poly = (vals: number[]) => vals.map((v, i) => point(i, v).join(",")).join(" ");
   return (
-    <View style={{ alignItems: "center" }}>
+    <View accessible accessibilityLabel={`상권 비교: ${axes.map((a) => `${a.label} ${a.value}`).join(", ")}`} style={{ alignItems: "center" }}>
       <Svg width={size} height={size}>
         {[25, 50, 75, 100].map((g) => (
           <Polygon key={g} points={poly(axes.map(() => g))} fill="none" stroke={colors.border} strokeWidth={1} />
@@ -119,7 +119,7 @@ export function DonutBreakdown({
   const total = segments.reduce((s, x) => s + x.value, 0) || 1;
   let offset = 0;
   return (
-    <View style={{ flexDirection: "row", alignItems: "center", flexWrap: "wrap", gap: 18 }}>
+    <View accessible accessibilityLabel={`구성: ${segments.map((s) => `${s.label} ${s.value}`).join(", ")}`} style={{ flexDirection: "row", alignItems: "center", flexWrap: "wrap", gap: 18 }}>
       <View style={{ width: size, height: size, alignItems: "center", justifyContent: "center" }}>
         <Svg width={size} height={size} style={{ position: "absolute" }}>
           <Circle cx={size / 2} cy={size / 2} r={r} stroke={colors.border} strokeWidth={stroke} fill="none" />
@@ -192,7 +192,7 @@ export function LineChart({
     band = `${up} ${lo} Z`;
   }
   return (
-    <Svg width="100%" height={height} viewBox={`0 0 ${w} ${height}`}>
+    <Svg width="100%" height={height} viewBox={`0 0 ${w} ${height}`} accessibilityLabel={`매출 예측: ${values.join(", ")}`}>
       <Defs>
         <LinearGradient id="g" x1="0" y1="0" x2="0" y2="1">
           <Stop offset="0" stopColor={colors.brand} stopOpacity={0.22} />
@@ -223,7 +223,7 @@ export function LineChart({
 export function MiniBars({ values, labels, height = 110, formatValue }: { values: number[]; labels?: string[]; height?: number; formatValue?: (n: number) => string }) {
   const max = Math.max(...values, 1);
   return (
-    <View style={{ flexDirection: "row", alignItems: "flex-end", height, gap: 6 }}>
+    <View accessible accessibilityLabel={`거래량: ${values.map((v, i) => `${labels?.[i] ?? i + 1} ${v}`).join(", ")}`} style={{ flexDirection: "row", alignItems: "flex-end", height, gap: 6 }}>
       {values.map((v, i) => (
         <View key={i} style={{ flex: 1, alignItems: "center", justifyContent: "flex-end", height: "100%" }}>
           {formatValue && v > 0 ? <Text style={{ fontSize: 8.5, fontWeight: "700", color: colors.muted, marginBottom: 3 }}>{formatValue(v)}</Text> : null}
