@@ -127,7 +127,7 @@ function AdminBody() {
       <div className="grid-2" style={{ marginBottom: 20 }}>
         <Section title="거래량 (최근 7일)" description="플랫폼 STO 거래 금액">
           {volume.length === 0 ? <EmptyState text="거래 데이터가 없습니다." /> : (
-            <MiniBars values={volume.map((v) => v.amount)} labels={volume.map((v) => v.label)} />
+            <MiniBars values={volume.map((v) => v.amount)} labels={volume.map((v) => v.label)} formatValue={(n) => (n >= 10000 ? `${Math.round(n / 10000).toLocaleString()}만` : n.toLocaleString())} />
           )}
         </Section>
         <Section title="플랫폼 사용자" description="역할별 구성">

@@ -220,12 +220,13 @@ export function LineChart({
 }
 
 /** 미니 막대 (거래량) */
-export function MiniBars({ values, labels, height = 110 }: { values: number[]; labels?: string[]; height?: number }) {
+export function MiniBars({ values, labels, height = 110, formatValue }: { values: number[]; labels?: string[]; height?: number; formatValue?: (n: number) => string }) {
   const max = Math.max(...values, 1);
   return (
     <View style={{ flexDirection: "row", alignItems: "flex-end", height, gap: 6 }}>
       {values.map((v, i) => (
         <View key={i} style={{ flex: 1, alignItems: "center", justifyContent: "flex-end", height: "100%" }}>
+          {formatValue && v > 0 ? <Text style={{ fontSize: 8.5, fontWeight: "700", color: colors.muted, marginBottom: 3 }}>{formatValue(v)}</Text> : null}
           <View style={{ width: "100%", borderTopLeftRadius: 5, borderTopRightRadius: 5, backgroundColor: colors.brand, opacity: 0.35 + 0.65 * (v / max), height: `${(v / max) * 80}%`, minHeight: 4 }} />
           {labels ? <Text style={{ fontSize: 9, color: colors.muted, marginTop: 5 }}>{labels[i]}</Text> : null}
         </View>

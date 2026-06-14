@@ -223,12 +223,13 @@ export function DonutBreakdown({ segments, centerLabel, centerSub, formatValue }
 }
 
 /** 미니 막대 차트 (관리자 거래량 등) */
-export function MiniBars({ values, labels, color = "var(--forest)", height = 120 }: { values: number[]; labels?: string[]; color?: string; height?: number }) {
+export function MiniBars({ values, labels, color = "var(--forest)", height = 120, formatValue }: { values: number[]; labels?: string[]; color?: string; height?: number; formatValue?: (n: number) => string }) {
   const max = Math.max(...values, 1);
   return (
     <div style={{ display: "flex", alignItems: "flex-end", gap: 8, height }}>
       {values.map((v, i) => (
         <div key={i} style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "flex-end", height: "100%" }}>
+          {formatValue && v > 0 && <span style={{ fontSize: 9.5, fontWeight: 600, color: "var(--ink-soft)", marginBottom: 4 }}>{formatValue(v)}</span>}
           <div style={{ width: "100%", borderRadius: "6px 6px 0 0", background: color, opacity: 0.35 + 0.65 * (v / max), height: `${(v / max) * 78}%`, minHeight: 4 }} />
           {labels && <span style={{ fontSize: 10, color: "var(--ink-soft)", marginTop: 6 }}>{labels[i]}</span>}
         </div>
