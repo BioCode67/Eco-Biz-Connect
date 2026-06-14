@@ -40,6 +40,7 @@ def run_pipeline(db: Session, business_data: BusinessData, parsed: dict | None =
         sales_forecast=analysis["sales_forecast"],
         cost_optimization_tips=analysis["cost_optimization_tips"],
         district_comparison=analysis["district_comparison"],
+        anomalies=analysis.get("anomalies", []),
     )
     db.add(report)
     business_data.processing_status = ProcessingStatus.AI_COMPLETED

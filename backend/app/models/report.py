@@ -28,6 +28,7 @@ class AIAnalysisReport(Base):
     sales_forecast: Mapped[dict] = mapped_column(JSON, nullable=False)
     cost_optimization_tips: Mapped[list] = mapped_column(JSON, nullable=False)
     district_comparison: Mapped[dict] = mapped_column(JSON, nullable=False)
+    anomalies: Mapped[list] = mapped_column(JSON, nullable=False, default=list)
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), server_default=func.now(), nullable=False
     )

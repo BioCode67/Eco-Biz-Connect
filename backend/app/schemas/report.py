@@ -17,4 +17,5 @@ class AIAnalysisReportOut(BaseModel):
     sales_forecast: dict
     cost_optimization_tips: list
     district_comparison: dict
+    anomalies: list = []
     created_at: datetime
