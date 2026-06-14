@@ -85,9 +85,20 @@ function PortfolioBody() {
   }, 0);
   const trees = Math.round(totalCo2 * 45); // 연 1톤 CO₂ ≈ 나무 약 45그루 흡수량
 
+  const noHoldings = (portfolio?.holdings?.length ?? 0) === 0;
+
   return (
     <div>
       {netError && <ErrorBanner onRetry={() => { setLoading(true); loadAll(); }} />}
+      {!netError && noHoldings && (
+        <div className="card" style={{ marginBottom: 20, padding: "20px 24px", background: "var(--forest-soft)", borderColor: "transparent", display: "flex", alignItems: "center", justifyContent: "space-between", gap: 16, flexWrap: "wrap" }}>
+          <div>
+            <div style={{ fontSize: 15, fontWeight: 600, color: "var(--forest-deep)" }}>👋 첫 투자를 시작하세요</div>
+            <div style={{ fontSize: 13.5, color: "var(--forest-deep)", marginTop: 4, lineHeight: 1.5 }}>마켓플레이스에서 탄소중립 STO를 소액으로 구매하면 보유 자산·배당·탄소 임팩트가 여기에 표시됩니다.</div>
+          </div>
+          <Link href="/marketplace" className="btn btn-primary">마켓플레이스 둘러보기</Link>
+        </div>
+      )}
       <div className="grid-stats" style={{ marginBottom: 20 }}>
         <StatCard label="총 투자금" value={won(portfolio?.total_invested)} icon="₩" />
         <StatCard label="현재 평가액" value={won(portfolio?.total_current_value)} accent icon="↗" />
