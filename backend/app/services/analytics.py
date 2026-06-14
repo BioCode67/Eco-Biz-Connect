@@ -260,6 +260,10 @@ def analyze(parsed: dict) -> dict:
             "operating_profit": round(operating_profit),
             "profit_margin": round(profit_margin, 1),
             "has_expense": has_expense,
+            "expense_breakdown": [
+                {"label": k, "amount": round(v), "ratio": round(v / total_rev * 100, 1)}
+                for k, v in sorted(exp.items(), key=lambda kv: -kv[1])
+            ] if (exp and total_rev) else [],
         },
         "_metrics": {
             "total_revenue": round(total_rev),

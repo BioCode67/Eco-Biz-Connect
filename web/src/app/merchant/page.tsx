@@ -15,6 +15,8 @@ import { useAuth } from "@/lib/auth";
 import { pct, won } from "@/lib/format";
 import type { AnalysisReport, BusinessData, ESGScore, LoanApplication, MatchedProduct } from "@/lib/types";
 
+const COST_COLORS = ["var(--forest)", "var(--sky)", "var(--gold)", "var(--leaf)"];
+
 const NAV = [
   { label: "대시보드", href: "#top", icon: "grid", active: true },
   { label: "경영 데이터", href: "#data", icon: "upload" },
@@ -148,6 +150,12 @@ function MerchantBody() {
                     <div style={{ fontSize: 12, color: "var(--ink-soft)" }}>영업이익률</div>
                     <div className="font-display" style={{ fontSize: 21, fontWeight: 600, color: "var(--ink)", letterSpacing: "-0.02em", marginTop: 2 }}>{report.profit.profit_margin.toFixed(1)}%</div>
                   </div>
+                </div>
+              )}
+              {report?.profit?.expense_breakdown && report.profit.expense_breakdown.length > 0 && (
+                <div style={{ marginTop: 16, paddingTop: 14, borderTop: "1px solid var(--line)" }}>
+                  <div style={{ fontSize: 13, color: "var(--ink-soft)", marginBottom: 8 }}>비용 구조 (매출 대비)</div>
+                  <BarRows rows={report.profit.expense_breakdown.map((e, i) => ({ label: e.label, value: e.ratio, max: 60, color: COST_COLORS[i % COST_COLORS.length] }))} />
                 </div>
               )}
               {report?.summary && <p style={{ fontSize: 13, color: "var(--ink-soft)", marginTop: 12, lineHeight: 1.6 }}>{report.summary}</p>}

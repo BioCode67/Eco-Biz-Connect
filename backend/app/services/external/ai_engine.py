@@ -32,12 +32,19 @@ def _synthetic(business_data: BusinessData) -> dict:
     monthly_rev_won = base_sales * 10000
     margin = 0.34 + (seed % 12) / 100  # 34~45%
     op_profit = round(monthly_rev_won * margin)
+    total_exp = monthly_rev_won - op_profit
+    # 합성 비용 구조(업종 통상 비중) — 데모용
+    _exp_w = {"재료비": 0.46, "인건비": 0.30, "임대료": 0.16, "공과금": 0.08}
     profit = {
         "total_revenue": monthly_rev_won,
-        "total_expense": monthly_rev_won - op_profit,
+        "total_expense": total_exp,
         "operating_profit": op_profit,
         "profit_margin": round(margin * 100, 1),
         "has_expense": True,
+        "expense_breakdown": [
+            {"label": k, "amount": round(total_exp * w), "ratio": round(total_exp * w / monthly_rev_won * 100, 1)}
+            for k, w in _exp_w.items()
+        ],
     }
 
     return {
