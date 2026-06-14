@@ -60,3 +60,4 @@
 | 49 | 앱 매출예측 LineChart에 신뢰구간 음영 없음(웹 AreaChart엔 있음); ESG 실데이터 산출은 이미 구현 확인(공과금→E·인건비→S·매출변동성→G, 샘플 env95/social60/gov70/B) | (c) 파리티·(검증) | LineChart에 lower/upper 신뢰구간 밴드 추가, MerchantScreen에서 confidence_lower/upper 전달 | tsc·expo export(711) 통과 |
 | 50 | 마켓 정렬에 환경 임팩트 기준 없음(ESG 플랫폼인데 수익률·가격순만) | (업그레이드) ESG 정합 | 웹·앱 마켓 정렬에 'CO₂ 저감순'(co2_offset_per_year desc) 추가 | web/app tsc·expo export(711) 통과 |
 | 51 | 앱 매출예측 LineChart에 데이터 라벨 없음(점만, 숫자 안 보임) — 웹 AreaChart엔 값 라벨 있음 | (c) 파리티·가독성 | LineChart 각 점 위에 값(toLocaleString)·아래 기간 라벨(SvgText) 추가 | tsc·expo export(711) 통과 |
+| 52 | 설계서가 목표 아키텍처(LSTM·Web3.py 등)만 기술, 실제 구현(추세회귀·영업이익·비용구조·인프로세스 mock)과 간극 | (업그레이드) 문서↔코드 정합·정직성 | Design 문서에 8장 "Implementation Notes" 추가 — 실사용 스택·AI실데이터분석·ESG실신호·블록체인 mock·외부연동 mock·부가가치 기능 정직 기록(.md만, pdf/svg 불변) | 문서 전용, 구조 유효 |
