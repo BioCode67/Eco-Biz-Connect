@@ -138,6 +138,18 @@ function MerchantBody() {
           {!forecast ? <EmptyState text="경영 데이터를 업로드하면 AI 매출 예측이 표시됩니다." action={<Button onClick={() => fileRef.current?.click()}>경영 데이터 업로드</Button>} /> : (
             <>
               <AreaChart values={forecast.next_3_months} labels={forecast.labels} lower={forecast.confidence_lower} upper={forecast.confidence_upper} unit="" />
+              {report?.profit?.has_expense && (
+                <div style={{ display: "flex", gap: 12, marginTop: 14 }}>
+                  <div style={{ flex: 1, padding: "12px 14px", borderRadius: 14, background: "var(--fill)" }}>
+                    <div style={{ fontSize: 12, color: "var(--ink-soft)" }}>분석기간 영업이익</div>
+                    <div className="font-display" style={{ fontSize: 21, fontWeight: 600, color: report.profit.operating_profit >= 0 ? "var(--forest-deep)" : "var(--danger)", letterSpacing: "-0.02em", marginTop: 2 }}>{won(report.profit.operating_profit)}</div>
+                  </div>
+                  <div style={{ flex: 1, padding: "12px 14px", borderRadius: 14, background: "var(--fill)" }}>
+                    <div style={{ fontSize: 12, color: "var(--ink-soft)" }}>영업이익률</div>
+                    <div className="font-display" style={{ fontSize: 21, fontWeight: 600, color: "var(--ink)", letterSpacing: "-0.02em", marginTop: 2 }}>{report.profit.profit_margin.toFixed(1)}%</div>
+                  </div>
+                </div>
+              )}
               {report?.summary && <p style={{ fontSize: 13, color: "var(--ink-soft)", marginTop: 12, lineHeight: 1.6 }}>{report.summary}</p>}
             </>
           )}

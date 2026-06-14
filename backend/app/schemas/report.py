@@ -18,4 +18,5 @@ class AIAnalysisReportOut(BaseModel):
     cost_optimization_tips: list
     district_comparison: dict
     anomalies: list = []
+    profit: dict | None = None
     created_at: datetime

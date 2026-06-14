@@ -25,9 +25,20 @@ def _synthetic(business_data: BusinessData) -> dict:
     seed = business_data.file_size % 100
     base_sales = 1000 + seed * 10
     forecast = [base_sales, base_sales + 150, base_sales + 300]
-    # 신뢰 구간(±12%) — LSTM 앙상블 예측 불확실성 표현(mock)
+    # 신뢰 구간(±12%) — 예측 불확실성 표현(mock)
     lower = [round(v * 0.88) for v in forecast]
     upper = [round(v * 1.12) for v in forecast]
+    # 합성 손익(월 매출 추정의 약 38% 이익률) — 데모 일관성용
+    monthly_rev_won = base_sales * 10000
+    margin = 0.34 + (seed % 12) / 100  # 34~45%
+    op_profit = round(monthly_rev_won * margin)
+    profit = {
+        "total_revenue": monthly_rev_won,
+        "total_expense": monthly_rev_won - op_profit,
+        "operating_profit": op_profit,
+        "profit_margin": round(margin * 100, 1),
+        "has_expense": True,
+    }
 
     return {
         "summary": (
@@ -64,4 +75,5 @@ def _synthetic(business_data: BusinessData) -> dict:
             },
             "note": "동일 상권 동종 업종 대비 백분위",
         },
+        "profit": profit,
     }

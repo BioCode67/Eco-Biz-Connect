@@ -78,6 +78,18 @@ export default function MerchantScreen() {
       {report ? (
         <Section title="90일 매출 예측" subtitle={`${report.sales_forecast.method ?? "시계열 추세 분석"} · 단위 ${report.sales_forecast.unit}`}>
           <LineChart values={report.sales_forecast.next_3_months} labels={report.sales_forecast.labels} />
+          {report.profit?.has_expense ? (
+            <View style={{ flexDirection: "row", gap: 10, marginTop: 12 }}>
+              <View style={styles.kpi}>
+                <Text style={styles.kpiLabel}>영업이익</Text>
+                <Text style={[styles.kpiValue, { color: report.profit.operating_profit >= 0 ? colors.brandDark : colors.danger }]}>{won(report.profit.operating_profit)}</Text>
+              </View>
+              <View style={styles.kpi}>
+                <Text style={styles.kpiLabel}>영업이익률</Text>
+                <Text style={styles.kpiValue}>{report.profit.profit_margin.toFixed(1)}%</Text>
+              </View>
+            </View>
+          ) : null}
           <Text style={styles.muted}>{report.summary}</Text>
         </Section>
       ) : null}
@@ -245,4 +257,7 @@ const styles = StyleSheet.create({
   bank: { fontSize: 11, color: colors.muted },
   pname: { fontSize: 14, fontWeight: "600", color: colors.text },
   rate: { fontSize: 19, fontWeight: "800", color: colors.brand, marginBottom: 4 },
+  kpi: { flex: 1, backgroundColor: colors.bg, borderRadius: 12, paddingVertical: 10, paddingHorizontal: 12 },
+  kpiLabel: { fontSize: 11.5, color: colors.muted },
+  kpiValue: { fontSize: 18, fontWeight: "800", color: colors.text, marginTop: 2 },
 });

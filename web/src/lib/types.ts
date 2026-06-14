@@ -70,6 +70,13 @@ export interface AnalysisReport {
     metrics?: Record<string, number>;
     note: string;
   };
+  profit?: {
+    total_revenue: number;
+    total_expense: number;
+    operating_profit: number;
+    profit_margin: number;
+    has_expense: boolean;
+  } | null;
   created_at: string;
 }
 
