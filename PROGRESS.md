@@ -64,3 +64,4 @@
 | 53 | 앱 화면에 데이터 새로고침 수단 없음(최초 로드만) — 모바일 표준 UX 부재 | (업그레이드) UX | useRefresh 공용 훅 신설, 4개 화면(소상공인·마켓·포트폴리오·관리자) ScrollView에 RefreshControl 당겨서새로고침 적용 | tsc·expo export(712) 통과 |
 | 54 | 앱이 네트워크 실패를 조용히 삼킴(.catch→기본값) — 백엔드 다운 시 빈화면만, 안내·재시도 없음 | (업그레이드) 견고성·UX | ui에 ErrorBanner(재시도) 추가, 소상공인은 Promise.allSettled로 전부 실패시 netError(빈데이터 404와 구분), 마켓은 try/catch. 배너+재시도 표시 | tsc·expo export(712) 통과. 포트폴리오·관리자는 다음 사이클 |
 | 55 | 앱 에러 UX가 소상공인·마켓에만 있고 포트폴리오·관리자엔 없음 | (업그레이드) 견고성·UX 완결 | Portfolio·Admin load를 Promise.allSettled+netError로 전환, ErrorBanner+재시도 추가 — 4개 화면 전체 네트워크 에러 UX 완성 | tsc·expo export(712) 통과 |
+| 56 | 관리자 거래량 7일 차트(MiniBars)가 막대만 있고 금액 미표시 | (업그레이드) 가독성 | MiniBars에 formatValue 옵션 추가, 0 초과 막대 위에 만원 약식 금액 표시(웹+앱) | web/app tsc·expo export(712) 통과 |
