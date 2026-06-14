@@ -1,5 +1,7 @@
 // 모바일 공통 색상/간격 토큰 — 웹과 동일한 Apple 스타일 디자인 언어.
 
+import { Platform } from "react-native";
+
 export const colors = {
   bg: "#f5f5f7", // Apple 라이트 그레이 배경
   text: "#1d1d1f",
@@ -21,11 +23,14 @@ export const colors = {
 export const radius = 22;
 export const radiusSm = 14;
 
-// iOS/Android 공통 카드 그림자(은은하게 — 웹 shadow-sm 톤)
-export const shadow = {
-  shadowColor: "#000000",
-  shadowOpacity: 0.05,
-  shadowRadius: 10,
-  shadowOffset: { width: 0, height: 3 },
-  elevation: 1,
-};
+// 카드 그림자(은은하게 — 웹 shadow-sm 톤). web 에선 boxShadow 로 분기해 RN-web deprecation 경고 제거.
+export const shadow = Platform.select({
+  web: { boxShadow: "0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04)" },
+  default: {
+    shadowColor: "#000000",
+    shadowOpacity: 0.05,
+    shadowRadius: 10,
+    shadowOffset: { width: 0, height: 3 },
+    elevation: 1,
+  },
+}) as object;
