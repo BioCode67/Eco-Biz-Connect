@@ -18,6 +18,7 @@ export default function LoginScreen() {
   const [role, setRole] = useState<Role>("MERCHANT");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showPw, setShowPw] = useState(false);
   const [businessRegNo, setBusinessRegNo] = useState("");
   const [storeName, setStoreName] = useState("");
   const [walletAddress, setWalletAddress] = useState("");
@@ -84,7 +85,8 @@ export default function LoginScreen() {
           </View>
 
           <Field label="이메일" value={email} onChange={setEmail} placeholder="you@example.com" keyboardType="email-address" />
-          <Field label="비밀번호" value={password} onChange={setPassword} placeholder="••••••••" secure />
+          <Field label="비밀번호" value={password} onChange={setPassword} placeholder="••••••••" secure={!showPw} />
+          <Text onPress={() => setShowPw((v) => !v)} style={{ alignSelf: "flex-end", marginTop: -6, marginBottom: 4, fontSize: 12.5, color: colors.muted }}>{showPw ? "비밀번호 숨기기" : "비밀번호 표시"}</Text>
 
           {mode === "register" && role === "MERCHANT" && (
             <>
