@@ -71,3 +71,4 @@
 | 60 | 앱 로그인 비번 표시 토글 없음(웹엔 있음) | (c) 파리티 | 앱 LoginScreen에 비밀번호 표시/숨기기 토글 추가 | tsc·expo export(712) 통과 |
 | 61 | 웹 차트 BarRows·MiniBars에 접근성 라벨 누락(타 차트는 있음) | (업그레이드) 접근성 | 두 차트 외곽에 role="img"+aria-label(데이터 요약) 추가 | web tsc 통과 |
 | 62 | 관리자 사용자표가 검색 없이 전체 나열 — 사용자 많으면 불편 | (업그레이드) 운영 편의 | 사용자 관리 섹션에 이메일·역할 검색 입력 + 실시간 필터 | web tsc 통과 |
+| 63 | 앱 차트에 그룹 접근성 라벨 없음 | (업그레이드) 접근성 | BarRows·RadarChart·DonutBreakdown·LineChart·MiniBars에 accessibilityLabel(데이터 요약) 추가 | tsc·expo export(712) 통과 |
