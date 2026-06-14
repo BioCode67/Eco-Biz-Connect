@@ -62,3 +62,4 @@
 | 51 | 앱 매출예측 LineChart에 데이터 라벨 없음(점만, 숫자 안 보임) — 웹 AreaChart엔 값 라벨 있음 | (c) 파리티·가독성 | LineChart 각 점 위에 값(toLocaleString)·아래 기간 라벨(SvgText) 추가 | tsc·expo export(711) 통과 |
 | 52 | 설계서가 목표 아키텍처(LSTM·Web3.py 등)만 기술, 실제 구현(추세회귀·영업이익·비용구조·인프로세스 mock)과 간극 | (업그레이드) 문서↔코드 정합·정직성 | Design 문서에 8장 "Implementation Notes" 추가 — 실사용 스택·AI실데이터분석·ESG실신호·블록체인 mock·외부연동 mock·부가가치 기능 정직 기록(.md만, pdf/svg 불변) | 문서 전용, 구조 유효 |
 | 53 | 앱 화면에 데이터 새로고침 수단 없음(최초 로드만) — 모바일 표준 UX 부재 | (업그레이드) UX | useRefresh 공용 훅 신설, 4개 화면(소상공인·마켓·포트폴리오·관리자) ScrollView에 RefreshControl 당겨서새로고침 적용 | tsc·expo export(712) 통과 |
+| 54 | 앱이 네트워크 실패를 조용히 삼킴(.catch→기본값) — 백엔드 다운 시 빈화면만, 안내·재시도 없음 | (업그레이드) 견고성·UX | ui에 ErrorBanner(재시도) 추가, 소상공인은 Promise.allSettled로 전부 실패시 netError(빈데이터 404와 구분), 마켓은 try/catch. 배너+재시도 표시 | tsc·expo export(712) 통과. 포트폴리오·관리자는 다음 사이클 |
