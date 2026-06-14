@@ -58,3 +58,4 @@
 | 47 | 비용 구조 막대가 웹에만 있고 앱엔 없음 | (c) 파리티 | 앱 AnalysisReport 타입에 expense_breakdown 추가, MerchantScreen 매출예측 섹션에 비용 구조 BarRows(COST_COLORS) 추가 | tsc·expo export(711) 통과 |
 | 48 | PDF 리포트가 stub 수준(매출예측·ESG만, 팁은 "N개" 카운트) | (업그레이드) 실작동·산출물 | PDF에 영업이익·이익률·비용구조(매출대비%, 영문라벨)·신뢰구간·상권 백분위·이상치 수 추가. 한글 impact는 PDF 폰트 한계로 앱/웹 안내 | reports 5테스트 통과, PDF 200·유효 PDF1.4·5개 신규 섹션 포함 확인 |
 | 49 | 앱 매출예측 LineChart에 신뢰구간 음영 없음(웹 AreaChart엔 있음); ESG 실데이터 산출은 이미 구현 확인(공과금→E·인건비→S·매출변동성→G, 샘플 env95/social60/gov70/B) | (c) 파리티·(검증) | LineChart에 lower/upper 신뢰구간 밴드 추가, MerchantScreen에서 confidence_lower/upper 전달 | tsc·expo export(711) 통과 |
+| 50 | 마켓 정렬에 환경 임팩트 기준 없음(ESG 플랫폼인데 수익률·가격순만) | (업그레이드) ESG 정합 | 웹·앱 마켓 정렬에 'CO₂ 저감순'(co2_offset_per_year desc) 추가 | web/app tsc·expo export(711) 통과 |
