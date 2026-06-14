@@ -7,8 +7,12 @@
   python -m scripts.seed_demo --if-empty  # 운영 부팅용: 비어 있을 때만 시드(초기화 안 함, 멱등)
 """
 
+import os
 import sys
 from datetime import datetime, timedelta, timezone
+
+# 저장소에 포함된 데모 샘플 CSV(소상공인 실분석 시연용)
+SAMPLE_CSV = os.path.join(os.path.dirname(__file__), "sample_business_data.csv")
 from decimal import Decimal
 
 from app.core.database import Base, SessionLocal, engine
@@ -24,7 +28,7 @@ from app.models.loan import LoanApplication, LoanStatus
 from app.models.sto import AssetType, STOAsset, STOStatus
 from app.models.transaction import TokenTransaction
 from app.models.user import KYCStatus, User, UserRole, VerificationStatus
-from app.services import esg_engine, pipeline
+from app.services import analytics, esg_engine, pipeline
 from app.services.external import ai_engine, blockchain
 from app.services.external.bank_api import compute_preferential_rate
 
@@ -41,8 +45,16 @@ def make_user(db, email, pw, role, **kw) -> User:
     return u
 
 
-def upload_and_process(db, merchant: User, file_name: str, size_seed: int) -> BusinessData:
-    """업로드 + 실제 파이프라인(AI 리포트 + ESG + 온체인 앵커) 실행."""
+def upload_and_process(db, merchant: User, file_name: str, size_seed: int, csv_path: str | None = None) -> BusinessData:
+    """업로드 + 실제 파이프라인(AI 리포트 + ESG + 온체인 앵커) 실행.
+
+    csv_path 가 주어지면 실제 CSV 를 파싱해 데이터 기반 분석을 수행한다(데모가 실엔진을 거치게 함).
+    """
+    parsed = None
+    if csv_path and os.path.exists(csv_path):
+        with open(csv_path, "rb") as f:
+            parsed = analytics.parse_business_csv(f.read())
+        size_seed = os.path.getsize(csv_path)
     bd = BusinessData(
         merchant_id=merchant.id,
         file_name=file_name,
@@ -52,7 +64,7 @@ def upload_and_process(db, merchant: User, file_name: str, size_seed: int) -> Bu
     )
     db.add(bd)
     db.flush()
-    pipeline.run_pipeline(db, bd)  # 리포트·ESG·블록체인 생성 + Merchant.esg_score 갱신
+    pipeline.run_pipeline(db, bd, parsed)  # 리포트·ESG·블록체인 생성 + Merchant.esg_score 갱신
     return bd
 
 
@@ -147,7 +159,8 @@ def main(if_empty: bool = False) -> None:
                        store_address="대구 중구 동성로 8", business_category="베이커리",
                        verification_status=VerificationStatus.VERIFIED)
         m1_bd = upload_and_process(db, m1, "2026Q1_매출.csv", 4820)
-        upload_and_process(db, m1, "2026_04_매출지출.csv", 7310)
+        # 최신 업로드는 실제 샘플 CSV를 파싱해 데이터 기반 분석(매출 추세·영업이익·비용구조·실신호 ESG)을 생성
+        upload_and_process(db, m1, "2026_04_매출지출.csv", 7310, csv_path=SAMPLE_CSV)
         # 데모용 ESG 상승 추이(과거 4개월 mock) — 추이 차트가 풍부해지도록 백필
         backfill_esg_history(db, m1, m1_bd.id, [70.0, 72.5, 74.5, 76.0], months_ago_start=5)
         upload_and_process(db, m2, "카페_매출데이터.csv", 5550)
