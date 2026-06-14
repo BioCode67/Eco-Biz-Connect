@@ -47,3 +47,5 @@
 | 39 | 앱 마켓플레이스에 비교 기능(UC6 "최대 3개") 없음 — 웹↔앱 마지막 파리티 갭 | (c) 파리티·설계 기능 | 카드 비교 체크박스 + 하단 플로팅 바 + 비교 시트(항목별 최적값 ★, 가로 스크롤 표) 추가 | tsc·expo export(710) 통과 — 앱이 4개 화면 모두 웹과 완전 파리티 달성 |
 | 40 | (야간 검증 스윕) 실기능·API연결·mock 전수 점검 | (검증) | 프런트↔백엔드 API 대조·외부 mock 연동·27엔드포인트 E2E·입력검증8종·접근제어·웹 콘솔로그·카본계산 정확도 | 끊긴 API 0, mock 5종 self-contained+wiring 확인, 27/27 엔드포인트 정상, 검증 8/8, 콘솔 에러 0. QA_REVIEW.md 갱신 |
 | 41 | 웹 콘솔에 Next "scroll-behavior smooth" 경고 반복 | (d) 품질 신호 | `<html>`에 `data-scroll-behavior="smooth"` 추가(Next 권고) | 서버 렌더 HTML에 속성 적용 확인 — 경고 해소 |
+| 42 | (문서 충실성 감사) 제출 설계서 vs 구현 대조 | (검증) | 13개 도메인클래스·ESG가중치(0.40/0.35/0.25)·Bank API 흐름·ERC-1400·SHA-256 앵커링·상태머신(LoanStatus·STOStatus)·웹훅 전수 대조 | 전부 설계서와 일치 확인. 외부 API는 문서가 규정한 인터페이스대로 mock 구현(실연동은 Phase 5, 문서상 불요) |
+| 43 | Design UC11 "배당 항목 클릭 시 블록체인 익스플로러 연결"이 정적 해시 표시로만 구현 | (업그레이드) 설계 기능·블록체인 깊이 | 온체인 해시 클릭 → `/chain/verify`(BlockchainRecord.verify()) 호출하는 검증 모달(record_type·block·network·SHA-256·검증배지) 컴포넌트 추가, 포트폴리오 배당·소상공인 ESG 앵커에 연결. 공용 Modal을 별도 모듈로 추출(순환 import 해소) | next build 12p·tsc 통과, 프리뷰에서 배당 해시 클릭→"✓ 검증됨·배당 분배·블록#·해시" 모달 시각 검증 |
