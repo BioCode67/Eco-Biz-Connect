@@ -1,7 +1,7 @@
 // 투자자 포트폴리오 (proto_04 모바일). UC11 포트폴리오·배당·예정배당 · UC12 거래내역.
 
-import React, { useEffect, useState } from "react";
-import { ScrollView, StyleSheet, Text, View } from "react-native";
+import React, { useCallback, useEffect, useState } from "react";
+import { RefreshControl, ScrollView, StyleSheet, Text, View } from "react-native";
 
 import { ChainHash } from "../components/ChainVerify";
 import { DonutBreakdown } from "../components/charts";
@@ -9,6 +9,7 @@ import { Skeleton } from "../components/Skeleton";
 import { Badge, EmptyState, Section, StatCard } from "../components/ui";
 import { api } from "../lib/api";
 import { dateStr, shortHash, txStatusKo, txTypeKo, won } from "../lib/format";
+import { useRefresh } from "../lib/useRefresh";
 import type { Dividend, Portfolio, STOAsset, TransactionItem, TransactionPage } from "../lib/types";
 import { colors } from "../theme";
 
@@ -21,21 +22,21 @@ export default function PortfolioScreen() {
   const [tx, setTx] = useState<TransactionItem[]>([]);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    (async () => {
-      const [p, d, t, a] = await Promise.all([
-        api<Portfolio>("/portfolio").catch(() => null),
-        api<Dividend[]>("/dividends").catch(() => [] as Dividend[]),
-        api<TransactionPage>("/transactions").catch(() => null),
-        api<STOAsset[]>("/marketplace").catch(() => [] as STOAsset[]),
-      ]);
-      setPortfolio(p);
-      setDividends(d);
-      setTx(t?.items ?? []);
-      setAssets(a);
-      setLoading(false);
-    })();
+  const load = useCallback(async () => {
+    const [p, d, t, a] = await Promise.all([
+      api<Portfolio>("/portfolio").catch(() => null),
+      api<Dividend[]>("/dividends").catch(() => [] as Dividend[]),
+      api<TransactionPage>("/transactions").catch(() => null),
+      api<STOAsset[]>("/marketplace").catch(() => [] as STOAsset[]),
+    ]);
+    setPortfolio(p);
+    setDividends(d);
+    setTx(t?.items ?? []);
+    setAssets(a);
+    setLoading(false);
   }, []);
+  useEffect(() => { load(); }, [load]);
+  const { refreshing, onRefresh } = useRefresh(load);
 
   if (loading) {
     return (
@@ -60,7 +61,7 @@ export default function PortfolioScreen() {
   const trees = Math.round(totalCo2 * 45);
 
   return (
-    <ScrollView contentContainerStyle={styles.container}>
+    <ScrollView contentContainerStyle={styles.container} refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={colors.brand} colors={[colors.brand]} />}>
       <View style={styles.statRow}>
         <StatCard label="총 투자금" value={won(portfolio?.total_invested)} />
         <StatCard label="평가액" value={won(portfolio?.total_current_value)} />

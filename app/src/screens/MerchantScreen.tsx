@@ -2,7 +2,9 @@
 
 import * as DocumentPicker from "expo-document-picker";
 import React, { useCallback, useEffect, useState } from "react";
-import { ScrollView, StyleSheet, Text, View } from "react-native";
+import { RefreshControl, ScrollView, StyleSheet, Text, View } from "react-native";
+
+import { useRefresh } from "../lib/useRefresh";
 
 import { BarRows, DonutGauge, LineChart, RadarChart } from "../components/charts";
 import { ChainHash } from "../components/ChainVerify";
@@ -44,6 +46,7 @@ export default function MerchantScreen() {
     setLoading(false);
   }, []);
   useEffect(() => { loadAll(); }, [loadAll]);
+  const { refreshing, onRefresh } = useRefresh(loadAll);
 
   async function upload() {
     const picked = await DocumentPicker.getDocumentAsync({ type: ["text/csv", "text/comma-separated-values", "application/vnd.ms-excel"] });
@@ -70,7 +73,7 @@ export default function MerchantScreen() {
   }
 
   return (
-    <ScrollView contentContainerStyle={styles.container}>
+    <ScrollView contentContainerStyle={styles.container} refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={colors.brand} colors={[colors.brand]} />}>
       <View style={styles.statRow}>
         <StatCard label="ESG 점수" value={esg ? `${Number(esg.composite_score).toFixed(0)}` : "—"} hint={esg ? `등급 ${esg.score_grade}` : "데이터 필요"} />
         <StatCard label="예상 월매출" value={report ? won(report.sales_forecast.next_3_months[0] * 10000) : "—"} hint="AI 예측" />

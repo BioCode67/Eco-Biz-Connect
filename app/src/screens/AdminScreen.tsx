@@ -1,7 +1,9 @@
 // 관리자 콘솔 (proto_05 모바일). UC8 발행 · UC13 모니터·통계·사용자관리.
 
 import React, { useCallback, useEffect, useState } from "react";
-import { ScrollView, StyleSheet, Text, View } from "react-native";
+import { RefreshControl, ScrollView, StyleSheet, Text, View } from "react-native";
+
+import { useRefresh } from "../lib/useRefresh";
 
 import { MiniBars } from "../components/charts";
 import { AppModal } from "../components/AppModal";
@@ -34,6 +36,7 @@ export default function AdminScreen() {
     setMetrics(m); setStats(s); setUsers(u); setLogs(l); setLoading(false);
   }, []);
   useEffect(() => { load(); }, [load]);
+  const { refreshing, onRefresh } = useRefresh(load);
 
   async function toggle(u: AdminUser) {
     try {
@@ -60,7 +63,7 @@ export default function AdminScreen() {
   const dotColor = (lv: string) => (lv === "danger" ? colors.danger : lv === "warn" ? colors.warning : colors.sky);
 
   return (
-    <ScrollView contentContainerStyle={styles.container}>
+    <ScrollView contentContainerStyle={styles.container} refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={colors.brand} colors={[colors.brand]} />}>
       <Section title="시스템 모니터" subtitle="서브시스템 상태(mock)">
         {Object.entries(subsystems).map(([key, val]) => {
           const status = String((val as Record<string, unknown>).status ?? "—");

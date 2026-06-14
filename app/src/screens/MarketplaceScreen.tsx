@@ -1,7 +1,9 @@
 // 투자 마켓플레이스 (proto_03 모바일). UC9 탐색 · UC10 구매(동적계산·위험고지·KYC).
 
 import React, { useCallback, useEffect, useMemo, useState } from "react";
-import { Pressable, ScrollView, StyleSheet, Text, TextInput, View } from "react-native";
+import { Pressable, RefreshControl, ScrollView, StyleSheet, Text, TextInput, View } from "react-native";
+
+import { useRefresh } from "../lib/useRefresh";
 
 import { AppModal } from "../components/AppModal";
 import { Skeleton } from "../components/Skeleton";
@@ -59,6 +61,7 @@ export default function MarketplaceScreen() {
     setLoading(false);
   }, []);
   useEffect(() => { load(); }, [load]);
+  const { refreshing, onRefresh } = useRefresh(load);
 
   const visible = useMemo(() => {
     let list = assets.filter((a) => typeFilter === "ALL" || a.asset_type === typeFilter);
@@ -86,7 +89,7 @@ export default function MarketplaceScreen() {
   }
 
   return (
-    <ScrollView contentContainerStyle={styles.container}>
+    <ScrollView contentContainerStyle={styles.container} refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={colors.brand} colors={[colors.brand]} />}>
       {!kycVerified ? (
         <View style={styles.kyc}>
           <Text style={styles.kycText}>토큰 투자를 위해 KYC 인증이 필요합니다.</Text>
