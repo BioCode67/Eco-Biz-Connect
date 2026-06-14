@@ -33,7 +33,7 @@ export interface ESGScore {
 export interface AnalysisReport {
   id: number;
   summary: string;
-  sales_forecast: { unit: string; labels?: string[]; next_3_months: number[]; confidence_lower?: number[]; confidence_upper?: number[]; confidence_level?: number };
+  sales_forecast: { unit: string; labels?: string[]; next_3_months: number[]; confidence_lower?: number[]; confidence_upper?: number[]; confidence_level?: number; method?: string };
   cost_optimization_tips: { title: string; detail: string; impact: string }[];
   district_comparison?: {
     your_percentile: number;

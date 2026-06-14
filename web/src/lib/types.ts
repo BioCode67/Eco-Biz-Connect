@@ -59,6 +59,7 @@ export interface AnalysisReport {
     confidence_lower?: number[];
     confidence_upper?: number[];
     confidence_level?: number;
+    method?: string;
   };
   cost_optimization_tips: CostTip[];
   anomalies?: Anomaly[];

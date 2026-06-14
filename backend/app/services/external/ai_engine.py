@@ -1,18 +1,26 @@
-"""AI 분석 엔진 외부연동 — MOCK 구현.
+"""AI 분석 엔진 — 업로드 데이터 실측 분석 + 합성 폴백.
 
-실제로는 LSTM 시계열 예측 모델(PyTorch/TensorFlow)을 호출하지만,
-여기서는 결정적인 가짜 분석 결과를 생성해 반환한다. Phase 5 에서 실제 모델로 교체한다.
+실제 CSV가 파싱된 경우 `analytics` 모듈이 매출 추세 회귀 예측·비용 비율 분석·이상치
+탐지를 수행한다(진짜 데이터 기반). 파싱 데이터가 없으면(시드/데모) 설계서(UC4) 출력
+형태를 따르는 결정적 합성값을 반환한다. (외부 ML 모델 실연동은 Phase 5)
 """
 
 from app.models.business import BusinessData
+from app.services import analytics
 
 
-def generate_analysis(business_data: BusinessData) -> dict:
-    """업로드된 경영 데이터에 대한 AI 분석 결과(mock)를 생성한다.
+def generate_analysis(business_data: BusinessData, parsed: dict | None = None) -> dict:
+    """업로드된 경영 데이터에 대한 분석 결과를 생성한다.
 
-    설계서(UC4)의 출력 형태를 따른다: 신뢰 구간이 포함된 매출 예측,
-    이상치 플래그가 표시된 비용 항목, 상권 비교, 등.
+    `parsed`(실제 CSV 파싱 결과)가 있으면 실측 분석을, 없으면 합성 분석을 반환한다.
     """
+    if parsed is not None:
+        return analytics.analyze(parsed)
+    return _synthetic(business_data)
+
+
+def _synthetic(business_data: BusinessData) -> dict:
+    """파싱 데이터가 없을 때의 결정적 합성 분석(시드/데모용, 설계 UC4 형태)."""
     # 파일 크기를 시드처럼 사용해 결정적이지만 데이터마다 다른 값을 만든다.
     seed = business_data.file_size % 100
     base_sales = 1000 + seed * 10

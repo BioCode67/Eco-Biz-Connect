@@ -13,7 +13,7 @@ from app.core.database import get_db
 from app.models.business import BusinessData
 from app.models.user import User, UserRole
 from app.schemas.business import BusinessDataOut
-from app.services import pipeline
+from app.services import analytics, pipeline
 from app.services.external import object_storage
 
 router = APIRouter(prefix="/business-data", tags=["business-data"])
@@ -54,8 +54,11 @@ async def upload_business_data(
     db.commit()
     db.refresh(business_data)
 
-    # 분석 파이프라인 트리거(mock)
-    pipeline.run_pipeline(db, business_data)
+    # 업로드된 CSV 를 실제로 파싱(실패 시 None → 합성 분석으로 폴백)
+    parsed = analytics.parse_business_csv(content) if ext == ".csv" else None
+
+    # 분석 파이프라인 트리거(실데이터 우선)
+    pipeline.run_pipeline(db, business_data, parsed)
     return business_data
 
 

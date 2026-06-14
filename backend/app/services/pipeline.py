@@ -22,14 +22,17 @@ from app.services import esg_engine
 from app.services.external import ai_engine, blockchain
 
 
-def run_pipeline(db: Session, business_data: BusinessData) -> None:
-    """업로드된 데이터를 분석 파이프라인에 통과시킨다(mock, 동기 실행)."""
+def run_pipeline(db: Session, business_data: BusinessData, parsed: dict | None = None) -> None:
+    """업로드된 데이터를 분석 파이프라인에 통과시킨다(동기 실행).
+
+    `parsed`(실제 CSV 파싱 결과)가 있으면 실측 분석을, 없으면 합성 분석을 수행한다.
+    """
     business_data.processing_status = ProcessingStatus.PARSING
     business_data.processing_status = ProcessingStatus.PARSED
     business_data.processing_status = ProcessingStatus.AI_QUEUED
 
-    # UC4: AI 분석 리포트 생성
-    analysis = ai_engine.generate_analysis(business_data)
+    # UC4: AI 분석 리포트 생성(실데이터 우선)
+    analysis = ai_engine.generate_analysis(business_data, parsed)
     report = AIAnalysisReport(
         business_data_id=business_data.id,
         merchant_id=business_data.merchant_id,
@@ -41,8 +44,8 @@ def run_pipeline(db: Session, business_data: BusinessData) -> None:
     db.add(report)
     business_data.processing_status = ProcessingStatus.AI_COMPLETED
 
-    # UC5: ESG 점수 산출 + 블록체인 앵커링
-    scores = esg_engine.calculate(business_data)
+    # UC5: ESG 점수 산출 + 블록체인 앵커링(실데이터 우선)
+    scores = esg_engine.calculate(business_data, parsed)
     payload = f"esg:{business_data.id}:{scores['composite_score']}"
     record = blockchain.anchor(db, RecordType.ESG_ANCHOR, payload)
     esg = ESGScore(

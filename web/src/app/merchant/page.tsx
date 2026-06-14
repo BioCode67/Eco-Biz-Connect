@@ -134,7 +134,7 @@ function MerchantBody() {
 
       {/* 리포트: 매출 예측 + ESG */}
       <div id="report" className="grid-2" style={{ marginBottom: 20 }}>
-        <Section title="90일 매출 예측" description={forecast ? `LSTM 앙상블 · 신뢰수준 ${(forecast.confidence_level ?? 0.9) * 100}% (음영) · 단위 ${forecast.unit}` : "AI 시계열 예측"} action={report ? <Button variant="ghost" onClick={exportPdf}>PDF 내보내기</Button> : undefined}>
+        <Section title="90일 매출 예측" description={forecast ? `${forecast.method ?? "시계열 추세 분석"} · 신뢰수준 ${Math.round((forecast.confidence_level ?? 0.9) * 100)}% (음영) · 단위 ${forecast.unit}` : "AI 시계열 예측"} action={report ? <Button variant="ghost" onClick={exportPdf}>PDF 내보내기</Button> : undefined}>
           {!forecast ? <EmptyState text="경영 데이터를 업로드하면 AI 매출 예측이 표시됩니다." action={<Button onClick={() => fileRef.current?.click()}>경영 데이터 업로드</Button>} /> : (
             <>
               <AreaChart values={forecast.next_3_months} labels={forecast.labels} lower={forecast.confidence_lower} upper={forecast.confidence_upper} unit="" />
