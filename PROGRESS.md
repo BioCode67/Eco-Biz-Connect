@@ -57,3 +57,4 @@
 | 46 | 분석이 비용 항목별 비율을 계산하지만(재료비/인건비/임대료/공과금) 화면 미표시 | (업그레이드) 실작동·시각화 | profit 블록에 expense_breakdown(항목·금액·매출대비%) 추가(영속화), 합성 경로도 동일, 웹 매출예측 섹션에 "비용 구조" 막대(BarRows) 추가 | web tsc·analytics 6테스트 통과, API expense_breakdown 반환(재료비25.8/인건16.8/임대9/공과4.5%), 프리뷰 4개 항목 막대 시각 확인 |
 | 47 | 비용 구조 막대가 웹에만 있고 앱엔 없음 | (c) 파리티 | 앱 AnalysisReport 타입에 expense_breakdown 추가, MerchantScreen 매출예측 섹션에 비용 구조 BarRows(COST_COLORS) 추가 | tsc·expo export(711) 통과 |
 | 48 | PDF 리포트가 stub 수준(매출예측·ESG만, 팁은 "N개" 카운트) | (업그레이드) 실작동·산출물 | PDF에 영업이익·이익률·비용구조(매출대비%, 영문라벨)·신뢰구간·상권 백분위·이상치 수 추가. 한글 impact는 PDF 폰트 한계로 앱/웹 안내 | reports 5테스트 통과, PDF 200·유효 PDF1.4·5개 신규 섹션 포함 확인 |
+| 49 | 앱 매출예측 LineChart에 신뢰구간 음영 없음(웹 AreaChart엔 있음); ESG 실데이터 산출은 이미 구현 확인(공과금→E·인건비→S·매출변동성→G, 샘플 env95/social60/gov70/B) | (c) 파리티·(검증) | LineChart에 lower/upper 신뢰구간 밴드 추가, MerchantScreen에서 confidence_lower/upper 전달 | tsc·expo export(711) 통과 |
