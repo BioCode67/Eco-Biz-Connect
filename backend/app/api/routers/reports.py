@@ -51,22 +51,44 @@ def export_latest_report_pdf(
     )
 
     forecast = report.sales_forecast.get("next_3_months", [])
+    method = report.sales_forecast.get("method", "trend regression")
+    profit = report.profit or {}
+    dc = report.district_comparison or {}
+    # PDF 는 한글 폰트 미임베딩 → 비용 항목명을 영문으로 매핑
+    exp_label = {"재료비": "Materials", "인건비": "Labor", "임대료": "Rent", "공과금": "Utilities"}
+
     lines = [
-        f"Merchant ID: {current_user.id}",
-        f"Report ID: {report.id}    Generated: {report.created_at:%Y-%m-%d}",
+        f"Merchant ID: {current_user.id}    Report ID: {report.id}    Generated: {report.created_at:%Y-%m-%d}",
         "",
         "[ Sales Forecast (10k KRW) ]",
-        f"  Next 3 months: {', '.join(str(v) for v in forecast)}",
+        f"  Next 3 months: {', '.join(str(v) for v in forecast)}   (method: {method})",
+        f"  90% band: {report.sales_forecast.get('confidence_lower', [])} ~ {report.sales_forecast.get('confidence_upper', [])}",
         "",
+    ]
+    if profit.get("has_expense"):
+        op = round(profit.get("operating_profit", 0) / 10000)
+        rev = round(profit.get("total_revenue", 0) / 10000)
+        lines += [
+            "[ Profitability ]",
+            f"  Revenue: {rev:,} (10k KRW)   Operating profit: {op:,} (10k KRW)   Margin: {profit.get('profit_margin', 0)}%",
+            "",
+            "[ Cost Structure (% of revenue) ]",
+            "  " + "   ".join(f"{exp_label.get(e['label'], e['label'])}: {e['ratio']}%" for e in profit.get("expense_breakdown", [])),
+            "",
+        ]
+    lines += [
         "[ EBC ESG Score ]",
         f"  Composite: {esg.composite_score if esg else 'N/A'}    Grade: {esg.score_grade if esg else 'N/A'}",
         f"  E/S/G: {esg.env_score}/{esg.social_score}/{esg.governance_score}" if esg else "  E/S/G: N/A",
         "",
-        "[ Cost Optimization Tips ]",
-        f"  {len(report.cost_optimization_tips)} recommendations included.",
-        "",
-        "Eco-Biz Connect - AI & ESG Financial Platform",
+        "[ Cost Optimization ]",
+        f"  {len(report.cost_optimization_tips)} data-driven recommendations (detail in app/web).",
     ]
+    if dc.get("your_percentile") is not None:
+        lines += ["", "[ District Comparison ]", f"  Top {100 - dc['your_percentile']}% among peers in district"]
+    if report.anomalies:
+        lines += ["", f"[ Anomalies ] {len(report.anomalies)} flagged for review"]
+    lines += ["", "Eco-Biz Connect - AI & ESG Financial Platform"]
     pdf = build_report_pdf("EBC AI Analysis Report", lines)
     return Response(
         content=pdf,
