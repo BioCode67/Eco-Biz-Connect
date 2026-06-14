@@ -100,8 +100,9 @@ export default function MarketplaceScreen() {
       {netError ? <ErrorBanner onRetry={() => { setLoading(true); load(); }} /> : null}
       {!kycVerified ? (
         <View style={styles.kyc}>
-          <Text style={styles.kycText}>토큰 투자를 위해 KYC 인증이 필요합니다.</Text>
-          <Button title="KYC 인증" onPress={verifyKyc} />
+          <Text style={styles.kycTitle}>🔒 본인인증(KYC)이 필요합니다</Text>
+          <Text style={styles.kycText}>자금세탁방지(AML) 규정에 따라 토큰 구매 전 본인인증이 필요합니다. 인증 후 모든 STO에 투자할 수 있습니다.</Text>
+          <Button title="지금 본인인증" onPress={verifyKyc} />
         </View>
       ) : null}
 
@@ -296,8 +297,9 @@ const styles = StyleSheet.create({
   container: { padding: 16, paddingBottom: 40 },
   filterBar: { gap: 8, marginBottom: 12 },
   search: { backgroundColor: colors.card, borderColor: colors.border, borderWidth: 1, borderRadius: 12, paddingHorizontal: 14, paddingVertical: 10, fontSize: 14, color: colors.text },
-  kyc: { backgroundColor: "#fbedd4", borderRadius: 12, padding: 14, marginBottom: 12, gap: 8 },
-  kycText: { color: colors.warning, fontSize: 13 },
+  kyc: { backgroundColor: "#fbedd4", borderRadius: 12, padding: 14, marginBottom: 12, gap: 6 },
+  kycTitle: { color: colors.warning, fontSize: 14, fontWeight: "700" },
+  kycText: { color: colors.warning, fontSize: 12.5, lineHeight: 18 },
   muted: { color: colors.muted, fontSize: 12, marginTop: 3 },
   product: { paddingVertical: 12, borderTopColor: colors.border, borderTopWidth: 1 },
   head: { flexDirection: "row", justifyContent: "space-between", alignItems: "center" },
