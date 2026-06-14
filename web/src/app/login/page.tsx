@@ -29,6 +29,7 @@ export default function LoginPage() {
   const [role, setRole] = useState<Role>("MERCHANT");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showPw, setShowPw] = useState(false);
   const [businessRegNo, setBusinessRegNo] = useState("");
   const [storeName, setStoreName] = useState("");
   const [walletAddress, setWalletAddress] = useState("");
@@ -131,7 +132,12 @@ export default function LoginPage() {
 
             <form onSubmit={onSubmit} style={{ display: "flex", flexDirection: "column", gap: 14 }}>
               <Field label="이메일"><input type="email" required value={email} onChange={(e) => setEmail(e.target.value)} placeholder="you@example.com" className="field" /></Field>
-              <Field label="비밀번호"><input type="password" required minLength={8} value={password} onChange={(e) => setPassword(e.target.value)} placeholder="8자 이상 · 대문자·숫자·특수문자" className="field" /></Field>
+              <Field label="비밀번호">
+                <div style={{ position: "relative" }}>
+                  <input type={showPw ? "text" : "password"} required minLength={8} value={password} onChange={(e) => setPassword(e.target.value)} placeholder="8자 이상 · 대문자·숫자·특수문자" className="field" style={{ paddingRight: 64 }} />
+                  <button type="button" onClick={() => setShowPw((v) => !v)} aria-label={showPw ? "비밀번호 숨기기" : "비밀번호 표시"} style={{ position: "absolute", right: 10, top: "50%", transform: "translateY(-50%)", background: "none", border: "none", cursor: "pointer", fontSize: 12.5, fontWeight: 500, color: "var(--ink-soft)" }}>{showPw ? "숨기기" : "표시"}</button>
+                </div>
+              </Field>
 
               {mode === "register" && role === "MERCHANT" && (
                 <>
