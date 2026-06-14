@@ -49,6 +49,7 @@ function AdminBody() {
   const [loading, setLoading] = useState(true);
   const [showIssue, setShowIssue] = useState(false);
   const [netError, setNetError] = useState(false);
+  const [userSearch, setUserSearch] = useState("");
 
   const load = useCallback(async () => {
     try {
@@ -187,13 +188,13 @@ function AdminBody() {
       </Section>
 
       {/* 사용자 관리 */}
-      <Section id="users" title="사용자 관리" description="계정 정지 / 복원 (감사 로그 기록)">
+      <Section id="users" title="사용자 관리" description="계정 정지 / 복원 (감사 로그 기록)" action={<input className="field" placeholder="🔍 이메일·역할 검색" value={userSearch} onChange={(e) => setUserSearch(e.target.value)} style={{ width: 200 }} />}>
         <table style={{ width: "100%", fontSize: 13.5, borderCollapse: "collapse" }}>
           <thead><tr style={{ textAlign: "left", color: "var(--ink-soft)", fontSize: 11.5 }}>
             <th style={{ padding: "0 0 8px" }}>이메일</th><th>역할</th><th>상태</th><th style={{ textAlign: "right" }}>작업</th>
           </tr></thead>
           <tbody>
-            {users.map((u) => (
+            {users.filter((u) => { const q = userSearch.trim().toLowerCase(); return !q || u.email.toLowerCase().includes(q) || roleKo(u.role).includes(q); }).map((u) => (
               <tr key={u.id} style={{ borderTop: "1px solid var(--line)" }}>
                 <td style={{ padding: "10px 0" }}>{u.email}</td>
                 <td><Badge tone="gray">{roleKo(u.role)}</Badge></td>
