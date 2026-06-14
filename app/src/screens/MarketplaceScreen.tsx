@@ -3,6 +3,8 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { Pressable, RefreshControl, ScrollView, StyleSheet, Text, TextInput, View } from "react-native";
 
+import * as Clipboard from "expo-clipboard";
+
 import { useRefresh } from "../lib/useRefresh";
 
 import { AppModal } from "../components/AppModal";
@@ -181,6 +183,7 @@ export default function MarketplaceScreen() {
 }
 
 function DetailSheet({ asset, kycVerified, onClose, onBuy }: { asset: STOAsset | null; kycVerified: boolean; onClose: () => void; onBuy: () => void }) {
+  const toast = useToast();
   if (!asset) return null;
   const soldOut = asset.status === "SOLD_OUT" || asset.remaining_tokens <= 0;
   const facts: [string, string][] = [
@@ -204,7 +207,11 @@ function DetailSheet({ asset, kycVerified, onClose, onBuy }: { asset: STOAsset |
           </View>
         ))}
       </View>
-      {asset.contract_address ? <Text style={[styles.muted, { marginTop: 12, fontSize: 11 }]}>⛓ ERC-1400: {asset.contract_address.slice(0, 24)}…</Text> : null}
+      {asset.contract_address ? (
+        <Pressable onPress={async () => { await Clipboard.setStringAsync(asset.contract_address!); toast.show("컨트랙트 주소를 복사했습니다.", "success"); }}>
+          <Text style={[styles.muted, { marginTop: 12, fontSize: 11 }]}>⛓ ERC-1400: {asset.contract_address.slice(0, 24)}… <Text style={{ color: colors.sky }}>복사</Text></Text>
+        </Pressable>
+      ) : null}
       <View style={{ marginTop: 16 }}>
         <Button title={soldOut ? "판매 완료" : "토큰 구매"} onPress={onBuy} disabled={soldOut || !kycVerified} />
       </View>
