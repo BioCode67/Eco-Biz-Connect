@@ -9,7 +9,7 @@ import { MiniBars } from "../components/charts";
 import { AppModal } from "../components/AppModal";
 import { Skeleton } from "../components/Skeleton";
 import { useToast } from "../components/Toast";
-import { Badge, Button, EmptyState, Field, Section, StatCard } from "../components/ui";
+import { Badge, Button, EmptyState, ErrorBanner, Field, Section, StatCard } from "../components/ui";
 import { api, ApiError } from "../lib/api";
 import { dateStr, roleKo, subsystemName } from "../lib/format";
 import type { AdminStats, AdminUser, AuditLog, STOAsset, SystemMetrics } from "../lib/types";
@@ -25,15 +25,20 @@ export default function AdminScreen() {
   const [logs, setLogs] = useState<AuditLog[]>([]);
   const [loading, setLoading] = useState(true);
   const [showIssue, setShowIssue] = useState(false);
+  const [netError, setNetError] = useState(false);
 
   const load = useCallback(async () => {
-    const [m, s, u, l] = await Promise.all([
-      api<SystemMetrics>("/admin/monitor").catch(() => null),
-      api<AdminStats>("/admin/stats").catch(() => null),
-      api<AdminUser[]>("/admin/users").catch(() => []),
-      api<AuditLog[]>("/admin/audit-log").catch(() => [] as AuditLog[]),
+    const rs = await Promise.allSettled([
+      api<SystemMetrics>("/admin/monitor"),
+      api<AdminStats>("/admin/stats"),
+      api<AdminUser[]>("/admin/users"),
+      api<AuditLog[]>("/admin/audit-log"),
     ]);
-    setMetrics(m); setStats(s); setUsers(u); setLogs(l); setLoading(false);
+    if (rs.every((r) => r.status === "rejected")) { setNetError(true); setLoading(false); return; }
+    const v = <T,>(i: number, def: T): T => (rs[i].status === "fulfilled" ? (rs[i] as PromiseFulfilledResult<T>).value : def);
+    setMetrics(v(0, null as SystemMetrics | null)); setStats(v(1, null as AdminStats | null));
+    setUsers(v(2, [] as AdminUser[])); setLogs(v(3, [] as AuditLog[]));
+    setNetError(false); setLoading(false);
   }, []);
   useEffect(() => { load(); }, [load]);
   const { refreshing, onRefresh } = useRefresh(load);
@@ -64,6 +69,7 @@ export default function AdminScreen() {
 
   return (
     <ScrollView contentContainerStyle={styles.container} refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={colors.brand} colors={[colors.brand]} />}>
+      {netError ? <ErrorBanner onRetry={() => { setLoading(true); load(); }} /> : null}
       <Section title="시스템 모니터" subtitle="서브시스템 상태(mock)">
         {Object.entries(subsystems).map(([key, val]) => {
           const status = String((val as Record<string, unknown>).status ?? "—");

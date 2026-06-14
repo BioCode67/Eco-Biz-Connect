@@ -6,7 +6,7 @@ import { RefreshControl, ScrollView, StyleSheet, Text, View } from "react-native
 import { ChainHash } from "../components/ChainVerify";
 import { DonutBreakdown } from "../components/charts";
 import { Skeleton } from "../components/Skeleton";
-import { Badge, EmptyState, Section, StatCard } from "../components/ui";
+import { Badge, EmptyState, ErrorBanner, Section, StatCard } from "../components/ui";
 import { api } from "../lib/api";
 import { dateStr, shortHash, txStatusKo, txTypeKo, won } from "../lib/format";
 import { useRefresh } from "../lib/useRefresh";
@@ -21,18 +21,22 @@ export default function PortfolioScreen() {
   const [assets, setAssets] = useState<STOAsset[]>([]);
   const [tx, setTx] = useState<TransactionItem[]>([]);
   const [loading, setLoading] = useState(true);
+  const [netError, setNetError] = useState(false);
 
   const load = useCallback(async () => {
-    const [p, d, t, a] = await Promise.all([
-      api<Portfolio>("/portfolio").catch(() => null),
-      api<Dividend[]>("/dividends").catch(() => [] as Dividend[]),
-      api<TransactionPage>("/transactions").catch(() => null),
-      api<STOAsset[]>("/marketplace").catch(() => [] as STOAsset[]),
+    const rs = await Promise.allSettled([
+      api<Portfolio>("/portfolio"),
+      api<Dividend[]>("/dividends"),
+      api<TransactionPage>("/transactions"),
+      api<STOAsset[]>("/marketplace"),
     ]);
-    setPortfolio(p);
-    setDividends(d);
-    setTx(t?.items ?? []);
-    setAssets(a);
+    if (rs.every((r) => r.status === "rejected")) { setNetError(true); setLoading(false); return; }
+    const v = <T,>(i: number, def: T): T => (rs[i].status === "fulfilled" ? (rs[i] as PromiseFulfilledResult<T>).value : def);
+    setPortfolio(v(0, null as Portfolio | null));
+    setDividends(v(1, [] as Dividend[]));
+    setTx(v(2, null as TransactionPage | null)?.items ?? []);
+    setAssets(v(3, [] as STOAsset[]));
+    setNetError(false);
     setLoading(false);
   }, []);
   useEffect(() => { load(); }, [load]);
@@ -62,6 +66,7 @@ export default function PortfolioScreen() {
 
   return (
     <ScrollView contentContainerStyle={styles.container} refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={colors.brand} colors={[colors.brand]} />}>
+      {netError ? <ErrorBanner onRetry={() => { setLoading(true); load(); }} /> : null}
       <View style={styles.statRow}>
         <StatCard label="총 투자금" value={won(portfolio?.total_invested)} />
         <StatCard label="평가액" value={won(portfolio?.total_current_value)} />
