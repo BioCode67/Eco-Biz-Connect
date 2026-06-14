@@ -203,7 +203,17 @@ export function LineChart({
       <Path d={area} fill="url(#g)" />
       <Path d={line} stroke={colors.brand} strokeWidth={2.5} fill="none" strokeLinecap="round" />
       {pts.map((p, i) => (
-        <Circle key={i} cx={p.x} cy={p.y} r={4} fill="#fff" stroke={colors.brand} strokeWidth={2.5} />
+        <React.Fragment key={i}>
+          <SvgText x={p.x} y={p.y - 8} fontSize={10} fontWeight="700" fill={colors.text} textAnchor="middle">
+            {values[i].toLocaleString()}
+          </SvgText>
+          {labels && labels[i] ? (
+            <SvgText x={p.x} y={height - 6} fontSize={9} fill={colors.muted} textAnchor="middle">
+              {labels[i]}
+            </SvgText>
+          ) : null}
+          <Circle cx={p.x} cy={p.y} r={4} fill="#fff" stroke={colors.brand} strokeWidth={2.5} />
+        </React.Fragment>
       ))}
     </Svg>
   );
