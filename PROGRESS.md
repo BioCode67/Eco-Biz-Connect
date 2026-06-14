@@ -66,3 +66,4 @@
 | 55 | 앱 에러 UX가 소상공인·마켓에만 있고 포트폴리오·관리자엔 없음 | (업그레이드) 견고성·UX 완결 | Portfolio·Admin load를 Promise.allSettled+netError로 전환, ErrorBanner+재시도 추가 — 4개 화면 전체 네트워크 에러 UX 완성 | tsc·expo export(712) 통과 |
 | 56 | 관리자 거래량 7일 차트(MiniBars)가 막대만 있고 금액 미표시 | (업그레이드) 가독성 | MiniBars에 formatValue 옵션 추가, 0 초과 막대 위에 만원 약식 금액 표시(웹+앱) | web/app tsc·expo export(712) 통과 |
 | 57 | 평가자가 로그인하려면 이메일/비번 타이핑 필요 — 데모 접근성 저하 | (업그레이드) 평가 편의 | 로그인 페이지에 데모 계정(소상공인/투자자/관리자) 원클릭 빠른로그인 버튼 추가(클릭 시 즉시 login→역할 홈) | web tsc 통과, 프리뷰에서 소상공인 클릭→/merchant 진입 시각 검증 |
+| 58 | 앱 로그인엔 데모 빠른로그인 버튼 없음(웹엔 있음) | (c) 파리티·평가 편의 | 앱 LoginScreen에 데모 계정(소상공인/투자자/관리자) 원클릭 빠른로그인 버튼 추가 | tsc·expo export(712) 통과 |
