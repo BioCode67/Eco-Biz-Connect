@@ -1,7 +1,7 @@
 // 로그인/회원가입 화면 (proto_01 모바일 버전).
 
 import React, { useState } from "react";
-import { KeyboardAvoidingView, Platform, ScrollView, StyleSheet, Text, TextInput, View } from "react-native";
+import { KeyboardAvoidingView, Platform, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from "react-native";
 
 import { Button } from "../components/ui";
 import { ApiError } from "../lib/api";
@@ -23,6 +23,17 @@ export default function LoginScreen() {
   const [walletAddress, setWalletAddress] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
+
+  async function quickLogin(em: string, pw: string) {
+    setEmail(em); setPassword(pw); setError(null); setBusy(true);
+    try {
+      await login(em, pw);
+    } catch (err) {
+      setError(err instanceof ApiError ? err.message : "오류가 발생했습니다.");
+    } finally {
+      setBusy(false);
+    }
+  }
 
   async function onSubmit() {
     setError(null);
@@ -91,6 +102,23 @@ export default function LoginScreen() {
             <Button title={busy ? "처리 중…" : mode === "login" ? "로그인" : "가입하기"} onPress={onSubmit} disabled={busy} />
           </View>
 
+          {mode === "login" ? (
+            <View style={styles.demoBox}>
+              <Text style={styles.demoLabel}>평가용 데모 계정 — 탭하면 바로 체험</Text>
+              <View style={styles.demoRow}>
+                {[
+                  { label: "소상공인", em: "merchant@ebc.com", pw: "Merch123!" },
+                  { label: "투자자", em: "investor@ebc.com", pw: "Invest123!" },
+                  { label: "관리자", em: "admin@ebc.com", pw: "Admin123!" },
+                ].map((a) => (
+                  <Pressable key={a.em} disabled={busy} onPress={() => quickLogin(a.em, a.pw)} style={({ pressed }) => [styles.demoBtn, pressed && { opacity: 0.6 }]}>
+                    <Text style={styles.demoBtnText}>{a.label}</Text>
+                  </Pressable>
+                ))}
+              </View>
+            </View>
+          ) : null}
+
           <Text style={styles.switch} onPress={() => { setMode(mode === "login" ? "register" : "login"); setError(null); }}>
             {mode === "login" ? "계정이 없으신가요? 회원가입 →" : "← 로그인으로"}
           </Text>
@@ -134,6 +162,11 @@ function Field({
 
 const styles = StyleSheet.create({
   container: { padding: 24, paddingTop: 72, backgroundColor: colors.bg, flexGrow: 1 },
+  demoBox: { marginTop: 16, paddingTop: 14, borderTopWidth: 1, borderTopColor: colors.border },
+  demoLabel: { fontSize: 12, color: colors.muted, textAlign: "center", marginBottom: 10 },
+  demoRow: { flexDirection: "row", gap: 8 },
+  demoBtn: { flex: 1, paddingVertical: 9, borderRadius: 10, borderWidth: 1, borderColor: colors.border, backgroundColor: colors.card, alignItems: "center" },
+  demoBtnText: { fontSize: 13, fontWeight: "600", color: colors.text },
   brand: { alignItems: "center", marginBottom: 24 },
   logo: { width: 56, height: 56, borderRadius: 16, backgroundColor: colors.brand, alignItems: "center", justifyContent: "center" },
   logoText: { color: colors.white, fontSize: 28, fontWeight: "800" },
