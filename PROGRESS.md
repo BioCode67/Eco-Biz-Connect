@@ -55,3 +55,4 @@
 | 44 | "AI 분석"이 업로드 CSV를 안 읽고 file_size 해시로 가짜값 생성 — 대표적 "모양만 있는" 기능 | (업그레이드) 실작동 | `analytics.py` 신설: 실제 CSV 파싱→매출 추세 회귀 3개월 예측·변동성 신뢰구간·실비용비율 기반 절감제안·z-score 이상치. upload→pipeline→ai_engine/esg_engine 배선(실데이터 우선, 없으면 합성) | pytest 통과, 샘플 CSV로 총매출 3,301만원·예측 검증 |
 | 45 | 소상공인 핵심지표인 영업이익/이익률 부재 | (업그레이드) 실작동·전문성 | analytics에 영업이익=매출-실비용·이익률 계산, report에 `profit` JSON 영속화(마이그레이션 0014), 웹·앱 대시보드에 영업이익·이익률 전용 카드 | 마이그레이션 0014 체인 검증·pytest 70 통과·API profit 반환(영업이익 484만/44%)·웹 카드 시각 검증 |
 | 46 | 분석이 비용 항목별 비율을 계산하지만(재료비/인건비/임대료/공과금) 화면 미표시 | (업그레이드) 실작동·시각화 | profit 블록에 expense_breakdown(항목·금액·매출대비%) 추가(영속화), 합성 경로도 동일, 웹 매출예측 섹션에 "비용 구조" 막대(BarRows) 추가 | web tsc·analytics 6테스트 통과, API expense_breakdown 반환(재료비25.8/인건16.8/임대9/공과4.5%), 프리뷰 4개 항목 막대 시각 확인 |
+| 47 | 비용 구조 막대가 웹에만 있고 앱엔 없음 | (c) 파리티 | 앱 AnalysisReport 타입에 expense_breakdown 추가, MerchantScreen 매출예측 섹션에 비용 구조 BarRows(COST_COLORS) 추가 | tsc·expo export(711) 통과 |
