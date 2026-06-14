@@ -79,6 +79,13 @@ export default function MerchantScreen() {
   return (
     <ScrollView contentContainerStyle={styles.container} refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={colors.brand} colors={[colors.brand]} />}>
       {netError ? <ErrorBanner onRetry={() => { setLoading(true); loadAll(); }} /> : null}
+      {!netError && datasets.length === 0 ? (
+        <View style={styles.onboard}>
+          <Text style={styles.onboardTitle}>👋 시작하기 — 경영 데이터를 업로드하세요</Text>
+          <Text style={styles.onboardText}>매출·지출 CSV를 올리면 AI 매출 예측·영업이익·비용 구조·ESG 점수가 자동 분석됩니다.</Text>
+          <Button title="파일 업로드" onPress={upload} />
+        </View>
+      ) : null}
       <View style={styles.statRow}>
         <StatCard label="ESG 점수" value={esg ? `${Number(esg.composite_score).toFixed(0)}` : "—"} hint={esg ? `등급 ${esg.score_grade}` : "데이터 필요"} />
         <StatCard label="예상 월매출" value={report ? won(report.sales_forecast.next_3_months[0] * 10000) : "—"} hint="AI 예측" />
@@ -264,6 +271,9 @@ function LoanStepper({ status, reason }: { status: string; reason?: string | nul
 
 const styles = StyleSheet.create({
   container: { padding: 16, paddingBottom: 40 },
+  onboard: { backgroundColor: colors.brandLight, borderRadius: 14, padding: 16, marginBottom: 12, gap: 8 },
+  onboardTitle: { fontSize: 14.5, fontWeight: "700", color: colors.brandDark },
+  onboardText: { fontSize: 12.5, color: colors.brandDark, lineHeight: 18 },
   statRow: { flexDirection: "row", gap: 10, marginBottom: 8 },
   row: { flexDirection: "row", justifyContent: "space-between", alignItems: "center", paddingVertical: 9, borderTopColor: colors.border, borderTopWidth: 1 },
   rowText: { fontSize: 13, color: colors.text, flex: 1 },
