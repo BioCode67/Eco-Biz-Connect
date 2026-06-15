@@ -15,7 +15,7 @@ GitHub Repository:
 https://github.com/BioCode67/Eco-Biz-Connect
 
 웹 서비스 접속 주소 (교수님 평가용):
-https://<배포후-Vercel주소>.vercel.app
+https://eco-biz-connect.vercel.app
 
 데모 계정 (역할별 체험):
   소상공인  merchant@ebc.com / Merch123!
