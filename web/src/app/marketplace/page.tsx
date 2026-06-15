@@ -159,7 +159,7 @@ function MarketplaceBody() {
                     <Button onClick={() => setBuyTarget(a)} disabled={soldOut || !kycVerified}>{soldOut ? "판매 완료" : "토큰 구매"}</Button>
                     <button className="link" onClick={() => setDetailTarget(a)} style={{ fontSize: 13 }}>상세보기 →</button>
                     <label style={{ marginLeft: "auto", display: "flex", alignItems: "center", gap: 5, fontSize: 12.5, color: "var(--ink-soft)", cursor: "pointer" }}>
-                      <input type="checkbox" checked={compareList.some((x) => x.id === a.id)} onChange={() => toggleCompare(a)} /> 비교
+                      <input type="checkbox" aria-label={`${a.name} 비교 목록에 추가`} checked={compareList.some((x) => x.id === a.id)} onChange={() => toggleCompare(a)} /> 비교
                     </label>
                   </div>
                 </div>
