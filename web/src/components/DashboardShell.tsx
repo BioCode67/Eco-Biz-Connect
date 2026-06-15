@@ -7,9 +7,10 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
 import { Icon } from "@/components/Icon";
+import { Modal } from "@/components/Modal";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { useAuth } from "@/lib/auth";
-import type { Role } from "@/lib/types";
+import type { Role, User } from "@/lib/types";
 
 export interface NavItem {
   label: string;
@@ -44,6 +45,7 @@ export default function DashboardShell({
   const { user, loading, logout } = useAuth();
   const router = useRouter();
   const [drawerOpen, setDrawerOpen] = useState(false);
+  const [showProfile, setShowProfile] = useState(false);
 
   useEffect(() => {
     if (loading) return;
@@ -92,15 +94,19 @@ export default function DashboardShell({
           ))}
         </nav>
         <div style={{ borderTop: "1px solid var(--line)", padding: 12 }}>
-          <div style={{ display: "flex", alignItems: "center", gap: 10, padding: "4px 8px 10px" }}>
+          <button
+            onClick={() => setShowProfile(true)}
+            aria-label="내 계정 정보 보기"
+            style={{ display: "flex", alignItems: "center", gap: 10, padding: "6px 8px 10px", width: "100%", background: "none", border: "none", cursor: "pointer", textAlign: "left", borderRadius: 10 }}
+          >
             <div style={{ width: 34, height: 34, borderRadius: 999, background: "var(--forest-soft)", color: "var(--forest-deep)", display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 700, fontSize: 14, flexShrink: 0 }}>
               {name[0]?.toUpperCase()}
             </div>
             <div style={{ minWidth: 0 }}>
               <div style={{ fontSize: 13, fontWeight: 600, color: "var(--ink)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{name}</div>
-              <div style={{ fontSize: 11, color: "var(--ink-soft)" }}>{user.email}</div>
+              <div style={{ fontSize: 11, color: "var(--ink-soft)" }}>{user.email} · 내 정보 →</div>
             </div>
-          </div>
+          </button>
           <button onClick={logout} className="btn btn-ghost" style={{ width: "100%", justifyContent: "flex-start" }}>
             <span aria-hidden style={{ opacity: 0.7 }}>⏻</span> 로그아웃
           </button>
@@ -123,7 +129,53 @@ export default function DashboardShell({
         </header>
         <div className="shell-content">{children}</div>
       </main>
+
+      {showProfile && <ProfileModal user={user} roleLabel={ROLE_LABEL[role]} onClose={() => setShowProfile(false)} />}
     </div>
+  );
+}
+
+function ProfileModal({ user, roleLabel, onClose }: { user: User; roleLabel: string; onClose: () => void }) {
+  const badge = (text: string, ok: boolean) => (
+    <span style={{ fontSize: 11.5, fontWeight: 600, padding: "2px 9px", borderRadius: 999, background: ok ? "var(--forest-soft)" : "var(--paper-2)", color: ok ? "var(--forest-deep)" : "var(--ink-soft)" }}>{text}</span>
+  );
+  const rows: [string, React.ReactNode][] = [
+    ["이름", user.name || "—"],
+    ["이메일", user.email],
+    ["역할", roleLabel],
+    ["전화번호", user.phone || "—"],
+  ];
+  if (user.role === "MERCHANT") {
+    rows.push(
+      ["상호명", user.store_name || "—"],
+      ["사업자등록번호", user.business_reg_no || "—"],
+      ["사업장 주소", user.store_address || "—"],
+      ["업종", user.business_category || "—"],
+      ["ESG 상생지수", user.esg_score ? `${Math.round(Number(user.esg_score))}점` : "데이터 필요"],
+    );
+  } else if (user.role === "INVESTOR") {
+    rows.push(
+      ["지갑 주소", user.wallet_address || "—"],
+      ["누적 투자금", user.total_invested ? `₩${Number(user.total_invested).toLocaleString()}` : "₩0"],
+    );
+  }
+
+  return (
+    <Modal onClose={onClose} title="내 계정 정보">
+      <div style={{ display: "flex", gap: 8, marginBottom: 16, flexWrap: "wrap" }}>
+        {badge(`계정 ${user.verification_status === "VERIFIED" ? "인증됨" : user.verification_status}`, user.verification_status === "VERIFIED")}
+        {user.role === "INVESTOR" && badge(`KYC ${user.kyc_status === "VERIFIED" ? "인증됨" : user.kyc_status === "PENDING" ? "대기" : (user.kyc_status ?? "미인증")}`, user.kyc_status === "VERIFIED")}
+      </div>
+      <div className="card" style={{ padding: "4px 16px", background: "var(--paper)" }}>
+        {rows.map(([label, value], i) => (
+          <div key={label} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 16, padding: "11px 0", borderTop: i === 0 ? "none" : "1px solid var(--line)", fontSize: 13.5 }}>
+            <span style={{ color: "var(--ink-soft)", flexShrink: 0 }}>{label}</span>
+            <span style={{ fontWeight: 500, textAlign: "right", wordBreak: "break-all" }}>{value}</span>
+          </div>
+        ))}
+      </div>
+      <p style={{ fontSize: 11.5, color: "var(--ink-soft)", marginTop: 12, lineHeight: 1.5 }}>계정 정보 수정은 고객센터를 통해 요청할 수 있습니다(데모).</p>
+    </Modal>
   );
 }
 
