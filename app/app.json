@@ -22,6 +22,12 @@
     },
     "plugins": [
       "expo-secure-store"
-    ]
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "a0a950c6-27bb-4e7f-be52-827cf0f8d609"
+      }
+    },
+    "owner": "biocode67"
   }
 }
