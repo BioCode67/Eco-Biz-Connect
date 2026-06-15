@@ -10,6 +10,7 @@ interface RegisterInput {
   password: string;
   role: Role;
   business_reg_no?: string;
+  representative_name?: string;
   store_name?: string;
   wallet_address?: string;
 }

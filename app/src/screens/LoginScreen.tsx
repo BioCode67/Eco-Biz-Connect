@@ -20,6 +20,7 @@ export default function LoginScreen() {
   const [password, setPassword] = useState("");
   const [showPw, setShowPw] = useState(false);
   const [businessRegNo, setBusinessRegNo] = useState("");
+  const [representativeName, setRepresentativeName] = useState("");
   const [storeName, setStoreName] = useState("");
   const [walletAddress, setWalletAddress] = useState("");
   const [error, setError] = useState<string | null>(null);
@@ -46,6 +47,7 @@ export default function LoginScreen() {
           password,
           role,
           business_reg_no: role === "MERCHANT" ? businessRegNo : undefined,
+          representative_name: role === "MERCHANT" ? representativeName : undefined,
           store_name: role === "MERCHANT" ? storeName : undefined,
           wallet_address: role === "INVESTOR" ? walletAddress : undefined,
         });
@@ -91,6 +93,7 @@ export default function LoginScreen() {
           {mode === "register" && role === "MERCHANT" && (
             <>
               <Field label="사업자등록번호" value={businessRegNo} onChange={setBusinessRegNo} placeholder="123-45-67890" />
+              <Field label="대표자명" value={representativeName} onChange={setRepresentativeName} placeholder="홍길동" />
               <Field label="상호명" value={storeName} onChange={setStoreName} placeholder="그린마트" />
             </>
           )}

@@ -31,6 +31,7 @@ export default function LoginPage() {
   const [password, setPassword] = useState("");
   const [showPw, setShowPw] = useState(false);
   const [businessRegNo, setBusinessRegNo] = useState("");
+  const [representativeName, setRepresentativeName] = useState("");
   const [storeName, setStoreName] = useState("");
   const [walletAddress, setWalletAddress] = useState("");
   const [busy, setBusy] = useState(false);
@@ -45,6 +46,7 @@ export default function LoginPage() {
           password,
           role,
           business_reg_no: role === "MERCHANT" ? businessRegNo : undefined,
+          representative_name: role === "MERCHANT" ? representativeName : undefined,
           store_name: role === "MERCHANT" ? storeName : undefined,
           wallet_address: role === "INVESTOR" ? walletAddress : undefined,
         });
@@ -142,6 +144,7 @@ export default function LoginPage() {
               {mode === "register" && role === "MERCHANT" && (
                 <>
                   <Field label="사업자등록번호"><input required value={businessRegNo} onChange={(e) => setBusinessRegNo(e.target.value)} placeholder="123-45-67890" className="field" /></Field>
+                  <Field label="대표자명"><input required value={representativeName} onChange={(e) => setRepresentativeName(e.target.value)} placeholder="홍길동" className="field" /></Field>
                   <Field label="상호명"><input value={storeName} onChange={(e) => setStoreName(e.target.value)} placeholder="그린마트" className="field" /></Field>
                 </>
               )}
