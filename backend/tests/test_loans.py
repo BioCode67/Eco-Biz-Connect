@@ -69,6 +69,22 @@ def test_bank_webhook_updates_status(client, merchant_payload):
     assert got["status"] == "APPROVED"
 
 
+def test_bank_webhook_cannot_overturn_final_decision(client, merchant_payload):
+    """확정(APPROVED/REJECTED)된 대출은 웹훅 재전송으로 번복되지 않는다(멱등성)."""
+    headers, product = _prepare_merchant_with_match(client, merchant_payload)
+    loan = client.post(
+        "/loans/apply",
+        headers=headers,
+        json={"financial_product_id": product["id"], "amount": 5_000_000, "term_months": 12, "consent": True},
+    ).json()
+    client.post(f"/loans/{loan['id']}/bank-webhook", json={"decision": "APPROVED", "reason": "신용 양호"})
+    # 이미 APPROVED → REJECTED 로 뒤집기 시도
+    res = client.post(f"/loans/{loan['id']}/bank-webhook", json={"decision": "REJECTED", "reason": "번복 시도"})
+    assert res.status_code == 409
+    # 원래 결정이 보존됨
+    assert client.get(f"/loans/{loan['id']}", headers=headers).json()["status"] == "APPROVED"
+
+
 def test_cannot_view_others_loan(client, merchant_payload, investor_payload):
     headers, product = _prepare_merchant_with_match(client, merchant_payload)
     loan = client.post(

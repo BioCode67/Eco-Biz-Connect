@@ -131,6 +131,13 @@ def bank_decision_webhook(
     if application is None:
         raise HTTPException(status.HTTP_404_NOT_FOUND, "대출 신청을 찾을 수 없습니다.")
 
+    # 확정(APPROVED/REJECTED)된 대출은 final — 웹훅 재전송·번복으로 덮어쓰지 않는다(멱등성).
+    if application.status in (LoanStatus.APPROVED, LoanStatus.REJECTED):
+        raise HTTPException(
+            status.HTTP_409_CONFLICT,
+            f"이미 심사가 완료된 대출입니다(현재 상태: {application.status.value}).",
+        )
+
     application.status = payload.decision
     application.decision_reason = payload.reason
     application.decision_received_at = datetime.now(timezone.utc)
