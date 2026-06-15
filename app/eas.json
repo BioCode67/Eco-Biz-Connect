@@ -10,7 +10,7 @@
         "buildType": "apk"
       },
       "env": {
-        "EXPO_PUBLIC_API_BASE": "https://ebc-backend.onrender.com"
+        "EXPO_PUBLIC_API_BASE": "https://ebc-backend-r0jm.onrender.com"
       }
     },
     "production": {
@@ -19,7 +19,7 @@
         "buildType": "apk"
       },
       "env": {
-        "EXPO_PUBLIC_API_BASE": "https://ebc-backend.onrender.com"
+        "EXPO_PUBLIC_API_BASE": "https://ebc-backend-r0jm.onrender.com"
       }
     }
   }
