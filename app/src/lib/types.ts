@@ -7,8 +7,14 @@ export interface User {
   email: string;
   role: Role;
   verification_status: string;
+  name?: string | null;
+  phone?: string | null;
+  business_reg_no?: string | null;
   store_name?: string | null;
+  store_address?: string | null;
+  business_category?: string | null;
   esg_score?: string | null;
+  wallet_address?: string | null;
   kyc_status?: string | null;
   total_invested?: string | null;
 }
