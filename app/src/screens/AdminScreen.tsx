@@ -11,7 +11,7 @@ import { Skeleton } from "../components/Skeleton";
 import { useToast } from "../components/Toast";
 import { Badge, Button, EmptyState, ErrorBanner, Field, Section, StatCard } from "../components/ui";
 import { api, ApiError } from "../lib/api";
-import { dateStr, roleKo, subsystemName } from "../lib/format";
+import { dateStr, roleKo, subsystemName, won } from "../lib/format";
 import type { AdminStats, AdminUser, AuditLog, STOAsset, SystemMetrics } from "../lib/types";
 import { colors } from "../theme";
 
@@ -25,6 +25,8 @@ export default function AdminScreen() {
   const [logs, setLogs] = useState<AuditLog[]>([]);
   const [loading, setLoading] = useState(true);
   const [showIssue, setShowIssue] = useState(false);
+  const [assets, setAssets] = useState<STOAsset[]>([]);
+  const [dividendTarget, setDividendTarget] = useState<STOAsset | null>(null);
   const [netError, setNetError] = useState(false);
 
   const load = useCallback(async () => {
@@ -33,11 +35,12 @@ export default function AdminScreen() {
       api<AdminStats>("/admin/stats"),
       api<AdminUser[]>("/admin/users"),
       api<AuditLog[]>("/admin/audit-log"),
+      api<STOAsset[]>("/sto"),
     ]);
     if (rs.every((r) => r.status === "rejected")) { setNetError(true); setLoading(false); return; }
     const v = <T,>(i: number, def: T): T => (rs[i].status === "fulfilled" ? (rs[i] as PromiseFulfilledResult<T>).value : def);
     setMetrics(v(0, null as SystemMetrics | null)); setStats(v(1, null as AdminStats | null));
-    setUsers(v(2, [] as AdminUser[])); setLogs(v(3, [] as AuditLog[]));
+    setUsers(v(2, [] as AdminUser[])); setLogs(v(3, [] as AuditLog[])); setAssets(v(4, [] as STOAsset[]));
     setNetError(false); setLoading(false);
   }, []);
   useEffect(() => { load(); }, [load]);
@@ -121,8 +124,20 @@ export default function AdminScreen() {
         </View>
       ) : null}
 
-      <Section title="STO 발행" subtitle="ERC-1400 컨트랙트 배포">
+      <Section title="STO 발행 · 배당" subtitle="ERC-1400 발행 후 보유자에게 배당 분배">
         <Button title="+ 새 STO 발행" onPress={() => setShowIssue(true)} />
+        {assets.map((a) => {
+          const sold = a.total_token_supply - a.remaining_tokens;
+          return (
+            <View key={a.id} style={styles.row}>
+              <View style={{ flex: 1 }}>
+                <Text style={styles.name}>{a.name}</Text>
+                <Text style={styles.muted}>판매 {sold.toLocaleString()} / {a.total_token_supply.toLocaleString()}</Text>
+              </View>
+              <Button title="배당 분배" variant="ghost" onPress={() => setDividendTarget(a)} disabled={sold === 0} />
+            </View>
+          );
+        })}
       </Section>
 
       <Section title="사용자 관리" subtitle="정지 / 복원 (감사 로그)">
@@ -139,7 +154,42 @@ export default function AdminScreen() {
       </Section>
 
       <IssueModal visible={showIssue} onClose={() => setShowIssue(false)} onDone={async () => { setShowIssue(false); await load(); }} />
+      <DividendModal asset={dividendTarget} onClose={() => setDividendTarget(null)} onDone={async () => { setDividendTarget(null); await load(); }} />
     </ScrollView>
+  );
+}
+
+function DividendModal({ asset, onClose, onDone }: { asset: STOAsset | null; onClose: () => void; onDone: () => void }) {
+  const toast = useToast();
+  const [perToken, setPerToken] = useState("500");
+  const [busy, setBusy] = useState(false);
+  const n = Math.max(0, Math.round(Number(perToken) || 0));
+  const sold = asset ? asset.total_token_supply - asset.remaining_tokens : 0;
+  const totalPayout = n * sold;
+
+  async function submit() {
+    if (!asset) return;
+    if (n <= 0) { toast.show("토큰당 배당액은 0보다 커야 합니다.", "error"); return; }
+    setBusy(true);
+    try {
+      await api(`/sto/${asset.id}/dividend`, { method: "POST", body: { per_token_amount: String(n) } });
+      toast.show(`${asset.name} 배당 분배 완료 — ${won(totalPayout)} 지급`, "success");
+      onDone();
+    } catch (err) { toast.show(err instanceof ApiError ? err.message : "배당 분배 실패", "error"); }
+    finally { setBusy(false); }
+  }
+
+  return (
+    <AppModal visible={asset !== null} title={asset ? `${asset.name} 배당 분배` : "배당 분배"} onClose={onClose}>
+      <Field label="토큰당 배당액 (원)" value={perToken} onChangeText={setPerToken} keyboardType="number-pad" />
+      <View style={styles.payoutBox}>
+        <View style={styles.payoutRow}><Text style={styles.muted}>판매 토큰</Text><Text style={styles.name}>{sold.toLocaleString()}개</Text></View>
+        <View style={styles.payoutRow}><Text style={[styles.name, { fontWeight: "700" }]}>총 분배 예정액</Text><Text style={[styles.name, { fontWeight: "700" }]}>{won(totalPayout)}</Text></View>
+      </View>
+      <Text style={styles.muted}>분배 시 온체인 기록이 생성되고 보유 투자자의 포트폴리오·배당 내역에 즉시 반영됩니다.</Text>
+      <View style={{ height: 10 }} />
+      <Button title={busy ? "분배 중…" : "배당 분배"} onPress={submit} disabled={busy || n <= 0} />
+    </AppModal>
   );
 }
 
@@ -188,4 +238,6 @@ const styles = StyleSheet.create({
   row: { flexDirection: "row", alignItems: "center", paddingVertical: 10, borderTopColor: colors.border, borderTopWidth: 1 },
   name: { fontSize: 14, fontWeight: "600", color: colors.text },
   muted: { color: colors.muted, fontSize: 12, marginTop: 3 },
+  payoutBox: { backgroundColor: colors.bg, borderRadius: 12, padding: 12, marginVertical: 10, gap: 6 },
+  payoutRow: { flexDirection: "row", justifyContent: "space-between", alignItems: "center" },
 });
