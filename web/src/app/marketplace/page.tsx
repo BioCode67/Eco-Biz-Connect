@@ -313,7 +313,7 @@ function PurchaseModal({ asset, walletReady, onClose, onDone }: { asset: STOAsse
     setBusy(true);
     try {
       await api(`/marketplace/${asset.id}/purchase`, { method: "POST", body: { quantity: qty } });
-      toast.show(`${asset.name} ${qty}토큰을 구매했습니다.`, "success");
+      toast.show(`${asset.name} ${qty}토큰 구매 완료 — 연 ${co2.toFixed(2)}t CO₂ 저감에 기여합니다 🌱`, "success");
       onDone();
     } catch (err) {
       toast.show(err instanceof ApiError ? err.message : "구매 실패", "error");

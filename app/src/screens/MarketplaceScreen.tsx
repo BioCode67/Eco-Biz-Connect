@@ -233,7 +233,7 @@ function PurchaseModal({ asset, onClose, onDone }: { asset: STOAsset | null; onC
     setBusy(true);
     try {
       await api(`/marketplace/${asset.id}/purchase`, { method: "POST", body: { quantity: q } });
-      toast.show(`${asset.name} ${q}토큰 구매 완료`, "success");
+      toast.show(`${asset.name} ${q}토큰 구매 완료 — 연 ${((asset.co2_offset_per_year * q) / asset.total_token_supply).toFixed(2)}t CO₂ 저감 기여 🌱`, "success");
       onDone();
     } catch (err) {
       toast.show(err instanceof ApiError ? err.message : "구매 실패", "error");
