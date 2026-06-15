@@ -52,6 +52,19 @@ export default function MerchantScreen() {
   useEffect(() => { loadAll(); }, [loadAll]);
   const { refreshing, onRefresh } = useRefresh(loadAll);
 
+  // ESG 추이: 같은 달 다중 점수는 최신 1개만 — 월별 깔끔한 추세선(oldest→newest)
+  const esgMonthly = (() => {
+    const seen = new Set<string>();
+    const picked: ESGScore[] = [];
+    for (const s of esgHistory) { // API 는 최신순
+      const key = String(s.created_at).slice(0, 7);
+      if (seen.has(key)) continue;
+      seen.add(key);
+      picked.push(s);
+    }
+    return picked.reverse();
+  })();
+
   async function upload() {
     const picked = await DocumentPicker.getDocumentAsync({ type: ["text/csv", "text/comma-separated-values", "application/vnd.ms-excel"] });
     if (picked.canceled || !picked.assets?.[0]) return;
@@ -140,12 +153,12 @@ export default function MerchantScreen() {
             { label: "사회 (S)", value: Number(esg.social_score), color: colors.sky },
             { label: "지배구조 (G)", value: Number(esg.governance_score), color: colors.gold },
           ]} />
-          {esgHistory.length >= 2 ? (
+          {esgMonthly.length >= 2 ? (
             <View style={{ marginTop: 16, paddingTop: 14, borderTopWidth: 1, borderTopColor: colors.border }}>
-              <Text style={[styles.muted, { marginTop: 0, marginBottom: 6 }]}>ESG 점수 추이 · 최근 {esgHistory.length}회</Text>
+              <Text style={[styles.muted, { marginTop: 0, marginBottom: 6 }]}>ESG 점수 추이 · 최근 {esgMonthly.length}개월</Text>
               <LineChart
-                values={[...esgHistory].reverse().map((s) => Math.round(Number(s.composite_score)))}
-                labels={[...esgHistory].reverse().map((s) => (s.created_at ? `${new Date(s.created_at).getMonth() + 1}월` : ""))}
+                values={esgMonthly.map((s) => Math.round(Number(s.composite_score)))}
+                labels={esgMonthly.map((s) => (s.created_at ? `${new Date(s.created_at).getMonth() + 1}월` : ""))}
               />
             </View>
           ) : null}

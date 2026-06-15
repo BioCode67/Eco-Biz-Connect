@@ -116,6 +116,19 @@ function MerchantBody() {
   const latestLoan = loans[0];
   const forecast = report?.sales_forecast;
 
+  // ESG 추이: 같은 달에 점수가 여러 개면 최신 1개만 — 월별 깔끔한 추세선으로 표시(oldest→newest)
+  const esgMonthly = (() => {
+    const seen = new Set<string>();
+    const picked: ESGScore[] = [];
+    for (const s of esgHistory) { // API 는 최신순
+      const key = String(s.created_at).slice(0, 7); // YYYY-MM
+      if (seen.has(key)) continue;
+      seen.add(key);
+      picked.push(s);
+    }
+    return picked.reverse();
+  })();
+
   if (loading) {
     return (
       <div className="grid-stats">
@@ -183,12 +196,12 @@ function MerchantBody() {
                   { label: "지배구조 (G)", value: Number(esg.governance_score), color: "var(--gold)" },
                 ]} />
               </div>
-              {esgHistory.length >= 2 && (
+              {esgMonthly.length >= 2 && (
                 <div style={{ width: "100%", paddingTop: 16, borderTop: "1px solid var(--line)" }}>
-                  <div style={{ fontSize: 13, color: "var(--ink-soft)", marginBottom: 6 }}>ESG 점수 추이 · 최근 {esgHistory.length}회</div>
+                  <div style={{ fontSize: 13, color: "var(--ink-soft)", marginBottom: 6 }}>ESG 점수 추이 · 최근 {esgMonthly.length}개월</div>
                   <AreaChart
-                    values={[...esgHistory].reverse().map((s) => Math.round(Number(s.composite_score)))}
-                    labels={[...esgHistory].reverse().map((s) => `${new Date(s.created_at).getMonth() + 1}월`)}
+                    values={esgMonthly.map((s) => Math.round(Number(s.composite_score)))}
+                    labels={esgMonthly.map((s) => `${new Date(s.created_at).getMonth() + 1}월`)}
                     color="var(--forest)"
                     unit=""
                   />
