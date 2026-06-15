@@ -27,7 +27,7 @@ def test_merchant_history_lists_loans(client, merchant_payload):
     client.post(
         "/business-data/upload",
         headers=headers,
-        files={"file": ("s.csv", b"a,b\n1,2\n", "text/csv")},
+        files={"file": ("s.csv", b"date,amount\n2026-01-01,1000\n2026-01-02,1200\n", "text/csv")},
     )
     product = client.get("/products/match", headers=headers).json()[0]
     client.post(

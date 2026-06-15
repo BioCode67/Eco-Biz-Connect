@@ -50,15 +50,36 @@ def _match_col(headers: list[str], keys: tuple[str, ...]) -> str | None:
     return None
 
 
-def parse_business_csv(content: bytes) -> dict | None:
-    """CSV 바이트를 파싱해 구조화된 지표를 반환한다. 실패/형식불명 시 None."""
+def _decode_csv(content: bytes) -> str | None:
+    """여러 인코딩을 시도해 CSV 바이트를 텍스트로 디코딩한다. 실패 시 None."""
     for enc in ("utf-8-sig", "utf-8", "cp949", "euc-kr"):
         try:
-            text = content.decode(enc)
-            break
+            return content.decode(enc)
         except (UnicodeDecodeError, LookupError):
             continue
-    else:
+    return None
+
+
+def is_business_csv(content: bytes) -> bool:
+    """업로드 파일이 '경영 데이터 CSV'로 인식 가능한지(매출 컬럼 보유) 검사한다.
+
+    HTML·이미지·무관한 표처럼 매출 컬럼이 없는 파일을 업로드 단계에서 걸러내기 위함이다.
+    데이터 행 수는 보지 않는다(행이 적은 정상 파일은 합성 분석으로 폴백).
+    """
+    text = _decode_csv(content)
+    if text is None:
+        return False
+    reader = csv.DictReader(io.StringIO(text))
+    if not reader.fieldnames:
+        return False
+    headers = [h for h in reader.fieldnames if h]
+    return _match_col(headers, _REVENUE_KEYS) is not None
+
+
+def parse_business_csv(content: bytes) -> dict | None:
+    """CSV 바이트를 파싱해 구조화된 지표를 반환한다. 실패/형식불명 시 None."""
+    text = _decode_csv(content)
+    if text is None:
         return None
 
     reader = csv.DictReader(io.StringIO(text))

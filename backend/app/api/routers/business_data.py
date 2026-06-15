@@ -43,6 +43,14 @@ async def upload_business_data(
     if len(content) > MAX_FILE_SIZE:
         raise HTTPException(status.HTTP_413_REQUEST_ENTITY_TOO_LARGE, "파일 크기가 50MB 를 초과했습니다.")
 
+    # .csv 는 사용자가 명시적으로 준 데이터다 — 매출 컬럼조차 없는 파일(HTML·무관 표 등)은
+    # 합성 분석으로 가장하지 않고 저장 전에 거절한다(고아 레코드 방지).
+    if ext == ".csv" and not analytics.is_business_csv(content):
+        raise HTTPException(
+            status.HTTP_422_UNPROCESSABLE_ENTITY,
+            "CSV에서 매출 데이터를 찾을 수 없습니다. '날짜', '매출액' 등의 컬럼이 포함된 경영 데이터 파일을 올려주세요.",
+        )
+
     storage_key = object_storage.store_file(current_user.id, file_name, content)
     business_data = BusinessData(
         merchant_id=current_user.id,
