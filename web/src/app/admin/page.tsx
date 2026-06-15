@@ -10,7 +10,7 @@ import { Modal } from "@/components/Modal";
 import { Badge, Button, EmptyState, ErrorBanner, Section, Skeleton } from "@/components/ui";
 import { useToast } from "@/components/Toast";
 import { api, ApiError, safe } from "@/lib/api";
-import { dateStr, roleKo } from "@/lib/format";
+import { dateStr, roleKo, won } from "@/lib/format";
 import type { AdminStats, AdminUser, AuditLog, STOAsset, SystemMetrics } from "@/lib/types";
 
 const NAV = [
@@ -48,19 +48,22 @@ function AdminBody() {
   const [logs, setLogs] = useState<AuditLog[]>([]);
   const [loading, setLoading] = useState(true);
   const [showIssue, setShowIssue] = useState(false);
+  const [assets, setAssets] = useState<STOAsset[]>([]);
+  const [dividendTarget, setDividendTarget] = useState<STOAsset | null>(null);
   const [netError, setNetError] = useState(false);
   const [userSearch, setUserSearch] = useState("");
   const [logSearch, setLogSearch] = useState("");
 
   const load = useCallback(async () => {
     try {
-      const [m, s, u, l] = await Promise.all([
+      const [m, s, u, l, a] = await Promise.all([
         safe(api<SystemMetrics | null>("/admin/monitor"), null),
         safe(api<AdminStats | null>("/admin/stats"), null),
         safe(api<AdminUser[]>("/admin/users"), [] as AdminUser[]),
         safe(api<AuditLog[]>("/admin/audit-log"), [] as AuditLog[]),
+        safe(api<STOAsset[]>("/sto"), [] as STOAsset[]),
       ]);
-      setMetrics(m); setStats(s); setUsers(u); setLogs(l);
+      setMetrics(m); setStats(s); setUsers(u); setLogs(l); setAssets(a);
       setNetError(false);
     } catch {
       setNetError(true);
@@ -183,9 +186,36 @@ function AdminBody() {
         )}
       </Section>
 
-      {/* STO 발행 */}
-      <Section id="issue" title="STO 발행" description="탄소 환경 자산을 토큰증권으로 발행 (ERC-1400)" action={<Button onClick={() => setShowIssue(true)}>+ 새 STO 발행</Button>}>
-        <p style={{ fontSize: 13, color: "var(--ink-soft)" }}>총 {stats?.total_sto ?? 0}개 자산이 발행되었습니다. 발행 시 스마트 컨트랙트가 배포되고 마켓플레이스에 공개됩니다.</p>
+      {/* STO 발행 · 배당 분배 */}
+      <Section id="issue" title="STO 발행 · 배당" description="탄소 환경 자산을 토큰증권으로 발행 (ERC-1400) 후 보유자에게 배당 분배" action={<Button onClick={() => setShowIssue(true)}>+ 새 STO 발행</Button>}>
+        {assets.length === 0 ? (
+          <p style={{ fontSize: 13, color: "var(--ink-soft)" }}>아직 발행된 STO가 없습니다. 발행 시 스마트 컨트랙트가 배포되고 마켓플레이스에 공개됩니다.</p>
+        ) : (
+          <table style={{ width: "100%", fontSize: 13.5, borderCollapse: "collapse" }}>
+            <thead><tr style={{ textAlign: "left", color: "var(--ink-soft)", fontSize: 11.5 }}>
+              <th style={{ padding: "0 0 8px" }}>자산</th><th>단가</th><th>판매</th><th style={{ textAlign: "right" }}>배당</th>
+            </tr></thead>
+            <tbody>
+              {assets.map((a) => {
+                const sold = a.total_token_supply - a.remaining_tokens;
+                return (
+                  <tr key={a.id} style={{ borderTop: "1px solid var(--line)" }}>
+                    <td style={{ padding: "10px 0", fontWeight: 600 }}>{a.name}</td>
+                    <td>{won(a.token_price)}</td>
+                    <td style={{ color: "var(--ink-soft)" }}>{sold.toLocaleString()} / {a.total_token_supply.toLocaleString()}</td>
+                    <td style={{ textAlign: "right" }}>
+                      <button onClick={() => setDividendTarget(a)} disabled={sold === 0}
+                        title={sold === 0 ? "판매된 토큰이 없어 배당할 수 없습니다" : "보유자에게 배당 분배"}
+                        style={{ background: "none", border: "none", cursor: sold === 0 ? "not-allowed" : "pointer", fontWeight: 600, fontSize: 12.5, color: sold === 0 ? "var(--ink-soft)" : "var(--forest)" }}>
+                        배당 분배
+                      </button>
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        )}
       </Section>
 
       {/* 사용자 관리 */}
@@ -226,7 +256,45 @@ function AdminBody() {
       </Section>
 
       {showIssue && <IssueModal onClose={() => setShowIssue(false)} onDone={async () => { setShowIssue(false); await load(); }} />}
+      {dividendTarget && <DividendModal asset={dividendTarget} onClose={() => setDividendTarget(null)} onDone={async () => { setDividendTarget(null); await load(); }} />}
     </div>
+  );
+}
+
+function DividendModal({ asset, onClose, onDone }: { asset: STOAsset; onClose: () => void; onDone: () => void }) {
+  const toast = useToast();
+  const [perToken, setPerToken] = useState(500);
+  const [busy, setBusy] = useState(false);
+  const sold = asset.total_token_supply - asset.remaining_tokens;
+  const totalPayout = Math.max(0, Math.round(perToken)) * sold;
+
+  async function submit() {
+    if (perToken <= 0) { toast.show("토큰당 배당액은 0보다 커야 합니다.", "error"); return; }
+    setBusy(true);
+    try {
+      await api(`/sto/${asset.id}/dividend`, { method: "POST", body: { per_token_amount: String(perToken) } });
+      toast.show(`${asset.name} 배당 분배 완료 — 보유자에게 ${won(totalPayout)} 지급.`, "success");
+      onDone();
+    } catch (err) { toast.show(err instanceof ApiError ? err.message : "배당 분배 실패", "error"); }
+    finally { setBusy(false); }
+  }
+
+  return (
+    <Modal onClose={onClose} title={`${asset.name} 배당 분배`}>
+      <label style={{ display: "block", marginBottom: 12 }}>
+        <span style={{ fontSize: 12, color: "var(--ink-soft)" }}>토큰당 배당액 (원)</span>
+        <input type="number" className="field" min={1} value={perToken} onChange={(e) => setPerToken(Math.max(0, Number(e.target.value)))} />
+      </label>
+      <div className="card" style={{ padding: 14, background: "var(--paper)", marginBottom: 14, fontSize: 13.5 }}>
+        <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 6 }}><span style={{ color: "var(--ink-soft)" }}>판매 토큰</span><span>{sold.toLocaleString()}개</span></div>
+        <div style={{ display: "flex", justifyContent: "space-between", fontWeight: 600 }}><span>총 분배 예정액</span><span>{won(totalPayout)}</span></div>
+      </div>
+      <p style={{ fontSize: 12, color: "var(--ink-soft)", marginBottom: 14, lineHeight: 1.5 }}>분배 시 스마트 컨트랙트가 호출되어 온체인 기록이 생성되고, 보유 투자자의 포트폴리오·배당 내역에 즉시 반영됩니다.</p>
+      <div style={{ display: "flex", gap: 10, justifyContent: "flex-end" }}>
+        <Button variant="ghost" onClick={onClose}>취소</Button>
+        <Button onClick={submit} disabled={busy || perToken <= 0}>{busy ? "분배 중…" : "배당 분배"}</Button>
+      </div>
+    </Modal>
   );
 }
 
