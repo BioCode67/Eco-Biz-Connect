@@ -30,6 +30,11 @@ def _cache_catalog(db: Session) -> dict[str, FinancialProduct]:
         if product is None:
             product = FinancialProduct(**item)
             db.add(product)
+        else:
+            # 카탈로그(은행·상품명·금리 등) 변경 시 기존 캐시 행도 동기화한다.
+            for key, value in item.items():
+                if getattr(product, key, None) != value:
+                    setattr(product, key, value)
         by_code[item["product_code"]] = product
     db.commit()
     for product in by_code.values():
