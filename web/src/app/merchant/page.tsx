@@ -129,6 +129,12 @@ function MerchantBody() {
     return picked.reverse();
   })();
 
+  // 매출 예측 추세: 1개월 vs 3개월 예측 비교(추세회귀 외삽 방향) — 화살표를 실제 방향에 맞춘다
+  const fc = report?.sales_forecast?.next_3_months;
+  const fcDir: "up" | "down" | "flat" = fc && fc.length >= 3
+    ? (fc[2] > fc[0] ? "up" : fc[2] < fc[0] ? "down" : "flat")
+    : "flat";
+
   // ESG 추세 방향: 최근 2개월 비교(상승/하락/유지) — 화살표를 실제 변화에 맞춘다
   const esgDir: "up" | "down" | "flat" = esgMonthly.length >= 2
     ? (() => {
@@ -159,7 +165,7 @@ function MerchantBody() {
         </div>
       )}
       <div className="grid-stats" style={{ marginBottom: 20 }}>
-        <StatCard label="예상 월매출" value={forecast ? won(forecast.next_3_months[0] * 10000) : "—"} hint="AI 1개월 예측" icon="↗" />
+        <StatCard label="예상 월매출" value={forecast ? won(forecast.next_3_months[0] * 10000) : "—"} trend={forecast ? { dir: fcDir, text: fcDir === "up" ? "3개월 상승 추세" : fcDir === "down" ? "3개월 하락 추세" : "3개월 보합" } : undefined} hint={forecast ? undefined : "AI 1개월 예측"} icon={forecast ? undefined : "↗"} />
         <StatCard label="EBC ESG 점수" value={esg ? `${Number(esg.composite_score).toFixed(0)}` : "—"} trend={esg ? { dir: esgDir, text: `등급 ${esg.score_grade}` } : undefined} hint={esg ? undefined : "데이터 필요"} accent />
         <StatCard label="데이터 업로드" value={`${datasets.length}건`} hint="누적" icon="▤" />
         <StatCard label="대출 신청" value={latestLoan ? statusKo(latestLoan.status) : "없음"} hint={latestLoan ? won(latestLoan.amount) : "상품 매칭 후"} icon="₩" />
