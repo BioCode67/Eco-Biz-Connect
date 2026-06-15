@@ -12,6 +12,22 @@ export class ApiError extends Error {
   }
 }
 
+// FastAPI/Pydantic 오류 응답에서 사람이 읽을 메시지만 추출한다.
+// - detail 이 문자열이면 그대로
+// - detail 이 검증 오류 배열(422)이면 각 항목의 msg 만 모아 "Value error," 접두사를 떼고 합친다
+function extractErrorMessage(data: unknown, status: number): string {
+  const detail = (data as { detail?: unknown } | null)?.detail;
+  if (typeof detail === "string") return detail;
+  if (Array.isArray(detail)) {
+    const msgs = detail
+      .map((e) => (e && typeof e === "object" && "msg" in e ? String((e as { msg: unknown }).msg) : ""))
+      .map((m) => m.replace(/^Value error,\s*/i, "").trim())
+      .filter(Boolean);
+    if (msgs.length) return [...new Set(msgs)].join("\n");
+  }
+  return `요청 실패 (${status})`;
+}
+
 export function getToken(): string | null {
   if (typeof window === "undefined") return null;
   return window.localStorage.getItem(TOKEN_KEY);
@@ -102,13 +118,7 @@ export async function api<T>(path: string, options: RequestOptions = {}): Promis
   const data = text ? JSON.parse(text) : null;
 
   if (!res.ok) {
-    const detail =
-      data && typeof data === "object" && "detail" in data
-        ? typeof data.detail === "string"
-          ? data.detail
-          : JSON.stringify(data.detail)
-        : `요청 실패 (${res.status})`;
-    throw new ApiError(res.status, detail);
+    throw new ApiError(res.status, extractErrorMessage(data, res.status));
   }
   return data as T;
 }

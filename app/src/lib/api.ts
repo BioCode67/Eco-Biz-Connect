@@ -17,6 +17,20 @@ export class ApiError extends Error {
   }
 }
 
+// FastAPI/Pydantic 오류에서 사람이 읽을 메시지만 추출(검증 오류 배열은 msg 만 모아 정리).
+function extractErrorMessage(data: unknown, status: number): string {
+  const detail = (data as { detail?: unknown } | null)?.detail;
+  if (typeof detail === "string") return detail;
+  if (Array.isArray(detail)) {
+    const msgs = detail
+      .map((e) => (e && typeof e === "object" && "msg" in e ? String((e as { msg: unknown }).msg) : ""))
+      .map((m) => m.replace(/^Value error,\s*/i, "").trim())
+      .filter(Boolean);
+    if (msgs.length) return [...new Set(msgs)].join("\n");
+  }
+  return `요청 실패 (${status})`;
+}
+
 export async function loadToken(): Promise<string | null> {
   try {
     memToken = await SecureStore.getItemAsync(TOKEN_KEY);
@@ -64,13 +78,7 @@ export async function api<T>(path: string, options: RequestOptions = {}): Promis
   const data = text ? JSON.parse(text) : null;
 
   if (!res.ok) {
-    const detail =
-      data && typeof data === "object" && "detail" in data
-        ? typeof data.detail === "string"
-          ? data.detail
-          : JSON.stringify(data.detail)
-        : `요청 실패 (${res.status})`;
-    throw new ApiError(res.status, detail);
+    throw new ApiError(res.status, extractErrorMessage(data, res.status));
   }
   return data as T;
 }
