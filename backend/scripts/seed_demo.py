@@ -101,16 +101,19 @@ def issue_sto(db, admin: User, **kw) -> STOAsset:
     return asset
 
 
-def purchase(db, investor: User, asset: STOAsset, qty: int) -> None:
+def purchase(db, investor: User, asset: STOAsset, qty: int, days_ago: int = 0) -> None:
     total = asset.token_price * qty
     rec = blockchain.purchase_tokens(db, asset.contract_address or "0x0", investor.wallet_address or "0x0", qty)
     asset.remaining_tokens -= qty
     if asset.remaining_tokens == 0:
         asset.status = STOStatus.SOLD_OUT
+    # 거래일을 최근 며칠에 분산 — 관리자 7일 거래량 차트가 단일 막대가 아니라 추세로 보이도록.
+    ts = datetime.now(timezone.utc) - timedelta(days=days_ago)
     db.add(TokenTransaction(investor_id=investor.id, sto_asset_id=asset.id, quantity_purchased=qty,
                             unit_price=asset.token_price, total_amount_paid=total,
                             payment_gateway_ref=f"PAY-{investor.id}-{int(total)}",
-                            on_chain_tx_hash=rec.tx_hash, block_number=rec.block_number))
+                            on_chain_tx_hash=rec.tx_hash, block_number=rec.block_number,
+                            created_at=ts))
     investor.total_invested = (investor.total_invested or Decimal("0")) + total
     db.flush()
 
@@ -194,13 +197,13 @@ def main(if_empty: bool = False) -> None:
                        location="강원 영월", total_token_supply=6000, token_price=Decimal("8000"),
                        expected_yield=Decimal("6.90"), co2_offset_per_year=51, installed_capacity_mw=Decimal("4.10"), dividend_period_months=3)
 
-        # ── 투자(구매) ──
-        purchase(db, i1, a1, 120)
-        purchase(db, i1, a2, 30)
-        purchase(db, i2, a1, 80)
-        purchase(db, i2, a5, 200)
-        purchase(db, i3, a3, 150)
-        purchase(db, i3, a4, 40)
+        # ── 투자(구매) ── 최근 6일에 분산 배치(관리자 7일 거래량 추세 표현)
+        purchase(db, i1, a1, 120, days_ago=6)
+        purchase(db, i1, a2, 30, days_ago=5)
+        purchase(db, i2, a1, 80, days_ago=4)
+        purchase(db, i2, a5, 200, days_ago=2)
+        purchase(db, i3, a3, 150, days_ago=1)
+        purchase(db, i3, a4, 40, days_ago=0)
 
         # ── 배당 분배 ──
         distribute(db, admin, a1, "120")
